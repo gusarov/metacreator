@@ -165,7 +165,21 @@
 
 	</Target>	
 	
-	<Target Name='ExecuteMetaCreator' Condition="'$(MC_Build)'=='Requested'" Inputs='@(Compile)' Outputs='@(IntermediateAssembly)' >
+	<Target
+		Name='ExecuteMetaCreator'
+		Condition="'$(MC_Build)'=='Requested'"
+		Inputs='$(MSBuildAllProjects);
+		        @(Compile);
+		        @(_CoreCompileResourceInputs);
+		        $(ApplicationIcon);
+		        $(AssemblyOriginatorKeyFile);
+		        @(ReferencePath);
+		        @(CompiledLicenseFile);
+		        @(EmbeddedDocumentation); 
+		        $(Win32Resource);
+		        $(Win32Manifest);
+		        @(CustomAdditionalCompileInputs)'
+		Outputs='@(IntermediateAssembly)' >
 		<Message Text='* MetaCreatorTargets: Execute MetaCreator...' Importance='high'/>
 		<ExecuteMetaCreator
 			Sources = '@(Compile)'

@@ -70,7 +70,7 @@ namespace MetaCreator
 
 		static string OriginalLinePredirrectiveAtStartOfMacroBlock(ProcessFileCtx ctx)
 		{
-			var banner = (ctx.GenerateBanner) ? @"// <MetaCreatorBanner>
+			var banner = (ctx.GenerateBanner) ? @"// <MetaCreator>
 // DO NOT MODIFY THIS GENERATED CODE
 // You can use /*@ GenerateBanner off */ to disable this message
 " : null;
@@ -84,7 +84,7 @@ namespace MetaCreator
 
 		static string OriginalLinePredirrectiveAtEndOfMacroBlock(ProcessFileCtx ctx)
 		{
-			var banner = (ctx.GenerateBanner) ? @"// </MetaCreatorBanner>" : null;
+			var banner = (ctx.GenerateBanner) ? @"// </MetaCreator>" : null;
 			string lineRemap = null;
 			if (ctx.ErrorRemap)
 			{
@@ -253,7 +253,7 @@ namespace MetaCreator
 
 		public bool Execute()
 		{
-			//Debugger.Launch();
+			// Debugger.Launch();
 			Initialize();
 
 			try

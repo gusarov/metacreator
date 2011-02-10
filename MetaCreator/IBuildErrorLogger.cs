@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace MetaCreator
 {
-	public interface IBuildErrorLogger
+	internal interface IBuildErrorLogger
 	{
 		void LogDebug(string msg);
 		void LogOutputMessage(string msg);

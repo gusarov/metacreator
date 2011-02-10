@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MyUtils
 {
-	public static class Lazy
+	static class Lazy
 	{
 		public static Lazy<T> New<T>(Func<T> factory) where T : class
 		{
@@ -18,7 +18,7 @@ namespace MyUtils
 
 	}
 
-	public class Lazy<T> where T : class
+	class Lazy<T> where T : class
 	{
 		Func<T> _factory;
 		T _value;

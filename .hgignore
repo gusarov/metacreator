@@ -2,3 +2,5 @@ glob:*.user
 glob:*.suo
 glob:obj/
 glob:bin/
+glob:Debug/
+glob:Release/

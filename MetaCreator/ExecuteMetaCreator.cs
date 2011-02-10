@@ -6,18 +6,30 @@ using Microsoft.Build.Utilities;
 
 namespace MetaCreator
 {
+	/// <summary>
+	/// MS Build Task
+	/// </summary>
 	[LoadInSeparateAppDomainAttribute]
 	public class ExecuteMetaCreator : AppDomainIsolatedTask
 	{
+		/// <summary>
+		/// Source code files with meta blocks
+		/// </summary>
 		[Required]
 		public ITaskItem[] Sources { get; set; }
 
+		/// <summary>
+		/// </summary>
 		[Required]
 		public ITaskItem[] References { get; set; }
 
+		/// <summary>
+		/// </summary>
 		[Required]
 		public string IntermediateOutputPath { get; set; }
 
+		/// <summary>
+		/// </summary>
 		[Required]
 		public string ProjDir { get; set; }
 

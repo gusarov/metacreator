@@ -8,10 +8,15 @@ using System.Runtime.InteropServices;
 namespace MetaCreator.Installer
 {
 	///<summary>
+	/// Installer
 	///</summary>
 	[RunInstaller(true)]
 	public class NgenInstaller : System.Configuration.Install.Installer
 	{
+		/// <summary>
+		/// Installer
+		/// </summary>
+		/// <param name="stateSaver"></param>
 		public override void Install(IDictionary stateSaver)
 		{
 			base.Install(stateSaver);

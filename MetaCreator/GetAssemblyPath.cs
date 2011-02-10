@@ -5,6 +5,9 @@ using Microsoft.Build.Utilities;
 
 namespace MetaCreator
 {
+	/// <summary>
+	/// Helper
+	/// </summary>
 	[LoadInSeparateAppDomain]
 	public class GetAssemblyPath : AppDomainIsolatedTask
 	{

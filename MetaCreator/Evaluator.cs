@@ -9,6 +9,9 @@ using System.IO;
 
 namespace MetaCreator
 {
+	/// <summary>
+	/// Dynamic compiling
+	/// </summary>
 	public static class Evaluator
 	{
 		const string _generatorMethodName = "Run";
@@ -192,13 +195,19 @@ namespace MetaCreator
 					TempFiles = new TempFileCollection(tempPath) { KeepFiles = true },
 					MainClass = _generatorClassName,
 				};
+
+			var alreadyReferencedNames = new List<string>(16);
 			foreach (var reference in typeof(Evaluator).Assembly.GetReferencedAssemblies())
 			{
+				alreadyReferencedNames.Add(reference.Name + ".dll");
 				options.ReferencedAssemblies.Add(reference.Name + ".dll");
 			}
 			foreach (var reference in additionalReferences ?? new string[0])
 			{
-				options.ReferencedAssemblies.Add(reference);
+				if (!alreadyReferencedNames.Contains(Path.GetFileName(reference), StringComparer.InvariantCultureIgnoreCase))
+				{
+					options.ReferencedAssemblies.Add(reference);
+				}
 			}
 			var compiler = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v3.5" } });
 

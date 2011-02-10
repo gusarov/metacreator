@@ -8,6 +8,9 @@ using System.Xml;
 
 namespace MetaCreator.Installer
 {
+	/// <summary>
+	/// Meta creator installer
+	/// </summary>
 	[RunInstaller(true)]
 	public class PatchMSBuildTargets : System.Configuration.Install.Installer
 	{

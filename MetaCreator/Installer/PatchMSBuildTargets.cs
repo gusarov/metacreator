@@ -3,8 +3,8 @@ using System.ComponentModel;
 using System.IO;
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.Text;
+using System.Xml;
 
 namespace MetaCreator.Installer
 {
@@ -29,7 +29,10 @@ namespace MetaCreator.Installer
 			{
 				// yield return Get_MSBuild_targets_path("v2.0", false);
 				yield return GetMsBuildTargetsPath("v3.5", false);
-				// yield return Get_MSBuild_targets_path("v4.0", false);
+				// yield return GetMsBuildTargetsPath("v4.0", false);
+				// yield return Get_MSBuild_targets_path("v2.0", true);
+				// yield return GetMsBuildTargetsPath("v3.5", true);
+				// yield return GetMsBuildTargetsPath("v4.0", true);
 			}
 		}
 

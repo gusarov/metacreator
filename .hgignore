@@ -1,2 +1,4 @@
 glob:*.user
 glob:*.suo
+glob:obj/
+glob:bin/

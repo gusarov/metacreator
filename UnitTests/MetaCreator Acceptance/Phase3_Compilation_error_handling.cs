@@ -51,11 +51,11 @@ class q
 
 			RunMsbuild(false);
 			StringAssert.Contains(File.ReadAllText(ParsedMsBuildError.FileName), @"
-// <MetaCreatorBanner>
+// <MetaCreator>
 // DO NOT MODIFY THIS GENERATED CODE
 // You can use /*@ GenerateBanner off */ to disable this message
 string q1 = 5;
-// </MetaCreatorBanner>");
+// </MetaCreator>");
 			CheckBanner(true);
 		}
 
@@ -78,7 +78,7 @@ class q
 		void CheckBanner(bool exp)
 		{
 			var body = File.ReadAllText(ParsedMsBuildError.FileName);
-			Assert.AreEqual(exp, body.Contains("<MetaCreatorBanner>"), body);
+			Assert.AreEqual(exp, body.Contains("<MetaCreator>"), body);
 		}
 
 		[TestMethod]

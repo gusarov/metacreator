@@ -262,6 +262,16 @@ public sealed class {5}
 		Result.AppendLine(msg);
 	}}
 
+	public void Write(object obj)
+	{{
+		Result.Append(obj == null ? string.Empty : obj.ToString());
+	}}
+
+	public void WriteLine(object obj)
+	{{
+		Result.AppendLine(obj == null ? string.Empty : obj.ToString());
+	}}
+
 	public {3} {2}()
 	{{
 // <UserCode>

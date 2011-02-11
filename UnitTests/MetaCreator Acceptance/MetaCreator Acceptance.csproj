@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Meta_blocks_as_single.cs" />
     <Compile Include="Phase4_Runtime_exception_handling.cs" />
     <Compile Include="Phase3_Compilation_error_handling.cs" />
     <Compile Include="Error_handling_base_tests.cs" />

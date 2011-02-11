@@ -5,6 +5,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using MetaCreator.Utils;
@@ -56,6 +57,7 @@ namespace MetaCreator
 		#endregion
 
 		#region Fields and Consts
+
 		const string _metacreatorErrorPrefix = "MetaCode: ";
 		static readonly Regex _rxBlock = new Regex(@"(?s)(?<=(?'p'.)?)/\*(?'type'[@+=!])(.+?)\*/");
 		internal static readonly Regex _rxStringInterpolVerbatim = new Regex(@"@""([^""]+)""");
@@ -123,30 +125,33 @@ namespace MetaCreator
 
 			ctx.FileProcessedContent = _rxBlock.Replace(ctx.FileProcessedContent, match =>
 				{
-					SaveCaptureState(ctx, match);
-
 					var type = match.Groups["type"].Value;
 					switch (type)
 					{
-						//case "+":
-						// BuildErrorLogger.LogWarningEvent(null);
-						//	return null;
-						case "!":
-							var result = Evaluate(match.Groups[1].Value, false, ctx);
-							if (!Environment.NewLine.Contains(match.Groups["p"].Value))
-							{
-								result = Environment.NewLine + result;
-							}
-							return result;
-						case "=":
-							return Evaluate(match.Groups[1].Value, true, ctx);
+//						case "+":
+//						 BuildErrorLogger.LogWarningEvent(null);
+//							return null;
+//						case "!":
+//							var result = Evaluate(match.Groups[1].Value, false, ctx);
+//							if (!Environment.NewLine.Contains(match.Groups["p"].Value))
+//							{
+//								result = Environment.NewLine + result;
+//							}
+//							return result;
+//						case "=":
+//							return Evaluate(match.Groups[1].Value, true, ctx);
 						case "@":
+							SaveCaptureState(ctx, match);
 							ProcessExtender(match.Groups["1"].Value, ctx);
 							return null;
 						default:
-							throw new Exception("Block type '{0}'".Arg(type));
+							return match.Value;
+							//break;
+							// throw new Exception("Block type '{0}' unknown".Arg(type));
 					}
 				});
+
+			ctx.FileProcessedContent = Process(ctx.FileProcessedContent, ctx);
 
 			if (ctx.EnabledStringInterpolation)
 			{
@@ -194,6 +199,51 @@ namespace MetaCreator
 					});
 			}
 
+		}
+
+		private string Process(string code, ProcessFileCtx ctx)
+		{
+			var blocks = _rxBlock.Matches(code).Cast<Match>().ToArray();
+
+			int from = 0;
+
+			var generatorMethodBuilder = new StringBuilder();
+
+			// create metacode
+			foreach (var block in blocks)
+			{
+				ctx.NumberOfMacrosProcessed++;
+
+				var type = block.Groups["type"].Value[0];
+
+				PlainTextWriter(code.Substring(from, block.Index - from), generatorMethodBuilder);
+
+				from = block.Index + block.Length;
+				switch (type)
+				{
+					case '!':
+						generatorMethodBuilder.AppendLine(block.Groups[1].Value);
+						break;
+					case '=':
+						generatorMethodBuilder.AppendLine("Write(" + block.Groups[1].Value + ");");
+						break;
+					default:
+						throw new Exception("Block with type " + type + " unexpected");
+				}
+			}
+
+			PlainTextWriter(code.Substring(from), generatorMethodBuilder);
+
+			// evalueate metacode
+			return Evaluate(generatorMethodBuilder.ToString(), false, ctx);
+			// return new file content
+		}
+
+		static void PlainTextWriter(string substring, StringBuilder sb)
+		{
+			sb.Append("Write(@\"");
+			sb.Append(substring.Replace("\"", "\"\""));
+			sb.AppendLine("\");");
 		}
 
 		public void Initialize()

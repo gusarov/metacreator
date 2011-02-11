@@ -9,7 +9,7 @@ namespace MetaCreator
 	/// <summary>
 	/// MS Build Task
 	/// </summary>
-	[LoadInSeparateAppDomainAttribute]
+	[LoadInSeparateAppDomain]
 	public class ExecuteMetaCreator : AppDomainIsolatedTask
 	{
 		/// <summary>

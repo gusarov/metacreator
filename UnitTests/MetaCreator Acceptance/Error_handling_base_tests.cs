@@ -69,9 +69,10 @@ namespace MetaCreator_Acceptance
 			}
 
 			_output = p.StandardOutput.ReadToEnd();
+			_error = p.StandardError.ReadToEnd();
 			Console.WriteLine("STDOUT:\r\n" + _output);
 			Console.WriteLine("===");
-			Console.WriteLine("STDERR:\r\n" + p.StandardError.ReadToEnd());
+			Console.WriteLine("STDERR:\r\n" + _error);
 			Console.WriteLine("===");
 
 			if (timeOut)
@@ -81,11 +82,11 @@ namespace MetaCreator_Acceptance
 
 			if (expectedSuccess)
 			{
-				Assert.AreEqual(0, p.ExitCode, _output);
+				Assert.AreEqual(0, p.ExitCode, _output + _error);
 			}
 			else
 			{
-				Assert.AreNotEqual(0, p.ExitCode, _output);
+				Assert.AreNotEqual(0, p.ExitCode, _output + _error);
 			}
 		}
 
@@ -103,6 +104,7 @@ namespace MetaCreator_Acceptance
 
 		string _parsedMsBuildErrorSource;
 		Match _parsedMsBuildError;
+		string _error;
 
 		protected class ParsedError
 		{

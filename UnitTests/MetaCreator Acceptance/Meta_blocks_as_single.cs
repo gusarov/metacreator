@@ -10,22 +10,81 @@ namespace MetaCreator_Acceptance
 		[TestMethod]
 		public void Should_use_blocks_from_different_parts()
 		{
+			Assert.IsFalse(File.Exists("bin/debug/sample.exe"));
+
 			File.WriteAllText("sample.cs", @"
 class q
 {
-	/*! for(var i=0;i<10;i++) { */
-	public int v/*= i */
-	/*! } */
-
 	static void Main()
 	{
+		/*! for (var i=0; i < 10; i++) { */
+		System.Console.WriteLine(""test "" + /*= i */);
+		/*! } */
 	}
 }");
 
 
 			RunMsbuild(true);
 
-			Assert.Inconclusive();
+			Assert.IsTrue(File.Exists("bin/debug/sample.exe"));
+
+			Run("bin/debug/sample.exe", "", true);
+
+			Assert.AreEqual(
+@"test 0
+test 1
+test 2
+test 3
+test 4
+test 5
+test 6
+test 7
+test 8
+test 9
+", _output);
+		}
+
+		[TestMethod]
+		public void Should_use_several_groups_of_block()
+		{
+			Assert.IsFalse(File.Exists("bin/debug/sample.exe"));
+
+			File.WriteAllText("sample.cs", @"
+class q
+{
+	/*! const int j = 5; */
+
+	static void Main()
+	{
+		/*! for (var i=0; i < 3; i++) { */
+		System.Console.WriteLine(""testA "" + /*= i */);
+		/*! } */
+
+		/*! for (var i=0; i < 3; i++) { */
+		System.Console.WriteLine(""testB "" + /*= i */);
+		/*! } */
+
+		System.Console.WriteLine(""/*= j */"");
+
+	}
+}");
+
+
+			RunMsbuild(true);
+
+			Assert.IsTrue(File.Exists("bin/debug/sample.exe"));
+
+			Run("bin/debug/sample.exe", "", true);
+
+			Assert.AreEqual(
+@"testA 0
+testA 1
+testA 2
+testB 0
+testB 1
+testB 2
+5
+", _output);
 		}
 		
 	}

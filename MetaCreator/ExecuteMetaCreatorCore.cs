@@ -11,7 +11,6 @@ using System.Threading;
 using MetaCreator.Utils;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using MyUtils;
 
 namespace MetaCreator
 {

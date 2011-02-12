@@ -91,7 +91,7 @@
     <Compile Include="GetAssemblyPath.cs" />
     <Compile Include="Extenders.cs" />
     <Compile Include="IBuildErrorLogger.cs" />
-    <Compile Include="Installer\NGen.cs">
+    <Compile Include="Installer\NgenInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Installer\PatchMSBuildTargets.cs">

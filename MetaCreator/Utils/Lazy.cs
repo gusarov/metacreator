@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace MyUtils
+namespace MetaCreator.Utils
 {
 	static class Lazy
 	{

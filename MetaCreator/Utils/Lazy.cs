@@ -77,6 +77,10 @@ namespace MyUtils
 
 		public static implicit operator T(Lazy<T> lazy)
 		{
+			if (lazy == null)
+			{
+				throw new ArgumentNullException("lazy");
+			}
 			return lazy.Value;
 		}
 

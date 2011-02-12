@@ -1,7 +1,7 @@
 <Project DefaultTarget='Disclamer' xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
 
 	<Target Name='Disclamer'>
-		<Error Text='You can not run MetaCreator.targets dirrectly. Please, include it into your project. MetaCreator injects to the building chain.' />
+		<Error Text='* MetaCreator.targets: You can not run MetaCreator.targets dirrectly. Please, include it into your project. MetaCreator injects to the building chain.' />
 	</Target>
 
 	<!-- Determine dev mode -->
@@ -65,7 +65,7 @@
 		<MCImportedTwice Condition="'$(MCImported)'=='True'">True</MCImportedTwice>
 		<MCImported>True</MCImported>
 		<ItemsGroup Condition="'$(MCImportedTwice)'=='True'">
-			<Error Message="Metacreator is imported twice! (Probably it is installed in the system and included into .proj file at the same time)" />
+			<Error Text="* MetaCreator.targets: Metacreator is imported twice! (Probably it is installed in the system and included into .proj file at the same time)" />
 			<!-- 
 			<BuildDependsOn Remove="ShadowCopyWrapper;ExecuteMetaCreator" />
 			<CleanDependsOn Remove="CleanGeneratedFiles" />
@@ -97,7 +97,7 @@
 	</Target>
 
 	<Target Name='MC_AfterBuild_Aspect'>
-		<Error Condition="'$(MC_Build)'!='Performed'" Text='* MetaCreatorTargets: Assert: Buld requested, but was not performed in building chain.' />
+		<Error Condition="'$(MC_Build)'!='Performed'" Text='* MetaCreator.targets: Assert: Buld requested, but was not performed in building chain.' />
 		<PropertyGroup>
 			<MC_Build>Done</MC_Build>
 		</PropertyGroup>
@@ -114,12 +114,12 @@
 	<UsingTask Condition='!$(DevMode)' AssemblyFile='$(MetaCreatorDLL)' TaskName='MetaCreator.ExecuteMetaCreator' />
 	
 	<!--Target Name="msg" BeforeTargets="ExecuteMetaCreatorWrapper;ExecuteMetaCreator;ShadowCopyWrapper">
-		<Message Text='* MetaCreatorTargets: DevMode=$(DevMode)' Importance='high' />
-		<Error Text="Targets have been imported twice in the project" Condition="'$(MCImportedTwice)'=='True'"/>
+		<Message Text='* MetaCreator.targets: DevMode=$(DevMode)' Importance='high' />
+		<Error Text="* MetaCreator.targets: Targets have been imported twice in the project" Condition="'$(MCImportedTwice)'=='True'"/>
 	</Target-->
 	
 	<Target Name='GetMetaCreatorRealFullPath' Condition="'$(MetaCreatorRealFullPath)'=='' Or '$(MetaCreatorDLL)'=='' ">
-		<Message Text='* MetaCreatorTargets: Execute wrapper with GetMetaCreatorRealFullPath...' />
+		<Message Text='* MetaCreator.targets: Execute wrapper with GetMetaCreatorRealFullPath...' />
 		<MSBuildWrapper
 			Task = 'MetaCreator.GetAssemblyPath, MetaCreator.dll'
 			Bin = '$(DevCommonBinPath)'
@@ -134,8 +134,24 @@
 
 	</Target>
 	
-	<Target Name='ExecuteMetaCreatorWrapper' Condition="'$(MC_Build)'=='Requested'" Inputs='@(Compile);$(MetaCreatorDLL)' Outputs='@(IntermediateAssembly)' >
-		<Message Text='* MetaCreatorTargets: Execute wrapper with MetaCreator...' Importance='high'/>
+	<Target Name='ExecuteMetaCreatorWrapper'
+		Inputs='$(MetaCreatorDLL);
+			@(Meta);
+			@(None);
+			$(MSBuildAllProjects);
+			@(Compile);
+			@(_CoreCompileResourceInputs);
+			$(ApplicationIcon);
+			$(AssemblyOriginatorKeyFile);
+			@(ReferencePath);
+			@(CompiledLicenseFile);
+			@(EmbeddedDocumentation); 
+			$(Win32Resource);
+			$(Win32Manifest);
+			@(CustomAdditionalCompileInputs)'
+		Outputs='@(IntermediateAssembly)' >
+		<Message Text='* MetaCreator.targets: Execute wrapper with MetaCreator...' Importance='high'/>
+		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Buld requested, but was not performed in building chain.' />
 
 		<MSBuildWrapper
 			Task = 'MetaCreator.ExecuteMetaCreator, MetaCreator.dll'
@@ -167,20 +183,22 @@
 	
 	<Target
 		Name='ExecuteMetaCreator'
-		Condition="'$(MC_Build)'=='Requested'"
-		Inputs='$(MSBuildAllProjects);
-		        @(Compile);
-		        @(_CoreCompileResourceInputs);
-		        $(ApplicationIcon);
-		        $(AssemblyOriginatorKeyFile);
-		        @(ReferencePath);
-		        @(CompiledLicenseFile);
-		        @(EmbeddedDocumentation); 
-		        $(Win32Resource);
-		        $(Win32Manifest);
-		        @(CustomAdditionalCompileInputs)'
+		Inputs='@(Meta);
+			@(None);
+			$(MSBuildAllProjects);
+			@(Compile);
+			@(_CoreCompileResourceInputs);
+			$(ApplicationIcon);
+			$(AssemblyOriginatorKeyFile);
+			@(ReferencePath);
+			@(CompiledLicenseFile);
+			@(EmbeddedDocumentation); 
+			$(Win32Resource);
+			$(Win32Manifest);
+			@(CustomAdditionalCompileInputs)'
 		Outputs='@(IntermediateAssembly)' >
-		<Message Text='* MetaCreatorTargets: Execute MetaCreator...' Importance='high'/>
+		<Message Text='* MetaCreator.targets: Execute MetaCreator...' Importance='high'/>
+		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Buld requested, but was not performed in building chain.' />
 		<ExecuteMetaCreator
 			Sources = '@(Compile)'
 			References = '@(ReferencePath)'
@@ -205,7 +223,7 @@
 		Inputs='$(Wrapper)'
 		Outputs='$(WrapperCopy)'>
 		
-		<Message Text='* MetaCreatorTargets: Shadow copy wrapper' />
+		<Message Text='* MetaCreator.targets: Shadow copy wrapper' Importance='high' />
 		<Copy ContinueOnError='true' SourceFiles='$(Wrapper)' DestinationFiles='$(WrapperCopy)' />
 
 		<PropertyGroup>
@@ -214,7 +232,7 @@
 	</Target>
 	
 	<Target Name='CleanGeneratedFiles'>
-		<Message Text='* MetaCreatorTargets: Clean' Importance='high'/>
+		<Message Text='* MetaCreator.targets: Clean' Importance='high'/>
 		<CreateItem Include='$(IntermediateOutputPath)**\*.g.cs'>
 			<Output TaskParameter='Include' ItemName='GeneratedFiles'/>
 		</CreateItem>
@@ -245,7 +263,7 @@
 	<!--
 	<UsingTask AssemblyFile='$(MetaCreatorDll)' TaskName='MetaCreator.ExecuteMetaCreator' />
 	<Target Name='ExecuteMetaCreator'>
-		<Message Text='* MetaCreator: Execute...' Importance='high'/>
+		<Message Text='* MetaCreator.targets: Execute...' Importance='high'/>
 		<MetaCreator.ExecuteMetaCreator Sources='@(Compile)' IntermediateOutputPath='$(IntermediateOutputPath)' >
 			<Output TaskParameter='AddFiles' ItemName='Compile' />
 			<Output TaskParameter="AddFiles" ItemName="MCAddFiles" />

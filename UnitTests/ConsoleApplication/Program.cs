@@ -1,17 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ConsoleApplication
 {
 	class Program
 	{
+		public string /*= File.ReadAllText("SomeDataForMetacode.txt") */ { get; set; }
+
 		static void Main()
 		{
-			/*! for (int i = 0; i < 10; i++) { */
-			Console.WriteLine("test /*= i */");
-			/*! } */
+			//Console.WriteLine("/*= File.ReadAllText("SomeDataForMetacode.txt") */");
+
+			foreach(var pi in typeof(Program).GetProperties())
+			{
+				Console.WriteLine(pi.Name);
+			}
+
+//	 		/* ! for (int i = 0; i < 10; i++) { */
+//			Console.WriteLine("test /* = i */");
+//			/* ! } */
+//
+//			/* ! for (int i = 0; i < 10; i++) { */
+//			Console.WriteLine("test /* = i */");
+//			/* ! } */
+
 		}
 	}
 }

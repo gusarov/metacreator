@@ -87,7 +87,7 @@ public sealed class MSBuildWrapper : AppDomainIsolatedTask
 
 	new void Log(string msg)
 	{
-		base.Log.LogMessage(MessageImportance.High, "* MSBuildTaskWrapper: " + msg);
+		base.Log.LogMessage(MessageImportance.High, "* MSBuildWrapper.dll: " + msg);
 	}
 
 	public override bool Execute()

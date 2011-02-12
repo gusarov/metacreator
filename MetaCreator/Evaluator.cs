@@ -125,7 +125,7 @@ namespace MetaCreator
 			}
 			var type = asm.GetType(_generatorClassName, true, true);
 			var method = type.GetMethod(_generatorMethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.IgnoreCase);
-			method.EnsureExists("Generator method not found");
+			method.EnsureExistsDebug("Generator method not found");
 			var instance = Activator.CreateInstance(type);
 
 			if (method.GetParameters().Count() != 0 || method.GetGenericArguments().Count() != 0)
@@ -153,7 +153,7 @@ namespace MetaCreator
 			if (useGeneratorResult)
 			{
 				var resultPi = type.GetField(_generatorResultPropertyName);
-				resultPi.EnsureExists("Generator - Result field not found");
+				resultPi.EnsureExistsDebug("Generator - Result field not found");
 				var value = resultPi.GetValue(instance).ToString();
 				result.ResultBody = value;
 			}

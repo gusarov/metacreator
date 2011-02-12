@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace MetaCreator.Utils
 {
-	static class Assert
+	static class DebugAssert
 	{
 		[Conditional("DEBUG")]
 		static public void That(bool condition, string message)
@@ -18,13 +18,13 @@ namespace MetaCreator.Utils
 		}
 
 		[Conditional("DEBUG")]
-		static public void EnsureExists(this object obj, string message)
+		static public void EnsureExistsDebug(this object obj, string message)
 		{
 			ThatCore(!ReferenceEquals(null, obj), "Contract violated");
 		}
 
 		[Conditional("DEBUG")]
-		static public void EnsureExists(this object obj)
+		static public void EnsureExistsDebug(this object obj)
 		{
 			ThatCore(!ReferenceEquals(null, obj), "Contract violated - object is null");
 		}

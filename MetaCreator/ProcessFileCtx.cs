@@ -52,7 +52,7 @@ namespace MetaCreator
 		public string GetOriginalFileNameRelativeToIntermediatePath()
 		{
 //			var interm = ReplacementFileName.Substring(0, IntermediateOutputPath.Length);
-//			Assert.That(interm==IntermediateOutputPath);
+//			DebugAssert.That(interm==IntermediateOutputPath);
 //			var intermFileName = ReplacementFileName.Substring(IntermediateOutputPath.Length).Trim('/', '\\');
 			return Path.Combine(ProjDir, OriginalFileName);
 		}

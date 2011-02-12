@@ -40,7 +40,7 @@ class Sample {
 			var buildFailed = false;
 			try
 			{
-				sut.ProcessFile( new ProcessFileCtx {FileOriginalContent=code, BuildErrorLogger = logger, OriginalFileName = "fakeFileName" });
+				sut.ProcessFile(new ProcessFileCtx { FileOriginalContent = code, BuildErrorLogger = logger, OriginalFileName = "1.tmp" });
 			}
 			catch
 			{
@@ -51,7 +51,7 @@ class Sample {
 			Assert.AreEqual(1, logger.Errors.Count);
 			Assert.AreEqual(0, logger.Warnings.Count);
 			Assert.AreEqual(6, logger.Errors[0].LineNumber);
-			Assert.AreEqual("fakeFileName", logger.Errors[0].File);
+			Assert.AreEqual("1.tmp", logger.Errors[0].File);
 		}
 
 		static ProcessFileCtx GetSut()
@@ -294,7 +294,7 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 //					
 //				};
 //			sut.Execute();
-//			Assert.Inconclusive();
+//			DebugAssert.Inconclusive();
 //		}
 	}
 }

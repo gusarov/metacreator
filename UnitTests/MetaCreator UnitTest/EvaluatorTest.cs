@@ -89,7 +89,7 @@ return;
 			File.WriteAllText(Path.GetTempFileName(), result.SourceCode);
 
 			Assert.IsTrue(result.EvaluationExceptionAtLine > 1);
-			Assert.AreEqual(46, result.EvaluationExceptionAtLine);
+			//DebugAssert.AreEqual(46, result.EvaluationExceptionAtLine);
 			Assert.AreEqual(userCode + 1, result.EvaluationExceptionAtLine);
 		}
 

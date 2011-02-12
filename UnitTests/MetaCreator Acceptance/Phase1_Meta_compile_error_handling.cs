@@ -33,6 +33,39 @@ class q
 		}
 
 		[TestMethod]
+		public void Should_jump_to_original_source_on_error_in_meta_code_with_multiple_blocks()
+		{
+			File.WriteAllText("sample.cs", @"
+class q
+{
+	/*!
+		for(int i=0;i<10;i++) {
+	*/
+
+	public int i/*=
+i */;
+
+	/*!
+		}
+
+		#error
+	*/
+	static void Main()
+	{
+	}
+}");
+
+
+			RunMsbuild(false);
+
+			Assert.AreEqual("sample.cs", ParsedMsBuildError.FileName);
+			Assert.AreEqual(14, ParsedMsBuildError.Line);
+			Assert.AreEqual(2, ParsedMsBuildError.Column);
+
+			Assert.AreEqual("sample.cs(5,14): error : MetaCode: Cannot implicitly convert type 'int' to 'string'", _output.Trim());
+		}
+
+		[TestMethod]
 		public void Should_jump_to_meta_source_on_error_in_non_user_meta_code()
 		{
 			File.WriteAllText("sample.cs", @"

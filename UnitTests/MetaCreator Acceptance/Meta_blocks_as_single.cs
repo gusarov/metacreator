@@ -10,6 +10,10 @@ namespace MetaCreator_Acceptance
 		[TestMethod]
 		public void Should_use_blocks_from_different_parts()
 		{
+			try
+			{
+				File.Delete("bin/debug/sample.exe");
+			}catch{}
 			Assert.IsFalse(File.Exists("bin/debug/sample.exe"));
 
 			File.WriteAllText("sample.cs", @"

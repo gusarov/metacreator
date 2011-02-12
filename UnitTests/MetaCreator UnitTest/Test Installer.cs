@@ -53,7 +53,7 @@ namespace MetaCreator_UnitTest
 	<Import Project=""$(ProgramFiles)\MetaCreator\MetaCreator.targets"" Condition="" '$(DontImportMetaCreator)' != 'True' AND Exists('$(ProgramFiles)\MetaCreator\MetaCreator.targets')"" />
 </Project>");
 
-//Assert.AreEqual(@"<Project xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+//DebugAssert.AreEqual(@"<Project xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
 //<!--The following element has been added by PostSharp Setup Program.-->
 //<Import Project=""C:\Program Files\PostSharp 2.0\PostSharp.targets"" Condition="" '$(DontImportPostSharp)' == '' AND Exists('C:\Program Files\PostSharp 2.0\PostSharp.targets')"" />
 //<Import Project=""$(ProgramFiles)\MetaCreator\MetaCreator.targets"" Condition="" '$(DontImportMetaCreator)' != 'True' AND Exists('$(ProgramFiles)\MetaCreator\MetaCreator.targets')"" /></Project>", actual);

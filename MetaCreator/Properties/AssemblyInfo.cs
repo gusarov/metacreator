@@ -5,4 +5,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("MetaCreator")]
 [assembly: AssemblyProduct("MetaCreator")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("1.2.*")]
+[assembly: AssemblyVersion("1.3.*")]

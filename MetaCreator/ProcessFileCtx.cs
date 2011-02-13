@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+
+using MetaCreator.AppDomainIsolation;
 using MetaCreator.Utils;
 using System.Collections.Generic;
 
@@ -8,13 +11,30 @@ namespace MetaCreator
 {
 	sealed class ProcessFileCtx
 	{
+		public ProcessFileCtx()
+		{
+			
+		}
+
+		public ProcessFileCtx(string projDir, string intermediateOutputPath, string originalFileName)
+		{
+			IntermediateOutputPath = intermediateOutputPath;
+			OriginalFileName = originalFileName;
+			ProjDir = projDir;
+		}
+
+		public string OriginalFileName;
+		public string IntermediateOutputPath;
+		public string ProjDir;
+
+		public bool MacrosFailed;
+
 		public int NumberOfMacrosProcessed;
 		public bool EnabledStringInterpolation;
 		public bool ErrorRemap = true;
-		public string OriginalFileName;
+		public string ReplacementAbsolutePath;
+		public string ReplacementRelativePath;
 		public string ReplacementFileName;
-		public string IntermediateOutputPath;
-		public string ProjDir;
 
 		public string[] ReferencesOriginal;
 		public List<string> ReferencesMetaAdditional = new List<string>();
@@ -122,7 +142,15 @@ namespace MetaCreator
 			}
 		}
 
-		public bool GenerateBanner = true;
+		// public bool GenerateBanner = true;
 		public TimeSpan MetaCodeExecutionTimeOut = TimeSpan.FromSeconds(10);
+		public AnotherAppDomFactory AppDomFactory;
+
+		public void MarkMacrosAndSaveCaptureState(ProcessFileCtx ctx, Capture match)
+		{
+			ctx.CurrentMacrosIndex = match.Index;
+			ctx.CurrentMacrosLength = match.Length;
+			ctx.NumberOfMacrosProcessed++;
+		}
 	}
 }

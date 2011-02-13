@@ -9,7 +9,7 @@ namespace MetaCreator_UnitTest
 		[TestMethod]
 		public void GetOriginalFileNameRelativeToIntermediatePathTest()
 		{
-			var target = new ProcessFileCtx
+			var target = new ProcessFileCtx()
 			{
 				OriginalFileName = "MyFolder\\Class1.cs",
 				IntermediateOutputPath = "C:\\Files\\Solution1\\Project1\\obj\\Debug",
@@ -22,7 +22,7 @@ namespace MetaCreator_UnitTest
 		[TestMethod]
 		public void GetOriginalFileNameRelativeToIntermediatePathTest3()
 		{
-			var target = new ProcessFileCtx
+			var target = new ProcessFileCtx()
 			{
 				OriginalFileName = "MyFolder\\Class1.cs",
 				IntermediateOutputPath = "C:\\Files\\SolutionInterm",

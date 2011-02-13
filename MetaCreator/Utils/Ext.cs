@@ -22,5 +22,17 @@ namespace MetaCreator.Utils
 		{
 			return source ?? Enumerable.Empty<T>();
 		}
+
+		static readonly Random _rnd = new Random();
+
+		public static int Random(this int value)
+		{
+			return _rnd.Next(value);
+		}
+
+		public static string GenerateId()
+		{
+			return _rnd.Next().ToString("X");
+		}
 	}
 }

@@ -19,14 +19,14 @@ namespace MetaCreator
 
 		public void LogDebug(string msg)
 		{
-#if DEBUG // it is required, because this method usually calls by interface. It can not be conditional.
-			LogOutputMessage(msg);
+#if DEBUG // it is required, because this method usually calls by interface. It can not be with conditional attribute.
+			LogOutputMessage("DEBUG: " + msg);
 #endif
 		}
 
 		public void LogOutputMessage(string msg)
 		{
-			_taskLoggingHelper.LogMessage(MessageImportance.High, "* MetaCreator: " + msg);
+			_taskLoggingHelper.LogMessage(MessageImportance.High, "* MetaCreator.dll: " + msg);
 		}
 
 		public void LogErrorEvent(BuildErrorEventArgs ev)

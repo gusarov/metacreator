@@ -127,7 +127,7 @@ namespace MetaCreator
 				var stringValue = match.Groups[1].Value;
 				stringValue = _rxStringInterpolInside.Replace(stringValue, m =>
 				{
-					ctx.MarkMacrosAndSaveCaptureState(ctx, match);
+					ctx.MarkMacrosAndSaveCaptureState(match);
 					var val = m.Groups[1].Value;
 					//if(string.IsNullOrEmpty(val))
 					//{
@@ -153,7 +153,7 @@ namespace MetaCreator
 				var stringValue = match.Groups[1].Value;
 				stringValue = _rxStringInterpolInside.Replace(stringValue, m =>
 				{
-					ctx.MarkMacrosAndSaveCaptureState(ctx, match);
+					ctx.MarkMacrosAndSaveCaptureState(match);
 					var val = m.Groups[1].Value;
 					//if (string.IsNullOrEmpty(val))
 					//{

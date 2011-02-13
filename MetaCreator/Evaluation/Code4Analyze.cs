@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using Microsoft.Build.Framework;
 
@@ -17,22 +18,82 @@ namespace MetaCreator.Evaluation
 		{
 			_ctx = ctx;
 			_buildErrorLogger = ctx.BuildErrorLogger;
+
+			ProcessEvaluationResult(evaluationResult);
 		}
 
-		BuildWarningEventArgs CreateBuildWarning(EvaluationResult result, CompilerError error, ProcessFileCtx ctx)
+		void ProcessEvaluationResult(EvaluationResult result)
 		{
-			BuildError_GetLineNumber(error, result, ctx); // init non user code
-			return new BuildWarningEventArgs(null, null, BuildError_GetFile(ctx, result), BuildError_GetLineNumber(error, result, ctx),
+
+			// Log meta code compile time warnings
+			if (result.Warnings != null)
+			{
+				foreach (var error in result.Warnings)
+				{
+					_buildErrorLogger.LogWarningEvent(CreateBuildWarning(result, error));
+				}
+			}
+
+			var macrosFailed = false;
+
+			// Log meta code compile time errors
+			if (result.Errors != null)
+			{
+				foreach (var error in result.Errors)
+				{
+					macrosFailed = true;
+					_buildErrorLogger.LogErrorEvent(CreateBuildError(result, error));
+				}
+			}
+
+			// Log meta code run time exceptions
+			if (result.EvaluationException != null)
+			{
+				macrosFailed = true;
+				// var linenumber = result.EvaluationException.
+				var message = result.EvaluationException.GetType().FullName + ": " + result.EvaluationException.Message;
+				_buildErrorLogger.LogOutputMessage(result.EvaluationException.ToString());
+
+				var i = result.EvaluationException.StackTrace.IndexOf('\r');
+				if (i <= 0)
+				{
+					i = result.EvaluationException.StackTrace.Length;
+				}
+				var stack = result.EvaluationException.StackTrace.Substring(0, i).Trim();
+
+				// at Generator.Run() in c:\Kip\Projects\MetaCreatorRep\UnitTests\ConsoleApplication\Program.cs:line 19
+
+				var match = Regex.Match(stack, @"(?i)at (?'method'[^\s]+) in (?'file'.+):line (?'line'\d+)");
+				if (match.Success)
+				{
+				}
+				var lineString = match.Groups["line"].Value;
+				int line;
+				int.TryParse(lineString, out line);
+				_buildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, match.Groups["file"].Value, line, 0, 0, 0, _metacreatorErrorPrefix + message, null, null));
+
+			}
+
+			// terminate
+			if (macrosFailed)
+			{
+				throw new FailBuildingException("$ terminating, jump to global catch and return false...");
+			}
+		}
+
+		BuildWarningEventArgs CreateBuildWarning(EvaluationResult result, CompilerError error)
+		{
+			BuildError_GetLineNumber(error, result); // init non user code
+			return new BuildWarningEventArgs(null, null, BuildError_GetFile(result, error), BuildError_GetLineNumber(error, result),
 				BuildError_GetColumnNumber(error), 0, 0, BuildError_GetMessage(error, result),
 				null, null);
 		}
 
-		BuildErrorEventArgs CreateBuildError(EvaluationResult result, CompilerError error, ProcessFileCtx ctx)
+		BuildErrorEventArgs CreateBuildError(EvaluationResult result, CompilerError error)
 		{
-			BuildError_GetLineNumber(error, result, ctx); // init non user code
-			return new BuildErrorEventArgs(null, null, BuildError_GetFile(ctx, result), BuildError_GetLineNumber(error, result, ctx),
-				BuildError_GetColumnNumber(error), 0, 0, BuildError_GetMessage(error, result),
-				null, null);
+			return new BuildErrorEventArgs(null, null, BuildError_GetFile(result, error), BuildError_GetLineNumber(error, result),
+			                               BuildError_GetColumnNumber(error), 0, 0, BuildError_GetMessage(error, result),
+			                               null, null);
 		}
 
 		static int BuildError_GetColumnNumber(CompilerError error)
@@ -40,33 +101,32 @@ namespace MetaCreator.Evaluation
 			return error.Column;
 		}
 
-		const int _nonUserCodeSpecialLineNumber = -777;
-
-		int BuildError_GetLineNumber(CompilerError error, EvaluationResult result, ProcessFileCtx ctx)
+		int BuildError_GetLineNumber(CompilerError error, EvaluationResult result)
 		{
-			var line = BuildError_GetLineNumberCore(error, result, ctx);
-			if (line == _nonUserCodeSpecialLineNumber)
-			{
-				if (ctx.ErrorRemap)
-				{
-					result.NonUserCode = "...";
-				}
-			}
-			return line;
+			return BuildError_GetLineNumberCore(error, result);
+//			if (line == _nonUserCodeSpecialLineNumber)
+//			{
+//				if (_ctx.ErrorRemap)
+//				{
+//					result.NonUserCode = "...";
+//				}
+//			}
+//			return line;
 		}
 
-		static int BuildError_GetLineNumberCore(CompilerError error, EvaluationResult result, ProcessFileCtx ctx)
+		static int BuildError_GetLineNumberCore(CompilerError error, EvaluationResult result)
 		{
-			if (!ctx.ErrorRemap)
-			{
-				return error.Line;
-			}
-			if (result.NonUserCode != null)
-			{
-				return error.Line;
-			}
-
-			return RemapErrorLineNumber(error.Line, ctx, result);
+			return error.Line;
+//			if (!_ctx.ErrorRemap)
+//			{
+//				return error.Line;
+//			}
+//			if (result.NonUserCode != null)
+//			{
+//				return error.Line;
+//			}
+//
+//			return RemapErrorLineNumber(error.Line, _ctx, result);
 		}
 
 		/// <summary>
@@ -76,25 +136,26 @@ namespace MetaCreator.Evaluation
 		/// <param name="ctx"></param>
 		/// <param name="result"></param>
 		/// <returns></returns>
-		private static int RemapErrorLineNumber(int errorLine, ProcessFileCtx ctx, EvaluationResult result)
+		private int RemapErrorLineNumber(int errorLine, EvaluationResult result)
 		{
-			var userCodeIndex = result.SourceCode.IndexOf("// <UserCode>");
-			var userCodeLine = result.SourceCode.Substring(0, userCodeIndex).ToCharArray().Count(x => x == '\r') + 2; // +\r + next line
+			return errorLine;
+			//var userCodeIndex = result.SourceCode.IndexOf("// <UserCode>");
+			//var userCodeLine = result.SourceCode.Substring(0, userCodeIndex).ToCharArray().Count(x => x == '\r') + 2; // +\r + next line
 
-			if (userCodeIndex < 1)
-			{
-				return _nonUserCodeSpecialLineNumber;
-			}
-			if (errorLine < userCodeLine)
-			{
-				return _nonUserCodeSpecialLineNumber;
-			}
-			if (userCodeLine < 0)
-			{
-				return _nonUserCodeSpecialLineNumber;
-			}
-			return errorLine -
-				userCodeLine + ctx.CurrentMacrosLineInOriginalFile;
+//			if (userCodeIndex < 1)
+//			{
+//				return _nonUserCodeSpecialLineNumber;
+//			}
+//			if (errorLine < userCodeLine)
+//			{
+//				return _nonUserCodeSpecialLineNumber;
+//			}
+//			if (userCodeLine < 0)
+//			{
+//				return _nonUserCodeSpecialLineNumber;
+//			}
+//			return errorLine -
+//				userCodeLine + _ctx.CurrentMacrosLineInOriginalFile;
 		}
 
 		string BuildError_GetMessage(CompilerError error, EvaluationResult result)
@@ -112,61 +173,25 @@ namespace MetaCreator.Evaluation
 			return _metacreatorErrorPrefix + error.ErrorText;
 		}
 
-		static string BuildError_GetFile(ProcessFileCtx ctx, EvaluationResult result)
+		string BuildError_GetFile(EvaluationResult result, CompilerError error)
 		{
-			if (result.NonUserCode != null || !ctx.ErrorRemap)
-			{
-				result.NonUserCode = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(ctx.OriginalFileName) + ".meta" + Path.GetExtension(ctx.OriginalFileName));
-				File.WriteAllText(result.NonUserCode, result.SourceCode);
-				return result.NonUserCode;
-			}
-			return ctx.OriginalFileName;
+//			var orig = _ctx.GetOriginalFileNameRelativeToIntermediatePath();
+//			if(result.Errors.First().FileName == orig)
+//			{
+//				return orig;
+//			}
+			return error.FileName;
+			//if (result.NonUserCode != null || !_ctx.ErrorRemap)
+//			{
+//				result.NonUserCode = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(_ctx.OriginalFileName) + ".meta" + Path.GetExtension(_ctx.OriginalFileName));
+//				File.WriteAllText(result.NonUserCode, result.SourceCode);
+//				return result.NonUserCode;
+//			}
+//			return _ctx.OriginalFileName;
 		}
 
 		ProcessFileCtx _ctx;
 		IBuildErrorLogger _buildErrorLogger;
-
-		void ProcessEvaluationResult(EvaluationResult result, ProcessFileCtx ctx)
-		{
-
-			// Log meta code compile time warnings
-			if (result.Warnings != null)
-			{
-				foreach (var error in result.Warnings)
-				{
-					_buildErrorLogger.LogWarningEvent(CreateBuildWarning(result, error, ctx));
-				}
-			}
-
-			var macrosFailed = false;
-
-			// Log meta code compile time errors
-			if (result.Errors != null)
-			{
-				foreach (var error in result.Errors)
-				{
-					macrosFailed = true;
-					_buildErrorLogger.LogErrorEvent(CreateBuildError(result, error, ctx));
-				}
-			}
-
-			// Log meta code run time exceptions
-			if (result.EvaluationException != null)
-			{
-				macrosFailed = true;
-				// var linenumber = result.EvaluationException.
-				var message = result.EvaluationException.GetType().FullName + ": " + result.EvaluationException.Message;
-				_buildErrorLogger.LogOutputMessage(message);
-				var line = RemapErrorLineNumber(result.EvaluationExceptionAtLine, ctx, result);
-				_buildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, ctx.OriginalFileName, line, 0, 0, 0, _metacreatorErrorPrefix + message, null, null));
-			}
-
-			// terminate
-			if (macrosFailed)
-			{
-				throw new FailBuildingException("$ terminating, jump to global catch and return false...");
-			}
-		}
 
 		const string _metacreatorErrorPrefix = "MetaCode: ";
 

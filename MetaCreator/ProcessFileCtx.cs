@@ -146,11 +146,11 @@ namespace MetaCreator
 		public TimeSpan MetaCodeExecutionTimeOut = TimeSpan.FromSeconds(10);
 		public AnotherAppDomFactory AppDomFactory;
 
-		public void MarkMacrosAndSaveCaptureState(ProcessFileCtx ctx, Capture match)
+		public void MarkMacrosAndSaveCaptureState(Capture match)
 		{
-			ctx.CurrentMacrosIndex = match.Index;
-			ctx.CurrentMacrosLength = match.Length;
-			ctx.NumberOfMacrosProcessed++;
+			CurrentMacrosIndex = match.Index;
+			CurrentMacrosLength = match.Length;
+			NumberOfMacrosProcessed++;
 		}
 	}
 }

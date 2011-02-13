@@ -20,29 +20,6 @@ namespace MetaCreator.Evaluation
 		public Exception EvaluationException { get; set; }
 		public string CompileTempPath { get; set; }
 
-		public int EvaluationExceptionAtLine
-		{
-			get
-			{
-				if (EvaluationException == null)
-				{
-					return 0;
-				}
-				var i = EvaluationException.StackTrace.IndexOf('\r');
-				if (i <= 0)
-				{
-					i = EvaluationException.StackTrace.Length;
-				}
-				var stack = EvaluationException.StackTrace.Substring(0, i).Trim();
-				var match = Regex.Match(stack, "(?i)" + Regex.Escape(Path.GetTempPath()) + @"[^:]+\.cs:\s?line (?'L'\d+)");
-				if (match.Success)
-				{
-					return int.Parse(match.Groups["L"].Value);
-				}
-				return -1;
-			}
-		}
-
 		[NonSerialized]
 		public string NonUserCode;
 

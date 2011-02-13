@@ -113,11 +113,21 @@ public static class Generator
 		readonly StringBuilder _methodBody = new StringBuilder();
 		readonly StringBuilder _classBody = new StringBuilder();
 
-		static void PlainTextWriter(string substring, StringBuilder sb)
+		static void PlainTextWriter(string substring, StringBuilder sb/*, int line, string originalFileName*/)
 		{
+//			if (line < 1)
+//			{
+//				throw new ArgumentException("", "line");
+//			}
+//			if(string.IsNullOrEmpty(originalFileName))
+//			{
+//				throw new ArgumentException("", "originalFileName");
+//			}
+			//sb.AppendLine("#line " + line + " \"" + originalFileName + "\"");
 			sb.Append("Write(@\"");
 			sb.Append(substring.Replace("\"", "\"\""));
 			sb.AppendLine("\");");
+			//sb.AppendLine("#line " + line + " \"" + originalFileName + "\"");
 		}
 
 //		static string OriginalLinePredirrectiveAtStartOfMacroBlock(ProcessFileCtx ctx)
@@ -207,7 +217,7 @@ public static class Generator
 				switch (type)
 				{
 					case '@':
-						ctx.MarkMacrosAndSaveCaptureState(ctx, match);
+						ctx.MarkMacrosAndSaveCaptureState(match);
 						Extenders.ExecuteExtender(match.Groups["1"].Value, ctx);
 						return null;
 					case '=':
@@ -227,7 +237,7 @@ public static class Generator
 			// create metacode
 			foreach (var block in blocks)
 			{
-				ctx.NumberOfMacrosProcessed++;
+				ctx.MarkMacrosAndSaveCaptureState(block);
 
 				var type = block.Groups["type"].Value[0];
 				var value = block.Groups[1].Value;
@@ -239,7 +249,9 @@ public static class Generator
 				switch (type)
 				{
 					case '!':
+						_methodBody.AppendLine("#line " + ctx.CurrentMacrosLineInOriginalFile + ' ' + '"' + ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
 						_methodBody.AppendLine(value);
+						_methodBody.AppendLine("#line default");
 						break;
 					case '=':
 						_methodBody.AppendLine("Write(" + value + ");");

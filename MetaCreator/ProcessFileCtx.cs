@@ -16,15 +16,9 @@ namespace MetaCreator
 			
 		}
 
-		public ProcessFileCtx(string projDir, string intermediateOutputPath, string originalFileName)
-		{
-			IntermediateOutputPath = intermediateOutputPath;
-			OriginalFileName = originalFileName;
-			ProjDir = projDir;
-		}
-
 		public string OriginalFileName;
-		public string IntermediateOutputPath;
+		public string IntermediateOutputPathRelative;
+		public string IntermediateOutputPathFull;
 		public string ProjDir;
 
 		public bool MacrosFailed;

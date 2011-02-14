@@ -13,7 +13,6 @@ namespace ConsoleApplication
 			Console.WriteLine("");
 			Console.WriteLine("");
 			/*!
-				WriteLine("#error asd");
 				Write("throw");
 				Write(" ");
 				Write("null");

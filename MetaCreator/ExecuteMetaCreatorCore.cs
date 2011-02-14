@@ -28,7 +28,7 @@ namespace MetaCreator
 		{
 			Sources = sources;
 			References = references;
-			IntermediateOutputPath = intermediateOutputPath;
+			IntermediateOutputPathRelative = intermediateOutputPath;
 			ProjDir = projDir;
 			BuildErrorLogger = buildErrorLogger;
 		}
@@ -37,7 +37,8 @@ namespace MetaCreator
 
 		public ITaskItem[] Sources { get; set; }
 		public ITaskItem[] References { get; set; }
-		public string IntermediateOutputPath { get; set; }
+		public string IntermediateOutputPathFull { get; set; }
+		public string IntermediateOutputPathRelative { get; set; }
 		public string ProjDir { get; set; }
 		public IBuildErrorLogger BuildErrorLogger { get; set; }
 
@@ -76,9 +77,9 @@ namespace MetaCreator
 				throw new Exception("ProjDir not defined");
 			}
 
-			if (string.IsNullOrEmpty(IntermediateOutputPath))
+			if (string.IsNullOrEmpty(IntermediateOutputPathRelative))
 			{
-				throw new Exception("IntermediateOutputPath not defined");
+				throw new Exception("IntermediateOutputPathRelative not defined");
 			}
 
 			if (Sources.OrEmpty().Count() <= 0)
@@ -91,10 +92,7 @@ namespace MetaCreator
 				throw new Exception("ProjDir is not full path");
 			}
 
-			if (IntermediateOutputPath != Path.GetFullPath(IntermediateOutputPath))
-			{
-				IntermediateOutputPath = Path.Combine(ProjDir, IntermediateOutputPath);
-			}
+			IntermediateOutputPathFull = Path.Combine(ProjDir, IntermediateOutputPathRelative);
 
 			if (Sources == null)
 			{
@@ -197,8 +195,10 @@ namespace MetaCreator
 				foreach (var sourceFile in Sources)
 				{
 					var fileName = sourceFile.ItemSpec;
-					var replacementFileRelativePath = Path.Combine(IntermediateOutputPath, Path.GetFileNameWithoutExtension(fileName) + ".g" + Path.GetExtension(fileName));
+					var ext = Path.GetExtension(fileName);
+					var replacementFile = fileName.Substring(0, fileName.Length - ext.Length) + ".g" + ext;
 
+					var replacementFileRelativePath = Path.Combine(IntermediateOutputPathRelative, replacementFile);
 					var replacementFileAbsolutePath = Path.GetFullPath(replacementFileRelativePath);
 
 					var ctx = new ProcessFileCtx()
@@ -209,7 +209,8 @@ namespace MetaCreator
 						FileOriginalContent = File.ReadAllText(fileName),
 						ReplacementRelativePath = replacementFileRelativePath,
 						ReplacementAbsolutePath = replacementFileAbsolutePath,
-						IntermediateOutputPath = IntermediateOutputPath,
+						IntermediateOutputPathRelative = IntermediateOutputPathRelative,
+						IntermediateOutputPathFull = IntermediateOutputPathFull,
 						ProjDir = ProjDir,
 						ReferencesOriginal = References.Select(x => x.ItemSpec).ToArray(),
 					};
@@ -226,6 +227,8 @@ namespace MetaCreator
 
 					if (ctx.NumberOfMacrosProcessed > 0)
 					{
+						BuildErrorLogger.LogDebug("fileName = " + fileName);
+						BuildErrorLogger.LogDebug("IntermediateOutputPathRelative = " + IntermediateOutputPathRelative);
 						BuildErrorLogger.LogDebug("replacementFileRelativePath = " + replacementFileRelativePath);
 						BuildErrorLogger.LogDebug("replacementFileAbsolutePath = " + replacementFileAbsolutePath);
 

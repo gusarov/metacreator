@@ -47,7 +47,7 @@ namespace MetaCreator
 
 			_core.Sources = Sources;
 			_core.References = References;
-			_core.IntermediateOutputPath = IntermediateOutputPath;
+			_core.IntermediateOutputPathRelative = IntermediateOutputPath;
 			_core.ProjDir = ProjDir;
 			_core.BuildErrorLogger = new BuildErrorLogger(BuildEngine, Log);
 			return _core.Execute();

@@ -24,13 +24,15 @@ public static class Generator
 {{
 	public static string Run()
 	{{
-		// methodbody
+		// <methodbody>
 		{1}
+		// </methodbody>
 		return Result.ToString();
 	}}
 
-	// classbody
+	// <classbody>
 {2}
+	// </classbody>
 
 	#region utils
 
@@ -113,15 +115,17 @@ public static class Generator
 		readonly StringBuilder _methodBody = new StringBuilder();
 		readonly StringBuilder _classBody = new StringBuilder();
 
-		void PlainTextWriter(string substring, StringBuilder sb)
+		void PlainTextWriter(string substring, StringBuilder sb, int line)
 		{
-			//sb.Append("WriteLine(@\"");
-			//sb.Append("#line " + _ctx.CurrentMacrosLineInOriginalFile + " \"\"" + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + "\"\"");
-			//sb.AppendLine("\");");
-			sb.Append("Write(@\"");
+			sb.Append("WriteLine(@\"");
+			sb.Append("#line " + line + " \"\"" + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + "\"\"");
+			sb.AppendLine("\");");
+
+			sb.Append("WriteLine(@\"");
 			sb.Append(substring.Replace("\"", "\"\""));
 			sb.AppendLine("\");");
-			//sb.AppendLine("#line default");
+
+			sb.AppendLine(@"WriteLine(""#line default"");");
 		}
 
 //		static string OriginalLinePredirrectiveAtStartOfMacroBlock(ProcessFileCtx _ctx)
@@ -241,7 +245,7 @@ public static class Generator
 				var value = block.Groups[1].Value;
 
 				// write previous text as plain
-				PlainTextWriter(code.Substring(from, block.Index - from), _methodBody);
+				PlainTextWriter(code.Substring(from, block.Index - from), _methodBody, _ctx.GetLineNumberInOriginalFileByIndex(from));
 
 				from = block.Index + block.Length;
 				switch (type)
@@ -264,7 +268,7 @@ public static class Generator
 				}
 			}
 
-			PlainTextWriter(code.Substring(from), _methodBody);
+			PlainTextWriter(code.Substring(from), _methodBody, _ctx.GetLineNumberInOriginalFileByIndex(from));
 
 
 			var imports = _ctx.Namespaces.OrEmpty().Concat(_defaultUsings).Distinct();

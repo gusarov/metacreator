@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-/*@ errorremap */
+/* @ errorremap */
 
 namespace ConsoleApplication
 {
@@ -13,7 +13,7 @@ namespace ConsoleApplication
 			Console.WriteLine("");
 			Console.WriteLine("");
 			/*!
-
+				WriteLine("#error asd");
 				Write("throw");
 				Write(" ");
 				Write("null");
@@ -24,7 +24,6 @@ namespace ConsoleApplication
 				WriteLine(";");
 			*/
 
-//#error
 
 		}
 	}

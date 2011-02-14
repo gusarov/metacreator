@@ -106,6 +106,13 @@ namespace MetaCreator
 			}
 		}
 
+		public int GetLineNumberInOriginalFileByIndex(int i)
+		{
+			return FileOriginalContent
+			       	.Substring(0, i)
+			       	.Split('\r').Length;
+		}
+
 		int _currentMacrosEndLineInOriginalFile;
 		public int CurrentMacrosEndLineInOriginalFile
 		{

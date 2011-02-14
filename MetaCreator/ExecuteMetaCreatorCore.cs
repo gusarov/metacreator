@@ -195,9 +195,17 @@ namespace MetaCreator
 				foreach (var sourceFile in Sources)
 				{
 					var fileName = sourceFile.ItemSpec;
+					var isExternalLink = fileName.StartsWith("..");
 					var ext = Path.GetExtension(fileName);
-					var replacementFile = fileName.Substring(0, fileName.Length - ext.Length) + ".g" + ext;
-
+					string replacementFile;
+					if (isExternalLink)
+					{
+						replacementFile = Path.Combine("_Linked", Path.GetFileNameWithoutExtension(fileName) + ".g" + Path.GetExtension(fileName));
+					}
+					else
+					{
+						replacementFile = fileName.Substring(0, fileName.Length - ext.Length) + ".g" + ext;
+					}
 					var replacementFileRelativePath = Path.Combine(IntermediateOutputPathRelative, replacementFile);
 					var replacementFileAbsolutePath = Path.GetFullPath(replacementFileRelativePath);
 
@@ -228,6 +236,7 @@ namespace MetaCreator
 					if (ctx.NumberOfMacrosProcessed > 0)
 					{
 						BuildErrorLogger.LogDebug("fileName = " + fileName);
+						BuildErrorLogger.LogDebug("replacementFile = " + replacementFile);
 						BuildErrorLogger.LogDebug("IntermediateOutputPathRelative = " + IntermediateOutputPathRelative);
 						BuildErrorLogger.LogDebug("replacementFileRelativePath = " + replacementFileRelativePath);
 						BuildErrorLogger.LogDebug("replacementFileAbsolutePath = " + replacementFileAbsolutePath);

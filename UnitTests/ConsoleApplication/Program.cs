@@ -2,27 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 
-/* @ errorremap */
-
 namespace ConsoleApplication
 {
 	class Program
 	{
+		static int Test()
+		{
+			return 5;
+		}
+
 		static void Main()
 		{
 			Console.WriteLine("");
 			Console.WriteLine("");
+
 			/*!
-				Write("throw");
-				Write(" ");
-				Write("null");
-				WriteLine(";");
-				Write("throw");
-				Write(" ");
-				Write("null");
-				WriteLine(";");
+
+			Test();
+
 			*/
 
+			/*+
+
+			public static void Test()
+			{
+				WriteLine("Hello");
+			}
+
+			class Utils
+			{
+			}
+
+			*/
 
 		}
 	}

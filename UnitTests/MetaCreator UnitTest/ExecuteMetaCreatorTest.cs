@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using MetaCreator;
+using MetaCreator.AppDomainIsolation;
+using MetaCreator.Evaluation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using Microsoft.Build.Framework;
@@ -28,47 +30,55 @@ class Sample {
 	}
 }
 ";
-			var logger = new FakeErrorLogger();
-			var sut = new ExecuteMetaCreatorCore
-				{
-					BuildErrorLogger = logger,
-					ProjDir = Path.GetDirectoryName(GetType().Assembly.Location),
-					IntermediateOutputPath = "obj\\Debug",
-					Sources = new ITaskItem[] {new TaskItem("1.tmp")},
-				};
-			sut.Initialize();
-			var buildFailed = false;
-			try
-			{
-				sut.ProcessFile(new ProcessFileCtx() { FileOriginalContent = code, BuildErrorLogger = logger, OriginalFileName = "1.tmp" });
-			}
-			catch
-			{
-				buildFailed = true;
-			}
+			SimulateBuild(code);
 			Assert.IsTrue(buildFailed);
 
 			Assert.AreEqual(1, logger.Errors.Count);
 			Assert.AreEqual(0, logger.Warnings.Count);
 			Assert.AreEqual(6, logger.Errors[0].LineNumber);
-			Assert.AreEqual("1.tmp", logger.Errors[0].File);
+			Assert.IsTrue(logger.Errors[0].File.Contains("1.tmp"));
 		}
 
-		static ProcessFileCtx GetSut()
+		FakeErrorLogger logger;
+		bool buildFailed;
+		ExecuteMetaCreatorCore sut;
+		ProcessFileCtx ctx;
+
+		void SimulateBuild(string code)
 		{
-			return new ProcessFileCtx()
+			logger = new FakeErrorLogger();
+			sut = new ExecuteMetaCreatorCore
 			{
-				OriginalFileName = "f",
-				ProjDir = "p",
+				BuildErrorLogger = logger,
+				ProjDir = Path.GetDirectoryName(GetType().Assembly.Location),
+				IntermediateOutputPathRelative = "obj\\Debug",
+				IntermediateOutputPathFull = Path.GetFullPath("obj\\Debug"),
+				Sources = new ITaskItem[] {new TaskItem("1.tmp")},
 			};
+			sut.Initialize();
+			buildFailed = false;
+			try
+			{
+				sut.ProcessFile(ctx = new ProcessFileCtx
+				{
+					FileOriginalContent = code,
+					BuildErrorLogger = logger,
+					OriginalFileName = "1.tmp",
+					ProjDir = sut.ProjDir,
+					AppDomFactory = AnotherAppDomFactory.AppDomainLiveScope(),
+				});
+			}
+			catch (FailBuildingException ex)
+			{
+				Console.WriteLine(ex.ToString());
+				buildFailed = true;
+			}
 		}
 
 		[TestMethod]
 		public void ProcessFile_string_interpolation()
 		{
-			var sut = new ExecuteMetaCreatorCore();
-			var ctx =GetSut();
-			ctx.FileOriginalContent = @"
+			var code = @"
 /*@ StringInterpolation */
 class q
 {
@@ -78,7 +88,9 @@ class q
 		static string b=""a={a}"";
 	}
 }";
-			sut.ProcessFile(ctx);
+
+			SimulateBuild(code);
+			Assert.IsFalse(buildFailed);
 
 			var act = ctx.FileProcessedContent.Trim();
 

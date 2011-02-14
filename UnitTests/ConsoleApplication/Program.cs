@@ -2,21 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 
+/*@ errorremap */
+
 namespace ConsoleApplication
 {
 	class Program
 	{
-//#error test asd
-
 		static void Main()
 		{
-			/* ! for (int i = 0; i < 10; i++) { */
-			Console.WriteLine("test /* = i */");
-			/* ! } */
-
+			Console.WriteLine("");
+			Console.WriteLine("");
 			/*!
-				Write("throw null;");
+
+				Write("throw");
+				Write(" ");
+				Write("null");
+				WriteLine(";");
+				Write("throw");
+				Write(" ");
+				Write("null");
+				WriteLine(";");
 			*/
+
+//#error
 
 		}
 	}

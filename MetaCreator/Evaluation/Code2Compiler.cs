@@ -18,7 +18,7 @@ namespace MetaCreator.Evaluation
 		public EvaluationResult Compile(string source, IEnumerable<string> additionalReferences)
 		{
 			additionalReferences = additionalReferences ?? Enumerable.Empty<string>();
-			var result = new EvaluationResult { SourceCode = source };
+			var result = new EvaluationResult { SourceCode = source, AdditionalReferences = additionalReferences.ToArray() };
 
 			var metaTempPath = Path.Combine(Path.GetTempPath(), "MetaCreator");
 			var tempPath = Path.Combine(metaTempPath, Ext.GenerateId());

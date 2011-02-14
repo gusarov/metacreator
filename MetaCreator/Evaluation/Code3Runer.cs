@@ -35,7 +35,7 @@ namespace MetaCreator.Evaluation
 			}
 
 			string returnedValue = null;
-			// using (new Resolver(evaluationResult.))
+			using (new Resolver(evaluationResult.AdditionalReferences))
 			{
 				try
 				{

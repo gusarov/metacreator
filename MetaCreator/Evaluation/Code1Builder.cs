@@ -113,31 +113,25 @@ public static class Generator
 		readonly StringBuilder _methodBody = new StringBuilder();
 		readonly StringBuilder _classBody = new StringBuilder();
 
-		static void PlainTextWriter(string substring, StringBuilder sb/*, int line, string originalFileName*/)
+		void PlainTextWriter(string substring, StringBuilder sb)
 		{
-//			if (line < 1)
-//			{
-//				throw new ArgumentException("", "line");
-//			}
-//			if(string.IsNullOrEmpty(originalFileName))
-//			{
-//				throw new ArgumentException("", "originalFileName");
-//			}
-			//sb.AppendLine("#line " + line + " \"" + originalFileName + "\"");
+			//sb.Append("WriteLine(@\"");
+			//sb.Append("#line " + _ctx.CurrentMacrosLineInOriginalFile + " \"\"" + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + "\"\"");
+			//sb.AppendLine("\");");
 			sb.Append("Write(@\"");
 			sb.Append(substring.Replace("\"", "\"\""));
 			sb.AppendLine("\");");
-			//sb.AppendLine("#line " + line + " \"" + originalFileName + "\"");
+			//sb.AppendLine("#line default");
 		}
 
-//		static string OriginalLinePredirrectiveAtStartOfMacroBlock(ProcessFileCtx ctx)
+//		static string OriginalLinePredirrectiveAtStartOfMacroBlock(ProcessFileCtx _ctx)
 //		{
-			//			var banner = (ctx.GenerateBanner) ? @"// <MetaCreator>
+			//			var banner = (_ctx.GenerateBanner) ? @"// <MetaCreator>
 //			//// DO NOT MODIFY THIS GENERATED CODE
 //			//// You can use /*@ GenerateBanner off */ to disable this message
 			//" : null;
 //			string lineRemap = null;
-//			if (ctx.ErrorRemap)
+//			if (_ctx.ErrorRemap)
 //			{
 //				lineRemap = "#line default";
 //			}
@@ -168,26 +162,26 @@ public static class Generator
 //			return linea;
 //		}
 
-//		static string OriginalLinePredirrectiveAtEndOfMacroBlock(ProcessFileCtx ctx)
+//		static string OriginalLinePredirrectiveAtEndOfMacroBlock(ProcessFileCtx _ctx)
 //		{
-//			var banner = (ctx.GenerateBanner) ? @"// </MetaCreator>" : null;
+//			var banner = (_ctx.GenerateBanner) ? @"// </MetaCreator>" : null;
 //			string lineRemap = null;
-//			if (ctx.ErrorRemap)
+//			if (_ctx.ErrorRemap)
 //			{
-//				lineRemap = "#line {0} \"{1}\"".Arg(ctx.CurrentMacrosEndLineInOriginalFile + 1, ctx.GetOriginalFileNameRelativeToIntermediatePath());
+//				lineRemap = "#line {0} \"{1}\"".Arg(_ctx.CurrentMacrosEndLineInOriginalFile + 1, _ctx.GetOriginalFileNameRelativeToIntermediatePath());
 //			}
 //			return CombineLines(banner, lineRemap);
 //		}
 
 //		string GetCode(string methodBody, string classBody, string returnType, IEnumerable<string> imports)
 //		{
-			//							var result = Evaluate(match.Groups[1].Value, false, ctx);
+			//							var result = Evaluate(match.Groups[1].Value, false, _ctx);
 //							if (!Environment.NewLine.Contains(match.Groups["p"].Value))
 //							{
 //								result = Environment.NewLine + result;
 //							}
 //							return result;
-//							return Evaluate(match.Groups[1].Value, true, ctx);
+//							return Evaluate(match.Groups[1].Value, true, _ctx);
 //
 //
 //			return
@@ -205,20 +199,24 @@ public static class Generator
 
 		static readonly Regex _rxBlock = new Regex(@"(?s)(?<=(?'p'.)?)/\*(?'type'[@+=!])(.+?)\*/");
 
+		ProcessFileCtx _ctx;
+
 		public string Build(string code, ProcessFileCtx ctx)
 		{
+			_ctx = ctx;
+
 			// auto import same namespaces
-			ctx.NamespaceImportsOriginal = Regex.Matches(code, @"(?m)^using\s+([^;]+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
+			_ctx.NamespaceImportsOriginal = Regex.Matches(code, @"(?m)^using\s+([^;]+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
 
 			// @ dirrectives
-			ctx.FileProcessedContent = _rxBlock.Replace(code, match =>
+			_ctx.FileProcessedContent = _rxBlock.Replace(code, match =>
 			{
 				var type = match.Groups["type"].Value[0];
 				switch (type)
 				{
 					case '@':
-						ctx.MarkMacrosAndSaveCaptureState(match);
-						Extenders.ExecuteExtender(match.Groups["1"].Value, ctx);
+						_ctx.MarkMacrosAndSaveCaptureState(match);
+						Extenders.ExecuteExtender(match.Groups["1"].Value, _ctx);
 						return null;
 					case '=':
 					case '!':
@@ -230,14 +228,14 @@ public static class Generator
 				}
 			});
 
-			var blocks = _rxBlock.Matches(ctx.FileProcessedContent).Cast<Match>().ToArray();
+			var blocks = _rxBlock.Matches(_ctx.FileProcessedContent).Cast<Match>().ToArray();
 
 			int from = 0;
 
 			// create metacode
 			foreach (var block in blocks)
 			{
-				ctx.MarkMacrosAndSaveCaptureState(block);
+				_ctx.MarkMacrosAndSaveCaptureState(block);
 
 				var type = block.Groups["type"].Value[0];
 				var value = block.Groups[1].Value;
@@ -249,7 +247,7 @@ public static class Generator
 				switch (type)
 				{
 					case '!':
-						_methodBody.AppendLine("#line " + ctx.CurrentMacrosLineInOriginalFile + ' ' + '"' + ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
+						_methodBody.AppendLine("#line " + _ctx.CurrentMacrosLineInOriginalFile + ' ' + '"' + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
 						_methodBody.AppendLine(value);
 						_methodBody.AppendLine("#line default");
 						break;
@@ -257,7 +255,9 @@ public static class Generator
 						_methodBody.AppendLine("Write(" + value + ");");
 						break;
 					case '+':
+						_classBody.AppendLine("#line " + _ctx.CurrentMacrosLineInOriginalFile + ' ' + '"' + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
 						_classBody.AppendLine(value);
+						_classBody.AppendLine("#line default");
 						break;
 					default:
 						throw new Exception("Block with type " + type + " unexpected");
@@ -267,7 +267,7 @@ public static class Generator
 			PlainTextWriter(code.Substring(from), _methodBody);
 
 
-			var imports = ctx.Namespaces.OrEmpty().Concat(_defaultUsings).Distinct();
+			var imports = _ctx.Namespaces.OrEmpty().Concat(_defaultUsings).Distinct();
 			var importsAsString = string.Join(Environment.NewLine, imports.Select(x => "using " + x + ";").ToArray());
 			var metacode = _skeleton.Arg(importsAsString, _methodBody, _classBody);
 

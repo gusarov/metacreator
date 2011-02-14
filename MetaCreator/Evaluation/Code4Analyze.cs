@@ -165,7 +165,7 @@ namespace MetaCreator.Evaluation
 				var source = result.SourceCode;
 				// Annotate source code with line numbers
 				{
-					source = string.Join(Environment.NewLine, source.Split('\r').Select((x, i) => (i + 1).ToString("00") + "| " + x.Trim('\n')).ToArray());
+					source = string.Join(Environment.NewLine, source.Split('\r').Select((x, i) => (i + 1).ToString("000") + "| " + x.Trim('\n')).ToArray());
 				}
 				var fullLogEntry = error.ErrorText + " at line " + error.Line + " col " + error.Column + "\r\n" + source;
 				_ctx.BuildErrorLogger.LogOutputMessage(fullLogEntry);

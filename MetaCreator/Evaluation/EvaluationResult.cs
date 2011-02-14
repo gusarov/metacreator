@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -25,6 +26,8 @@ namespace MetaCreator.Evaluation
 
 		[NonSerialized]
 		public Assembly Assembly;
+
+		public string[] AdditionalReferences;
 
 		public bool IsSuccess
 		{

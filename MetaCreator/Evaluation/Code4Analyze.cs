@@ -64,9 +64,9 @@ namespace MetaCreator.Evaluation
 				// at Generator.Run() in c:\Kip\Projects\MetaCreatorRep\UnitTests\ConsoleApplication\Program.cs:line 19
 
 				var match = Regex.Match(stack, @"(?i)at (?'method'[^\s]+) in (?'file'.+):line (?'line'\d+)");
-				if (match.Success)
-				{
-				}
+//				if (match.Success)
+//				{
+//				}
 				var lineString = match.Groups["line"].Value;
 				int line;
 				int.TryParse(lineString, out line);
@@ -175,13 +175,21 @@ namespace MetaCreator.Evaluation
 
 		string BuildError_GetFile(EvaluationResult result, CompilerError error)
 		{
-//			var orig = _ctx.GetOriginalFileNameRelativeToIntermediatePath();
-//			if(result.Errors.First().FileName == orig)
-//			{
-//				return orig;
-//			}
-			return error.FileName;
-			//if (result.NonUserCode != null || !_ctx.ErrorRemap)
+			// detect that error is redirrected from random name of dynamic file
+			var errorFileName = Path.GetFileName(error.FileName).ToLowerInvariant();
+			var intermFileName = Path.GetFileName(_ctx.GetOriginalFileNameRelativeToIntermediatePath()).ToLowerInvariant();
+			var originalFileName = Path.GetFileName(_ctx.OriginalFileName).ToLowerInvariant();
+			if (errorFileName == originalFileName || errorFileName == intermFileName)
+			{
+				return error.FileName;
+			}
+
+			// TODO combine with temp files of dynamic buil %tmp%\metacreator\${rnd}
+			result.NonUserCode = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(_ctx.OriginalFileName) + ".meta" + Path.GetExtension(_ctx.OriginalFileName));
+			File.WriteAllText(result.NonUserCode, result.SourceCode);
+			return result.NonUserCode;
+
+		//if (result.NonUserCode != null || !_ctx.ErrorRemap)
 //			{
 //				result.NonUserCode = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(_ctx.OriginalFileName) + ".meta" + Path.GetExtension(_ctx.OriginalFileName));
 //				File.WriteAllText(result.NonUserCode, result.SourceCode);

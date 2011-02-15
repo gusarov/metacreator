@@ -7,15 +7,20 @@ namespace MetaCreator_Acceptance
 	[TestClass]
 	public class Meta_blocks_as_single : Error_handling_base_tests
 	{
-		[TestMethod]
-		public void Should_use_blocks_from_different_parts()
+		[TestInitialize]
+		public void Init()
 		{
 			try
 			{
 				File.Delete("bin/debug/sample.exe");
-			}catch{}
+			}
+			catch { }
 			Assert.IsFalse(File.Exists("bin/debug/sample.exe"));
+		}
 
+		[TestMethod]
+		public void Should_use_blocks_from_different_parts()
+		{
 			File.WriteAllText("sample.cs", @"
 class q
 {
@@ -51,8 +56,6 @@ test 9
 		[TestMethod]
 		public void Should_use_several_groups_of_block()
 		{
-			Assert.IsFalse(File.Exists("bin/debug/sample.exe"));
-
 			File.WriteAllText("sample.cs", @"
 class q
 {

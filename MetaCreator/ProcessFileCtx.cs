@@ -11,10 +11,6 @@ namespace MetaCreator
 {
 	sealed class ProcessFileCtx
 	{
-		public ProcessFileCtx()
-		{
-			
-		}
 
 		public string OriginalFileName;
 		public string IntermediateOutputPathRelative;
@@ -23,17 +19,17 @@ namespace MetaCreator
 
 		public bool MacrosFailed;
 
-		public int NumberOfMacrosProcessed;
-		public bool EnabledStringInterpolation;
-		public bool ErrorRemap = true;
+		public int NumberOfMetaBlocksProcessed;
+		//public bool EnabledStringInterpolation;
+		//public bool ErrorRemap = true;
 		public string ReplacementAbsolutePath;
 		public string ReplacementRelativePath;
 		public string ReplacementFileName;
 
 		public string[] ReferencesOriginal;
 		public List<string> ReferencesMetaAdditional = new List<string>();
-		public string[] NamespaceImportsOriginal;
-		public List<string> NamespaceImportsMetaAdditional = new List<string>();
+		//public string[] NamespaceImportsOriginal;
+		//public List<string> NamespaceImportsMetaAdditional = new List<string>();
 
 		public string[] References
 		{
@@ -51,107 +47,66 @@ namespace MetaCreator
 			}
 		}
 
-		public string[] Namespaces
-		{
-			get
-			{
-				return NamespaceImportsOriginal.OrEmpty().Concat(NamespaceImportsMetaAdditional.OrEmpty()).ToArray();
-			}
-		}
+//		public string[] Namespaces
+//		{
+//			get
+//			{
+//				return NamespaceImportsOriginal.OrEmpty().Concat(NamespaceImportsMetaAdditional.OrEmpty()).ToArray();
+//			}
+//		}
 
 		/// <summary>
-		/// Get file name relative to intermediate path
+		/// Get file name relative to intermediate path (Now it returns absolute path to original file name)
 		/// </summary>
 		/// <returns></returns>
+		//[Obsolete("Now it returns absolute path to original file name")]
 		public string GetOriginalFileNameRelativeToIntermediatePath()
 		{
+			//return IntermediateOutputPathRelative
 //			var interm = ReplacementFileName.Substring(0, IntermediateOutputPath.Length);
 //			DebugAssert.That(interm==IntermediateOutputPath);
 //			var intermFileName = ReplacementFileName.Substring(IntermediateOutputPath.Length).Trim('/', '\\');
+
+			// todo Now it returns absolute path to original file name
 			return Path.Combine(ProjDir, OriginalFileName);
 		}
 
 		public IBuildErrorLogger BuildErrorLogger;
 
-		string _fileOriginalContent;
-		public string FileOriginalContent
-		{
-			get { return _fileOriginalContent; }
-			set
-			{
-				_fileOriginalContent = value;
-				_currentMacrosEndLineInOriginalFile = 0;
-				_currentMacrosLineInOriginalFile = 0;
-			}
-		}
+//		string _fileOriginalContent;
+//		public string FileOriginalContent
+//		{
+//			get { return _fileOriginalContent; }
+//			set
+//			{
+//				_fileOriginalContent = value;
+//				_currentMacrosEndLineInOriginalFile = 0;
+//				_currentMacrosLineInOriginalFile = 0;
+//			}
+//		}
+//
+//		public string FileProcessedContent;
+//
+//		int _currentMacrosLineInOriginalFile;
+//		public int CurrentMacrosLineInOriginalFile
+//		{
+//			get
+//			{
+//				return _currentMacrosLineInOriginalFile != 0
+//					? _currentMacrosLineInOriginalFile
+//					: _currentMacrosLineInOriginalFile = FileOriginalContent
+//						.Substring(0, _currentMacrosIndex)
+//						.Split('\r').Length;
+//			}
+//		}
 
-		public string FileProcessedContent;
 
-		int _currentMacrosLineInOriginalFile;
-		public int CurrentMacrosLineInOriginalFile
-		{
-			get
-			{
-				return _currentMacrosLineInOriginalFile != 0
-					? _currentMacrosLineInOriginalFile
-					: _currentMacrosLineInOriginalFile = FileOriginalContent
-						.Substring(0, _currentMacrosIndex)
-						.Split('\r').Length;
-			}
-		}
+//
 
-		public int GetLineNumberInOriginalFileByIndex(int i)
-		{
-			return FileOriginalContent
-			       	.Substring(0, i)
-			       	.Split('\r').Length;
-		}
-
-		int _currentMacrosEndLineInOriginalFile;
-		public int CurrentMacrosEndLineInOriginalFile
-		{
-			get
-			{
-				return _currentMacrosEndLineInOriginalFile != 0
-					? _currentMacrosEndLineInOriginalFile
-					: _currentMacrosEndLineInOriginalFile = FileOriginalContent
-						.Substring(0, _currentMacrosIndex+_currentMacrosLength)
-						.Split('\r').Length;
-			}
-		}
-
-		int _currentMacrosIndex;
-		public int CurrentMacrosIndex
-		{
-			get { return _currentMacrosIndex; }
-			set
-			{
-				_currentMacrosIndex = value;
-				_currentMacrosLineInOriginalFile = 0;
-				_currentMacrosEndLineInOriginalFile = 0;
-			}
-		}
-
-		int _currentMacrosLength;
-		public int CurrentMacrosLength
-		{
-			get { return _currentMacrosLength; }
-			set
-			{
-				_currentMacrosLength = value;
-				_currentMacrosEndLineInOriginalFile = 0;
-			}
-		}
 
 		// public bool GenerateBanner = true;
-		public TimeSpan MetaCodeExecutionTimeOut = TimeSpan.FromSeconds(10);
-		public AnotherAppDomFactory AppDomFactory;
+//		public TimeSpan MetaCodeExecutionTimeOut = TimeSpan.FromSeconds(10);
+		//public AnotherAppDomFactory AppDomFactory;
 
-		public void MarkMacrosAndSaveCaptureState(Capture match)
-		{
-			CurrentMacrosIndex = match.Index;
-			CurrentMacrosLength = match.Length;
-			NumberOfMacrosProcessed++;
-		}
 	}
 }

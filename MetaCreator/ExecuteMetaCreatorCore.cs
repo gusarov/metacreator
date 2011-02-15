@@ -62,14 +62,6 @@ namespace MetaCreator
 
 		#endregion
 
-		#region Fields and Consts
-
-		internal static readonly Regex _rxStringInterpolVerbatim = new Regex(@"@""([^""]+)""");
-		internal static readonly Regex _rxStringInterpolInside = new Regex(@"{([^\d].*?)}");
-		internal static readonly Regex _rxStringInterpolNoVerbatim = new Regex(@"(?<!@)""(.*?[^\\])""");
-
-		#endregion
-
 		public void Initialize()
 		{
 			if (string.IsNullOrEmpty(ProjDir))
@@ -103,92 +95,41 @@ namespace MetaCreator
 			{
 				References = new ITaskItem[0];
 			}
+
+			_appDomFactory = AnotherAppDomFactory.AppDomainLiveScope();
 		}
 
-		internal void ProcessFile(ProcessFileCtx ctx)
+		internal string ProcessFile(string code, ProcessFileCtx ctx)
 		{
-			ctx.FileProcessedContent = ctx.FileOriginalContent;
-
-			ctx.FileProcessedContent = EvaluateMetacode(ctx.FileProcessedContent, ctx);
-
-			if (ctx.EnabledStringInterpolation)
-			{
-				ProcessStringInterpolation(ctx);
-			}
-
-		}
-
-		static void ProcessStringInterpolation(ProcessFileCtx ctx)
-		{
-			ctx.FileProcessedContent = _rxStringInterpolNoVerbatim.Replace(ctx.FileProcessedContent, match =>
-			{
-				var stringValue = match.Groups[1].Value;
-				stringValue = _rxStringInterpolInside.Replace(stringValue, m =>
-				{
-					ctx.MarkMacrosAndSaveCaptureState(match);
-					var val = m.Groups[1].Value;
-					//if(string.IsNullOrEmpty(val))
-					//{
-					//   return null;
-					//}
-					return "\"+" + val + "+\"";
-				});
-				stringValue = "\"" + stringValue + "\"";
-				// trim "" + and + ""
-				if (stringValue.StartsWith("\"\"+"))
-				{
-					stringValue = stringValue.Substring(3);
-				}
-				if (stringValue.EndsWith("+\"\""))
-				{
-					stringValue = stringValue.Substring(0, stringValue.Length - 3);
-				}
-				return stringValue;
-			});
-
-			ctx.FileProcessedContent = _rxStringInterpolVerbatim.Replace(ctx.FileProcessedContent, match =>
-			{
-				var stringValue = match.Groups[1].Value;
-				stringValue = _rxStringInterpolInside.Replace(stringValue, m =>
-				{
-					ctx.MarkMacrosAndSaveCaptureState(match);
-					var val = m.Groups[1].Value;
-					//if (string.IsNullOrEmpty(val))
-					//{
-					//   return null;
-					//}
-					return "\"+" + val + "+@\"";
-				});
-				stringValue = "@\"" + stringValue + "\"";
-				return stringValue;
-			});
+			return EvaluateMetacode(code, ctx);
 		}
 
 		private string EvaluateMetacode(string code, ProcessFileCtx ctx)
 		{
 			var codeBuilder = new Code1Builder();
 			var metacode = codeBuilder.Build(code, ctx);
-			if (ctx.NumberOfMacrosProcessed == 0)
+			if (ctx.NumberOfMetaBlocksProcessed == 0)
 			{
 				return code;
 			}
-			var evaluationResult = ctx.AppDomFactory.AnotherAppDomMarshal.Evaluate(new AnotherAppDomInputData
+			var evaluationResult = _appDomFactory.AnotherAppDomMarshal.Evaluate(new AnotherAppDomInputData
 			{
 				Metacode = metacode,
 				References = ctx.References,
 			});
-			ctx.AppDomFactory.MarkDirectoryPathToRemoveAfterUnloadDomain(evaluationResult.CompileTempPath);
+			_appDomFactory.MarkDirectoryPathToRemoveAfterUnloadDomain(evaluationResult.CompileTempPath);
 			var codeAnalyzer = new Code4Analyze();
 			codeAnalyzer.Analyze(evaluationResult, ctx);
 			return evaluationResult.ResultBody;
 		}
 
+		AnotherAppDomFactory _appDomFactory;
 		public bool Execute()
 		{
 			// Debugger.Launch();
 			Initialize();
 
-			using (var appDomFactory = AnotherAppDomFactory.AppDomainLiveScope())
+			using (_appDomFactory)
 			{
 				int totalMacrosProcessed = 0;
 				var totalTime = Stopwatch.StartNew();
@@ -211,10 +152,9 @@ namespace MetaCreator
 
 					var ctx = new ProcessFileCtx()
 					{
-						AppDomFactory = appDomFactory,
+						//AppDomFactory = appDomFactory,
 						BuildErrorLogger = BuildErrorLogger,
 						OriginalFileName = fileName,
-						FileOriginalContent = File.ReadAllText(fileName),
 						ReplacementRelativePath = replacementFileRelativePath,
 						ReplacementAbsolutePath = replacementFileAbsolutePath,
 						IntermediateOutputPathRelative = IntermediateOutputPathRelative,
@@ -223,9 +163,12 @@ namespace MetaCreator
 						ReferencesOriginal = References.Select(x => x.ItemSpec).ToArray(),
 					};
 
+					var code = File.ReadAllText(fileName);
+
+					string processedCode;
 					try
 					{
-						ProcessFile(ctx);
+						processedCode = ProcessFile(code, ctx);
 					}
 					catch (FailBuildingException)
 					{
@@ -233,7 +176,7 @@ namespace MetaCreator
 						return false;
 					}
 
-					if (ctx.NumberOfMacrosProcessed > 0)
+					if (ctx.NumberOfMetaBlocksProcessed > 0)
 					{
 						BuildErrorLogger.LogDebug("fileName = " + fileName);
 						BuildErrorLogger.LogDebug("replacementFile = " + replacementFile);
@@ -241,12 +184,12 @@ namespace MetaCreator
 						BuildErrorLogger.LogDebug("replacementFileRelativePath = " + replacementFileRelativePath);
 						BuildErrorLogger.LogDebug("replacementFileAbsolutePath = " + replacementFileAbsolutePath);
 
-						totalMacrosProcessed += ctx.NumberOfMacrosProcessed;
+						totalMacrosProcessed += ctx.NumberOfMetaBlocksProcessed;
 
 						Directory.CreateDirectory(Path.GetDirectoryName(replacementFileAbsolutePath));
 
 						var theSameContent = File.Exists(replacementFileAbsolutePath) &&
-													File.ReadAllText(replacementFileAbsolutePath) == ctx.FileProcessedContent;
+													File.ReadAllText(replacementFileAbsolutePath) == processedCode;
 
 						if (!theSameContent)
 						{
@@ -254,11 +197,11 @@ namespace MetaCreator
 							//{
 							//   File.SetAttributes(replacementFileName, File.GetAttributes(replacementFileName) & ~FileAttributes.ReadOnly);
 							//}
-							File.WriteAllText(replacementFileAbsolutePath, ctx.FileProcessedContent);
+							File.WriteAllText(replacementFileAbsolutePath, processedCode);
 							//File.SetAttributes(replacementFileName, File.GetAttributes(replacementFileName) | FileAttributes.ReadOnly);
 						}
 
-						BuildErrorLogger.LogOutputMessage(fileName + " - " + ctx.NumberOfMacrosProcessed + " macros processed to => " + replacementFileRelativePath + ". File " + (theSameContent ? "is up to date." : "updated"));
+						BuildErrorLogger.LogOutputMessage(fileName + " - " + ctx.NumberOfMetaBlocksProcessed + " macros processed to => " + replacementFileRelativePath + ". File " + (theSameContent ? "is up to date." : "updated"));
 
 						_removeFiles.Add(sourceFile);
 						_addFiles.Add(new TaskItem(replacementFileAbsolutePath));

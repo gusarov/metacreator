@@ -94,7 +94,6 @@
     <Compile Include="Evaluation\Code4Analyze.cs" />
     <Compile Include="Evaluation\EvaluationResult.cs" />
     <Compile Include="AppDomainIsolation\Resolver.cs" />
-    <Compile Include="Evaluation\Extenders.cs" />
     <Compile Include="Evaluation\FailBuildingException.cs" />
     <Compile Include="ExecuteMetaCreator.cs" />
     <Compile Include="ExecuteMetaCreatorCore.cs" />

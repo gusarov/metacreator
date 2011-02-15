@@ -13,8 +13,9 @@ using Microsoft.Build.Utilities;
 namespace MetaCreator_UnitTest
 {
 	[TestClass]
-	public class ExecuteMetaCreatorTest
+	public class ExecuteMetaCreator : ExecuteMetaCreatorBase
 	{
+
 		[TestMethod]
 		public void ProcessFile_create_correct_build_error_line_number()
 		{
@@ -39,42 +40,6 @@ class Sample {
 			Assert.IsTrue(logger.Errors[0].File.Contains("1.tmp"));
 		}
 
-		FakeErrorLogger logger;
-		bool buildFailed;
-		ExecuteMetaCreatorCore sut;
-		ProcessFileCtx ctx;
-
-		void SimulateBuild(string code)
-		{
-			logger = new FakeErrorLogger();
-			sut = new ExecuteMetaCreatorCore
-			{
-				BuildErrorLogger = logger,
-				ProjDir = Path.GetDirectoryName(GetType().Assembly.Location),
-				IntermediateOutputPathRelative = "obj\\Debug",
-				IntermediateOutputPathFull = Path.GetFullPath("obj\\Debug"),
-				Sources = new ITaskItem[] {new TaskItem("1.tmp")},
-			};
-			sut.Initialize();
-			buildFailed = false;
-			try
-			{
-				sut.ProcessFile(ctx = new ProcessFileCtx
-				{
-					FileOriginalContent = code,
-					BuildErrorLogger = logger,
-					OriginalFileName = "1.tmp",
-					ProjDir = sut.ProjDir,
-					AppDomFactory = AnotherAppDomFactory.AppDomainLiveScope(),
-				});
-			}
-			catch (FailBuildingException ex)
-			{
-				Console.WriteLine(ex.ToString());
-				buildFailed = true;
-			}
-		}
-
 		[TestMethod]
 		public void ProcessFile_string_interpolation()
 		{
@@ -84,41 +49,43 @@ class q
 {
 	void c()
 	{
-		static int a=5;
-		static string b=""a={a}"";
+		int a=5;
+		string b=""a={a}"";
 	}
 }";
 
 			SimulateBuild(code);
 			Assert.IsFalse(buildFailed);
 
-			var act = ctx.FileProcessedContent.Trim();
+			var act = result;
+			Console.WriteLine(act);
 
-			switch (act.Trim())
-			{
-				case @"class q
+			const string exp = @"class q
 {
 	void c()
 	{
-		static int a=5;
-		static string b=""a=""+a;
+		int a=5;
+		string b=""a=""+a;
 	}
-}":
+}";
+
+			switch (result.Trim())
+			{
+				case exp:
 					break;
 				case @"class q
 {
 	void c()
 	{
-		static int a=5;
-		static string b=""a=""+a+"""";
+		int a=5;
+		string b=""a=""+a+"""";
 	}
 }":
-					Console.WriteLine(act);
 					Assert.Inconclusive("+");
 					break;
 				default:
-					//File.WriteAllText(Path.GetTempFileName(), exp);
-					//File.WriteAllText(Path.GetTempFileName(), act);
+					File.WriteAllText(Path.GetTempFileName(), exp);
+					File.WriteAllText(Path.GetTempFileName(), act);
 					Assert.Fail(act);
 					break;
 			}
@@ -127,9 +94,7 @@ class q
 		[TestMethod]
 		public void ProcessFile_string_interpolation_in_med()
 		{
-			var sut = new ExecuteMetaCreatorCore();
-			var ctx = GetSut();
-			ctx.FileOriginalContent = @"
+			var code = @"
 /*@ StringInterpolation */
 class q
 {
@@ -140,7 +105,8 @@ class q
 	}
 }
 ";
-			sut.ProcessFile(ctx);
+			SimulateBuild(code);
+
 			Assert.AreEqual(@"class q
 {
 	void c()
@@ -148,15 +114,14 @@ class q
 		static string a=""asd"";
 		static string b=""a=""+a+""_"";
 	}
-}", ctx.FileProcessedContent.Trim());
+}", result.Trim());
 		}
 
 		[TestMethod]
 		public void Should_not_corrupt_empty_strings()
 		{
-			var sut = new ExecuteMetaCreatorCore();
-			var ctx = GetSut();
-			ctx.FileOriginalContent = @"
+
+			SimulateBuild(@"
 /*@ StringInterpolation */
 class q
 {
@@ -166,8 +131,7 @@ class q
 		static string b=@"""";
 	}
 }
-";
-			sut.ProcessFile(ctx);
+");
 			Assert.AreEqual(@"class q
 {
 	void c()
@@ -175,15 +139,13 @@ class q
 		static string a="""";
 		static string b=@"""";
 	}
-}", ctx.FileProcessedContent.Trim());
+}", result.Trim());
 		}
 
 		[TestMethod]
 		public void ProcessFile_string_interpolation_verbatim()
 		{
-			var sut = new ExecuteMetaCreatorCore();
-			var ctx = GetSut();
-			ctx.FileOriginalContent = @"
+			SimulateBuild(@"
 /*@ StringInterpolation */
 class q
 {
@@ -193,8 +155,7 @@ class q
 		static string b=@""a={a}_"";
 	}
 }
-";
-			sut.ProcessFile(ctx);
+");
 			Assert.AreEqual(@"class q
 {
 	void c()
@@ -202,33 +163,29 @@ class q
 		static string a=""asd"";
 		static string b=@""a=""+a+@""_"";
 	}
-}", ctx.FileProcessedContent.Trim());
+}", result.Trim());
 		}
 
 		[TestMethod, Ignore]
 		public void Should_use_string_builder_if_there_are_more_than_7_items()
 		{
-			var sut = new ExecuteMetaCreatorCore();
-			var ctx = GetSut();
-			ctx.FileOriginalContent = @"
+			SimulateBuild(@"
 /*@ StringInterpolation */
 string a = ""asd1"";
 string b = ""asd2"";
 return ""a={a}, b={b}, a={a}, b={b}, a={a}, b={b}, a={a}, b={b}"";
-";
-			sut.ProcessFile(ctx);
+");
 			Assert.AreEqual(@"
 string a = ""asd1"";
 string b = ""asd2"";
 return string.Format(""a={0}, b={1}, a={0}, b={1}, a={0}, b={1}, a={0}, b={1}"", a, b);
-", ctx.FileProcessedContent.Trim());
+", result.Trim());
 			Assert.AreEqual(@"
 string a = ""asd1"";
 string b = ""asd2"";
 return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).Append("", a="").Append(a).Append("", b="").Append(b).Append("", a="").Append(a).Append("", b="").Append(b).ToString();
-", ctx.FileProcessedContent.Trim());
+", result.Trim());
 			Assert.Inconclusive();
-			//Assert.AreEqual(Evaluator.EvaluateMethodBody(ctx.FileOriginalContent), Evaluator.EvaluateMethodBody(ctx.FileProcessedContent));
 		}
 
 		[TestMethod, Ignore]
@@ -237,15 +194,15 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 			string a = "asd1";
 			string b = "asd2";
 			var sw1 = Stopwatch.StartNew();
-			string q1=null,q2=null;
+			string q1 = null, q2 = null;
 			for (int i = 0; i < int.MaxValue / 500; i++)
 			{
 				// q1 = string.Format("a={0}, b={1}, a={0}, b={1}, a={0}, b={1}, a={0}, b={1}", a, b);
 				// q1 = string.Format("a={0}, b={1}, a={0}, b={1}", a, b);
 				// q1 = "a=" + a + ", b=" + b + ", a=" + a + ", b=" + b;
 				// q1 = "a=" + a + ", b=" + b + ", a=" + a + ", b=" + b + ", a=" + a + ", b=" + b + ", a=" + a + ", b=" + b;
-				q1 = "a=" + a + ", b=" + b + ", a=" + a + ", b=" + b 
-					+ ", a=" + a + ", b=" + b + ", a=" + a + ", b=" + b 
+				q1 = "a=" + a + ", b=" + b + ", a=" + a + ", b=" + b
+					+ ", a=" + a + ", b=" + b + ", a=" + a + ", b=" + b
 					+ ", a=" + a + ", b=" + b + ", a=" + a + ", b=" + b
 					+ ", a=" + a + ", b=" + b + ", a=" + a + ", b=" + b
 					+ ", a=" + a + ", b=" + b + ", a=" + a + ", b=" + b;
@@ -263,15 +220,15 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 				//q2 = new StringBuilder().Append("a=").Append(a).Append(", b=").Append(b).Append(", a=").Append(a).Append(", b=").Append(b).ToString();
 			}
 			sw2.Stop();
-			Assert.AreEqual(q1,q2);
+			Assert.AreEqual(q1, q2);
 			Assert.Inconclusive(sw1.Elapsed + " <=> " + sw2.Elapsed);
 		}
 
 		[TestMethod]
 		public void Should_detect_no_verbatim_strings_in_code()
 		{
-			var rx = ExecuteMetaCreatorCore._rxStringInterpolNoVerbatim;
-			ValidateString(rx, true, @"someThing = ""asd"";", "\"asd\"","asd");
+			var rx = MetaCreator.Evaluation.Code1Builder._rxStringInterpolNoVerbatim;
+			ValidateString(rx, true, @"someThing = ""asd"";", "\"asd\"", "asd");
 			ValidateString(rx, false, @"someThing = ""asd;", null, "asd");
 			ValidateString(rx, false, @"someThing = @""asd"";", null, "asd");
 		}
@@ -279,14 +236,57 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 		[TestMethod]
 		public void Should_detect_verbatim_strings_in_code()
 		{
-			var rx = ExecuteMetaCreatorCore._rxStringInterpolVerbatim;
+			var rx = MetaCreator.Evaluation.Code1Builder._rxStringInterpolVerbatim;
 			ValidateString(rx, false, @"someThing = ""asd"";", null, "asd");
 			ValidateString(rx, false, @"someThing = ""asd;", null, "asd");
 			ValidateString(rx, true, @"someThing = @""asd"";", "@\"asd\"", "asd");
 			ValidateString(rx, false, @"someThing = @""asd;", null, "asd");
 		}
+	}
 
-		static void ValidateString(Regex rx, bool result, string input, string match, string body)
+	[TestClass]
+	public abstract class ExecuteMetaCreatorBase
+	{
+		#region Utils
+
+		internal FakeErrorLogger logger;
+		public bool buildFailed;
+		ExecuteMetaCreatorCore sut;
+		ProcessFileCtx ctx;
+		public string result;
+
+		public void SimulateBuild(string code)
+		{
+			logger = new FakeErrorLogger();
+			sut = new ExecuteMetaCreatorCore
+			{
+				BuildErrorLogger = logger,
+				ProjDir = Path.GetDirectoryName(GetType().Assembly.Location),
+				IntermediateOutputPathRelative = "obj\\Debug",
+				IntermediateOutputPathFull = Path.GetFullPath("obj\\Debug"),
+				Sources = new ITaskItem[] {new TaskItem("1.tmp")},
+			};
+			sut.Initialize();
+			buildFailed = false;
+			try
+			{
+				result = sut.ProcessFile(code, new ProcessFileCtx
+				{
+					//FileOriginalContent = code,
+					BuildErrorLogger = logger,
+					OriginalFileName = "1.tmp",
+					ProjDir = sut.ProjDir,
+					//AppDomFactory = AnotherAppDomFactory.AppDomainLiveScope(),
+				});
+			}
+			catch (FailBuildingException ex)
+			{
+				Console.WriteLine(ex.ToString());
+				buildFailed = true;
+			}
+		}
+
+		public static void ValidateString(Regex rx, bool result, string input, string match, string body)
 		{
 			var m = rx.Match(input);
 			Assert.AreEqual(result, m.Success);
@@ -297,18 +297,8 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 			}
 		}
 
+		#endregion
 
-//      [TestMethod]
-//      public void Should_detect_original_namespace_imports()
-//      {
-//         var tmp = File.WriteAllText("q.cs",@");
-//			var sut = new ExecuteMetaCreatorCore
-//				{
-//					
-//				};
-//			sut.Execute();
-//			DebugAssert.Inconclusive();
-//		}
 	}
 }
 

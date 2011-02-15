@@ -35,8 +35,19 @@ namespace MetaCreator.AppDomainIsolation
 		}
 
 		AppDomain _appDomain;
+		bool isDisposed;
 		readonly Lazy<IAnotherAppDomMarshalApi> _anotherAppDomMarshal;
-		public IAnotherAppDomMarshalApi AnotherAppDomMarshal { get { return _anotherAppDomMarshal.Value; } }
+		public IAnotherAppDomMarshalApi AnotherAppDomMarshal
+		{
+			get
+			{
+				if (isDisposed)
+				{
+					throw new ObjectDisposedException("App dom is not initialized or already disposed");
+				}
+				return _anotherAppDomMarshal.Value;
+			}
+		}
 
 		public static AnotherAppDomFactory AppDomainLiveScope()
 		{
@@ -67,9 +78,11 @@ namespace MetaCreator.AppDomainIsolation
 
 		public void Dispose()
 		{
+			isDisposed = true;
 			if (_appDomain != null)
 			{
 				AppDomain.Unload(_appDomain);
+				_appDomain = null;
 				foreach (var dir in _tempDirrectoriesToRemoveAfterUnloadAppDomain)
 				{
 					try

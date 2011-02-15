@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MetaCreator_Acceptance
@@ -25,11 +27,11 @@ class q
 
 			RunMsbuild(false);
 
-			Assert.AreEqual("sample.cs", ParsedMsBuildError.FileName);
+			Assert.AreEqual("sample.cs",Path.GetFileName(ParsedMsBuildError.FileName));
 			Assert.AreEqual(5, ParsedMsBuildError.Line);
 			Assert.AreEqual(14, ParsedMsBuildError.Column);
 
-			Assert.AreEqual("sample.cs(5,14): error : MetaCode: Cannot implicitly convert type 'int' to 'string'", _output.Trim());
+			Assert.IsTrue(_output.Trim().EndsWith("sample.cs(5,14): error : MetaCode: Cannot implicitly convert type 'int' to 'string'"));
 		}
 
 		[TestMethod]
@@ -48,7 +50,7 @@ i */;
 	/*!
 		}
 
-		#error
+		#error test
 	*/
 	static void Main()
 	{
@@ -58,11 +60,10 @@ i */;
 
 			RunMsbuild(false);
 
-			Assert.AreEqual("sample.cs", ParsedMsBuildError.FileName);
+			Assert.AreEqual("sample.cs", Path.GetFileName(ParsedMsBuildError.FileName));
 			Assert.AreEqual(14, ParsedMsBuildError.Line);
-			Assert.AreEqual(2, ParsedMsBuildError.Column);
-
-			Assert.AreEqual("sample.cs(5,14): error : MetaCode: Cannot implicitly convert type 'int' to 'string'", _output.Trim());
+			Assert.AreEqual(10, ParsedMsBuildError.Column);
+			Assert.IsTrue(Regex.IsMatch(_output.Trim(), @"sample\.cs\(14,10\): error : MetaCode: #error: 'test'"));
 		}
 
 		[TestMethod]
@@ -84,10 +85,10 @@ class q
 			RunMsbuild(false);
 
 			Assert.AreEqual(Path.GetTempPath() + "sample.meta.cs", ParsedMsBuildError.FileName, _output);
-			Assert.AreEqual(6, ParsedMsBuildError.Line, _output);
 			Assert.AreEqual(7, ParsedMsBuildError.Column, _output);
+			Assert.AreEqual(40, ParsedMsBuildError.Line, _output);
 
-			Assert.AreEqual(Path.GetTempPath() + "sample.meta.cs(6,7): error : MetaCode: The type or namespace name 'someThingWrong' could not be found (are you missing a using directive or an assembly reference?)", _output.Trim());
+			Assert.AreEqual(Path.GetTempPath() + "sample.meta.cs(40,7): error : MetaCode: The type or namespace name 'someThingWrong' could not be found (are you missing a using directive or an assembly reference?)", _output.Trim());
 		}
 
 		[TestMethod]
@@ -109,10 +110,10 @@ class q
 			RunMsbuild(false);
 
 			Assert.AreEqual(Path.GetTempPath() + "sample.meta.cs", ParsedMsBuildError.FileName, _output);
-			Assert.AreEqual(47, ParsedMsBuildError.Line, _output);
+			Assert.AreEqual(55, ParsedMsBuildError.Line, _output);
 			Assert.AreEqual(14, ParsedMsBuildError.Column, _output);
 
-			Assert.AreEqual(Path.GetTempPath() + "sample.meta.cs(47,14): error : MetaCode: Cannot implicitly convert type 'int' to 'string'", _output.Trim());
+			Assert.AreEqual(Path.GetTempPath() + "sample.meta.cs(55,14): error : MetaCode: Cannot implicitly convert type 'int' to 'string'", _output.Trim());
 		}
 
 		[TestMethod]
@@ -163,11 +164,11 @@ class q
 
 			RunMsbuild(false);
 
-			Assert.AreEqual("sample.cs", ParsedMsBuildError.FileName);
+			Assert.AreEqual("sample.cs", Path.GetFileName(ParsedMsBuildError.FileName));
 			Assert.AreEqual(15, ParsedMsBuildError.Line);
 			Assert.AreEqual(14, ParsedMsBuildError.Column);
 
-			Assert.AreEqual("sample.cs(15,14): error : MetaCode: Cannot implicitly convert type 'int' to 'string'", _output.Trim());
+			Assert.IsTrue(_output.Trim().EndsWith("sample.cs(15,14): error : MetaCode: Cannot implicitly convert type 'int' to 'string'"));
 		}
 	}
 }

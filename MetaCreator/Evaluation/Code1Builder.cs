@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
 using MetaCreator.Utils;
+using Microsoft.Build.Framework;
 
 namespace MetaCreator.Evaluation
 {
@@ -12,29 +15,47 @@ namespace MetaCreator.Evaluation
 	/// </summary>
 	class Code1Builder
 	{
+		ProcessFileCtx _ctx;
+
+		public Code1Builder()
+		{
+			_mapExtenders = new Dictionary<string, Action<string>>
+			{
+				{"stringinterpolation", StringInterpolation},
+				{"errorremap", ErrorRemap},
+				{"reference", Reference},
+				{"using", Using},
+				{"generatebanner", GenerateBanner},
+			};
+		}
 
 		const string _skeleton = @"// METACODE
 // This file is generated and compiled in-memory.
 // If there are any compilation errors - file can be saved to temporary path for working with IDE.
 
-// imports
+#region Imports
 {0}
+#endregion
 
 public static class Generator
 {{
 	public static string Run()
 	{{
-		// <methodbody>
+#region methodbody
+
 		{1}
-		// </methodbody>
+
+#endregion
 		return Result.ToString();
 	}}
 
-	// <classbody>
-{2}
-	// </classbody>
+#region classbody
 
-	#region utils
+{2}
+
+#endregion
+
+#region utils
 
 	public static StringBuilder Result = new StringBuilder();
 
@@ -68,64 +89,62 @@ public static class Generator
 		Result.AppendLine(obj == null ? string.Empty : obj.ToString());
 	}}
 
-	#endregion
+#endregion
 }}";
 
-		const string _generatorMethodName = "Run";
-		const string _generatorClassName = "Generator";
-
-		static readonly string[] _defaultUsings = new[] {
-		                                                	"global::Microsoft.Win32",
-		                                                	"global::System",
-		                                                	"global::System.Collections",
-		                                                	"global::System.Collections.Generic",
-		                                                	"global::System.Collections.Specialized",
-		                                                	"global::System.Collections.ObjectModel",
-		                                                	"global::System.Configuration.Assemblies",
-		                                                	"global::System.ComponentModel",
-		                                                	"global::System.Diagnostics",
-		                                                	"global::System.Diagnostics.CodeAnalysis",
-		                                                	"global::System.Globalization",
-		                                                	"global::System.IO",
-		                                                	"global::System.IO.Compression",
-		                                                	"global::System.IO.Ports",
-		                                                	"global::System.Media",
-		                                                	"global::System.Net",
-		                                                	"global::System.Net.Sockets",
-		                                                	"global::System.Reflection",
-		                                                	"global::System.Resources",
-		                                                	"global::System.Runtime.CompilerServices",
-		                                                	"global::System.Runtime.InteropServices",
-		                                                	"global::System.Runtime.InteropServices.ComTypes",
-		                                                	"global::System.Runtime.Serialization",
-		                                                	"global::System.Runtime.Serialization.Formatters.Binary",
-		                                                	"global::System.Security",
-		                                                	"global::System.Security.Cryptography",
-		                                                	"global::System.Security.Cryptography.X509Certificates",
-		                                                	"global::System.Security.Permissions",
-		                                                	"global::System.Security.Policy",
-		                                                	"global::System.Text",
-		                                                	"global::System.Text.RegularExpressions",
-		                                                	"global::System.Threading",
-		                                                	"global::System.CodeDom.Compiler",
-		                                                	"global::System.Linq",
-		                                                };
-
+		static readonly string[] _defaultUsings = new[]
+		{
+			"global::Microsoft.Win32",
+			"global::System",
+			"global::System.Collections",
+			"global::System.Collections.Generic",
+			"global::System.Collections.Specialized",
+			"global::System.Collections.ObjectModel",
+			"global::System.Configuration.Assemblies",
+			"global::System.ComponentModel",
+			"global::System.Diagnostics",
+			"global::System.Diagnostics.CodeAnalysis",
+			"global::System.Globalization",
+			"global::System.IO",
+			"global::System.IO.Compression",
+			"global::System.IO.Ports",
+			"global::System.Media",
+			"global::System.Net",
+			"global::System.Net.Sockets",
+			"global::System.Reflection",
+			"global::System.Resources",
+			"global::System.Runtime.CompilerServices",
+			"global::System.Runtime.InteropServices",
+			"global::System.Runtime.InteropServices.ComTypes",
+			"global::System.Runtime.Serialization",
+			"global::System.Runtime.Serialization.Formatters.Binary",
+			"global::System.Security",
+			"global::System.Security.Cryptography",
+			"global::System.Security.Cryptography.X509Certificates",
+			"global::System.Security.Permissions",
+			"global::System.Security.Policy",
+			"global::System.Text",
+			"global::System.Text.RegularExpressions",
+			"global::System.Threading",
+			"global::System.CodeDom.Compiler",
+			"global::System.Linq",
+		};
 
 		readonly StringBuilder _methodBody = new StringBuilder();
 		readonly StringBuilder _classBody = new StringBuilder();
 
+		// write string from original file to resulting file by metacode
 		void PlainTextWriter(string substring, StringBuilder sb, int line)
 		{
-			sb.Append("WriteLine(@\"");
-			sb.Append("#line " + line + " \"\"" + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + "\"\"");
-			sb.AppendLine("\");");
+			//sb.Append("WriteLine(@\"");
+			//sb.Append("#line " + line + " \"\"" + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + "\"\"");
+			//sb.AppendLine("\");");
 
-			sb.Append("WriteLine(@\"");
+			sb.Append("Write(@\"");
 			sb.Append(substring.Replace("\"", "\"\""));
 			sb.AppendLine("\");");
 
-			sb.AppendLine(@"WriteLine(""#line default"");");
+			//sb.AppendLine(@"WriteLine(""#line default"");");
 		}
 
 //		static string OriginalLinePredirrectiveAtStartOfMacroBlock(ProcessFileCtx _ctx)
@@ -202,64 +221,85 @@ public static class Generator
 //		}
 
 		static readonly Regex _rxBlock = new Regex(@"(?s)(?<=(?'p'.)?)/\*(?'type'[@+=!])(.+?)\*/");
-
-		ProcessFileCtx _ctx;
+		string[] _namespacesFromOriginalFile;
+		string _code;
 
 		public string Build(string code, ProcessFileCtx ctx)
 		{
 			_ctx = ctx;
+			_code = code;
+			code = Preprocess(code);
+			var metacode = BuildMetacode(ctx, code);
+			return metacode;
+		}
 
-			// auto import same namespaces
-			_ctx.NamespaceImportsOriginal = Regex.Matches(code, @"(?m)^using\s+([^;]+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
-
-			// @ dirrectives
-			_ctx.FileProcessedContent = _rxBlock.Replace(code, match =>
+		string Preprocess(string code)
+		{
+			foreach (Match match in _rxBlock.Matches(code))
 			{
-				var type = match.Groups["type"].Value[0];
-				switch (type)
+				var blockType = match.Groups["type"].Value[0];
+				switch (blockType)
 				{
 					case '@':
-						_ctx.MarkMacrosAndSaveCaptureState(match);
-						Extenders.ExecuteExtender(match.Groups["1"].Value, _ctx);
-						return null;
-					case '=':
-					case '!':
-					case '+':
-						// handle that later
-						return match.Value;
-					default:
-						throw new Exception("MetaBlock type '{0}' unknown".Arg(type));
+						ExecuteExtender(match.Groups["1"].Value);
+						break;
 				}
-			});
+			}
+			if(_enabledStringInterpolation)
+			{
+				code = ProcessStringInterpolation(code);
+			}
+			return code;
+		}
 
-			var blocks = _rxBlock.Matches(_ctx.FileProcessedContent).Cast<Match>().ToArray();
+		string BuildMetacode(ProcessFileCtx ctx, string code)
+		{
+			_ctx = ctx;
+			_code = code;
+
+			// auto import same namespaces
+			_namespacesFromOriginalFile = Regex.Matches(code, @"(?m)^using\s+([^;]+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
+
+			var blocks = _rxBlock.Matches(code).Cast<Match>().ToArray();
 
 			int from = 0;
 
 			// create metacode
 			foreach (var block in blocks)
 			{
-				_ctx.MarkMacrosAndSaveCaptureState(block);
+				_ctx.NumberOfMetaBlocksProcessed++;
+				MarkMacrosAndSaveCaptureState(block);
 
 				var type = block.Groups["type"].Value[0];
 				var value = block.Groups[1].Value;
 
 				// write previous text as plain
-				PlainTextWriter(code.Substring(from, block.Index - from), _methodBody, _ctx.GetLineNumberInOriginalFileByIndex(from));
+				PlainTextWriter(code.Substring(from, block.Index - from), _methodBody, GetLineNumberByIndex(code, from));
 
 				from = block.Index + block.Length;
 				switch (type)
 				{
+					case '@':
+						//ExecuteExtender(value);
+						break;
 					case '!':
-						_methodBody.AppendLine("#line " + _ctx.CurrentMacrosLineInOriginalFile + ' ' + '"' + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
+						// TODO detect, is it new line or just some insertion
+						if (_errorRemap)
+						{
+							_methodBody.AppendLine("#line " + GetLineNumberByIndex(code, _currentBlockIndex) + ' ' + '"' +
+								_ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
+						}
 						_methodBody.AppendLine(value);
-						_methodBody.AppendLine("#line default");
+						if (_errorRemap)
+						{
+							_methodBody.AppendLine("#line default");
+						}
 						break;
 					case '=':
 						_methodBody.AppendLine("Write(" + value + ");");
 						break;
 					case '+':
-						_classBody.AppendLine("#line " + _ctx.CurrentMacrosLineInOriginalFile + ' ' + '"' + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
+						_classBody.AppendLine("#line " + GetLineNumberByIndex(code, _currentBlockIndex) + ' ' + '"' + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
 						_classBody.AppendLine(value);
 						_classBody.AppendLine("#line default");
 						break;
@@ -268,16 +308,196 @@ public static class Generator
 				}
 			}
 
-			PlainTextWriter(code.Substring(from), _methodBody, _ctx.GetLineNumberInOriginalFileByIndex(from));
+			PlainTextWriter(code.Substring(from), _methodBody, GetLineNumberByIndex(code, from));
 
 
-			var imports = _ctx.Namespaces.OrEmpty().Concat(_defaultUsings).Distinct();
+			var imports = _namespacesFromOriginalFile.OrEmpty().Concat(_defaultUsings).Concat(_namespaceImportsMetaAdditional.OrEmpty()).Distinct();
 			var importsAsString = string.Join(Environment.NewLine, imports.Select(x => "using " + x + ";").ToArray());
-			var metacode = _skeleton.Arg(importsAsString, _methodBody, _classBody);
-
-			return metacode;
+			return _skeleton.Arg(importsAsString, _methodBody, _classBody);
 		}
 
-		
+		public void MarkMacrosAndSaveCaptureState(Capture match)
+		{
+			_currentBlockIndex = match.Index;
+			_currentBlockLength = match.Length;
+			_currentBlockFinishIndex = _currentBlockIndex + _currentBlockLength;
+		}
+
+		int _currentBlockIndex;
+		int _currentBlockLength;
+		int _currentBlockFinishIndex;
+
+		public int GetLineNumberByIndex(string code, int i)
+		{
+			return code
+				.Substring(0, i)
+				.Split('\r').Length;
+		}
+
+		internal static readonly Regex _rxStringInterpolVerbatim = new Regex(@"@""([^""]+)""");
+		internal static readonly Regex _rxStringInterpolInside = new Regex(@"{([^\d].*?)}");
+		internal static readonly Regex _rxStringInterpolNoVerbatim = new Regex(@"(?<!@)""(.*?[^\\])""");
+
+		string ProcessStringInterpolation(string code)
+		{
+			code = _rxStringInterpolNoVerbatim.Replace(code, match =>
+			{
+				var stringValue = match.Groups[1].Value;
+				stringValue = _rxStringInterpolInside.Replace(stringValue, m =>
+				{
+					MarkMacrosAndSaveCaptureState(match);
+					var val = m.Groups[1].Value;
+					if(string.IsNullOrEmpty(val))
+					{
+					   return null;
+					}
+					return "\"+" + val + "+\"";
+				});
+				stringValue = "\"" + stringValue + "\"";
+				// trim "" + and + ""
+				if (stringValue.StartsWith("\"\"+"))
+				{
+					stringValue = stringValue.Substring(3);
+				}
+				if (stringValue.EndsWith("+\"\""))
+				{
+					stringValue = stringValue.Substring(0, stringValue.Length - 3);
+				}
+				return stringValue;
+			});
+
+			code = _rxStringInterpolVerbatim.Replace(code, match =>
+			{
+				var stringValue = match.Groups[1].Value;
+				stringValue = _rxStringInterpolInside.Replace(stringValue, m =>
+				{
+					MarkMacrosAndSaveCaptureState(match);
+					var val = m.Groups[1].Value;
+					if (string.IsNullOrEmpty(val))
+					{
+					   return null;
+					}
+					return "\"+" + val + "+@\"";
+				});
+				stringValue = "@\"" + stringValue + "\"";
+				return stringValue;
+			});
+			return code;
+		}
+
+		readonly Dictionary<string, Action<string>> _mapExtenders;
+
+		bool _enabledStringInterpolation;
+
+
+		static string CutFirstWord(ref string str)
+		{
+			string word;
+			var i = str.IndexOf(' ');
+			if (i < 0)
+			{
+				word = str;
+				str = string.Empty;
+			}
+			else
+			{
+				word = str.Substring(0, i).Trim();
+				str = str.Substring(i).Trim();
+			}
+			return word;
+		}
+
+		public void ExecuteExtender(string extender)
+		{
+			extender = extender.Trim();
+
+			var name = CutFirstWord(ref extender);
+			var args = extender;
+
+			Action<string> value;
+			if (_mapExtenders.TryGetValue(name.ToLowerInvariant(), out value))
+			{
+				value(args);
+			}
+			else
+			{
+				var knownExtenders = string.Join(string.Empty, _mapExtenders.Keys.Select(x => Environment.NewLine + x).ToArray());
+
+				WriteWarning("Meta Extender '{0}' is unknown. Known extenders is:{1}", name, knownExtenders);
+				//_ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, _ctx.OriginalFileName,
+				//GetLineNumberByIndex(_code, _currentBlockIndex), 0, 0, 0,
+				//"Meta Extender '{0}' is unknown. Known extenders is:{1}".Arg(name.ToLowerInvariant(), knownExtenders), null, null));
+			}
+		}
+
+		static bool ToBool(string val)
+		{
+			if (val == null)
+			{
+				return true;
+			}
+			switch (val.ToLowerInvariant().Trim())
+			{
+				case "enable":
+				case "enabled":
+				case "on":
+				case "1":
+				case "true":
+				case "yes":
+				case "":
+					return true;
+				case "disable":
+				case "disabled":
+				case "off":
+				case "0":
+				case "false":
+				case "no":
+					return false;
+				default:
+					throw new Exception("Can not convert '{0}' to bool".Arg(val));
+			}
+		}
+
+		void StringInterpolation(string arg)
+		{
+			_enabledStringInterpolation = ToBool(arg);
+		}
+
+		void ErrorRemap(string arg)
+		{
+			_errorRemap = ToBool(arg);
+		}
+
+		bool _errorRemap = true;
+		readonly List<String> _referencesMetaAdditional = new List<string>();
+
+		void Reference(string arg)
+		{
+			_referencesMetaAdditional.Add(arg);
+		}
+
+		void GenerateBanner(string arg)
+		{
+			WriteWarning("GenerateBanner is deprecated. Remove that.");
+			//ctx.GenerateBanner = ToBool(arg);
+		}
+
+		void WriteWarning(string message, params object[] args)
+		{
+			_ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, _ctx.OriginalFileName, GetLineNumberByIndex(_code, _currentBlockIndex), 0, GetLineNumberByIndex(_code, _currentBlockFinishIndex), 0, message.Arg(args), null, "MetaCreator.dll"));
+		}
+
+		void WriteError(string message, params object[] args)
+		{
+			_ctx.BuildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, _ctx.OriginalFileName, GetLineNumberByIndex(_code, _currentBlockIndex), 0, GetLineNumberByIndex(_code, _currentBlockFinishIndex), 0, message.Arg(args), null, "MetaCreator.dll"));
+		}
+
+		void Using(string arg)
+		{
+			_namespaceImportsMetaAdditional.Add(arg);
+		}
+
+		readonly List<string> _namespaceImportsMetaAdditional = new List<string>();
+
 	}
 }

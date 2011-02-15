@@ -1,40 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace ConsoleApplication
+class Program
 {
-	class Program
+	static void Main()
 	{
-		static int Test()
-		{
-			return 5;
-		}
-
-		static void Main()
-		{
-			Console.WriteLine("");
-			Console.WriteLine("");
-
-			/*!
-
-			Test();
-
-			*/
-
-			/*+
-
-			public static void Test()
-			{
-				WriteLine("Hello");
-			}
-
-			class Utils
-			{
-			}
-
-			*/
-
-		}
+		/*!
+			string q = 5;
+		*/
 	}
 }

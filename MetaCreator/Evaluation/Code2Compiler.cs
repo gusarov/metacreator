@@ -53,13 +53,15 @@ namespace MetaCreator.Evaluation
 				alreadyReferencedNames.Add(reference.Name + ".dll");
 				options.ReferencedAssemblies.Add(reference.Name + ".dll");
 			}
-			foreach (var reference in additionalReferences ?? new string[0])
+			foreach (var reference in additionalReferences)
 			{
 				if (!alreadyReferencedNames.Contains(Path.GetFileName(reference), StringComparer.InvariantCultureIgnoreCase))
 				{
 					options.ReferencedAssemblies.Add(reference);
 				}
 			}
+
+			result.ReferencesUsed = options.ReferencedAssemblies.Cast<string>().ToArray();
 			var compiler = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v3.5" } });
 
 			var compilerResults = compiler.CompileAssemblyFromSource(options, source);

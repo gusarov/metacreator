@@ -24,6 +24,8 @@ namespace MetaCreator.Evaluation
 
 		void ProcessEvaluationResult(EvaluationResult result)
 		{
+			// Log imformation about metacode and generated code
+			//_buildErrorLogger.LogErrorEvent
 
 			// Log meta code compile time warnings
 			if (result.Warnings != null)
@@ -167,7 +169,9 @@ namespace MetaCreator.Evaluation
 				{
 					source = string.Join(Environment.NewLine, source.Split('\r').Select((x, i) => (i + 1).ToString("000") + "| " + x.Trim('\n')).ToArray());
 				}
-				var fullLogEntry = error.ErrorText + " at line " + error.Line + " col " + error.Column + "\r\n" + source;
+				var references = string.Join(Environment.NewLine, result.ReferencesUsed);
+
+				var fullLogEntry = error.ErrorText + " at line " + error.Line + " col " + error.Column + Environment.NewLine + "References:" + Environment.NewLine + references + Environment.NewLine + source;
 				_ctx.BuildErrorLogger.LogOutputMessage(fullLogEntry);
 			}
 			return _metacreatorErrorPrefix + error.ErrorText;

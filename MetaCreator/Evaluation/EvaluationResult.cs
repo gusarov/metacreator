@@ -13,7 +13,7 @@ namespace MetaCreator.Evaluation
 	[Serializable]
 	public class EvaluationResult
 	{
-		public string ResultBody { get; set; }
+		public object ReturnedValue { get; set; }
 		public CompilerError[] Errors { get; set; }
 		public CompilerError[] Warnings { get; set; }
 		public string SourceCode { get; set; }
@@ -28,6 +28,9 @@ namespace MetaCreator.Evaluation
 		public Assembly Assembly;
 
 		public string[] AdditionalReferences;
+
+		// list of references, that used in metacode
+		public string[] ReferencesUsed;
 
 		public bool IsSuccess
 		{

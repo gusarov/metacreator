@@ -110,7 +110,7 @@ public sealed class MSBuildWrapper : AppDomainIsolatedTask
 			throw new Exception("Task Type '" + Task + "' does not found");
 		}
 
-		var task = (AppDomainIsolatedTask) Activator.CreateInstance(taskType);
+		var task = (ITask) Activator.CreateInstance(taskType);
 
 		if (taskType == null)
 		{

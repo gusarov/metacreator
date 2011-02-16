@@ -45,6 +45,8 @@ namespace MetaCreator
 		{
 			// Debugger.Launch();
 
+			//this.Log.LogWarning()
+
 			_core.Sources = Sources;
 			_core.References = References;
 			_core.IntermediateOutputPathRelative = IntermediateOutputPath;

@@ -112,6 +112,7 @@ namespace MetaCreator
 			{
 				return code;
 			}
+			BuildErrorLogger.LogOutputMessage(ctx.OriginalFileName + " - {0} macros processed. Evaluating...".Arg(ctx.NumberOfMetaBlocksProcessed));
 			var evaluationResult = _appDomFactory.AnotherAppDomMarshal.Evaluate(new AnotherAppDomInputData
 			{
 				Metacode = metacode,
@@ -120,7 +121,7 @@ namespace MetaCreator
 			_appDomFactory.MarkDirectoryPathToRemoveAfterUnloadDomain(evaluationResult.CompileTempPath);
 			var codeAnalyzer = new Code4Analyze();
 			codeAnalyzer.Analyze(evaluationResult, ctx);
-			return evaluationResult.ResultBody;
+			return (string)evaluationResult.ReturnedValue;
 		}
 
 		AnotherAppDomFactory _appDomFactory;

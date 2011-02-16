@@ -27,17 +27,35 @@ namespace MetaCreator
 		public void LogOutputMessage(string msg)
 		{
 			_taskLoggingHelper.LogMessage(MessageImportance.High, "* MetaCreator.dll: " + msg);
+			_buildEngine.LogMessageEvent(new BuildMessageEventArgs("test", "help", "source", MessageImportance.High));
 		}
 
 		public void LogErrorEvent(BuildErrorEventArgs ev)
 		{
 			ErrorsExists = true;
 			_buildEngine.LogErrorEvent(ev);
+			//_buildEngine.LogCustomEvent(new InformationBuildEventArgs());
+			_buildEngine.LogMessageEvent(new BuildMessageEventArgs("test", "help", "source", MessageImportance.High));
 		}
 
 		public void LogWarningEvent(BuildWarningEventArgs ev)
 		{
 			_buildEngine.LogWarningEvent(ev);
+			_buildEngine.LogMessageEvent(new BuildMessageEventArgs("test", "help", "source", MessageImportance.High));
+		}
+
+//		public void LogInformationEvent(BuildErrorEventArgs ev)
+//		{
+//			_buildEngine.LogMessageEvent(new BuildMessageEventArgs() {});
+//		}
+
+	}
+
+	class InformationBuildEventArgs : CustomBuildEventArgs
+	{
+		public override string ToString()
+		{
+			return "test";
 		}
 	}
 }

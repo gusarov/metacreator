@@ -14,32 +14,33 @@ namespace MetaCreator.Evaluation
 	/// </summary>
 	class Code3Runer
 	{
-		internal void Run(EvaluationResult evaluationResult)
+		internal void Run(EvaluationResult evaluationResult, string className, string methodName)
 		{
 			evaluationResult.EnsureExistsDebug();
 			evaluationResult.Assembly.EnsureExistsDebug();
 
-			var type = evaluationResult.Assembly.GetType("Generator", true);
-			type.EnsureExistsDebug("Generator method not found");
+			var type = evaluationResult.Assembly.GetType(className, true);
+			type.EnsureExistsDebug("Generator class not found");
 
-			var method = type.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
+			var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
 			method.EnsureExistsDebug("Generator method not found");
 
 			if (method.GetParameters().Count() != 0 || method.GetGenericArguments().Count() != 0)
 			{
 				throw new Exception("Method has unexpected parameters");
 			}
-			if (!method.IsStatic)
-			{
-				throw new Exception("Method is not static");
-			}
 
-			string returnedValue = null;
+			object returnedValue = null;
 			using (new Resolver(evaluationResult.AdditionalReferences))
 			{
 				try
 				{
-					returnedValue = (string)method.Invoke(null, null);
+					object instance = null;
+					if (!method.IsStatic)
+					{
+						instance = Activator.CreateInstance(type);
+					}
+					returnedValue = (string)method.Invoke(instance, null);
 				}
 				catch (TargetInvocationException ex)
 				{
@@ -47,7 +48,7 @@ namespace MetaCreator.Evaluation
 				}
 			}
 
-			evaluationResult.ResultBody = returnedValue;
+			evaluationResult.ReturnedValue = returnedValue;
 		}
 	}
 }

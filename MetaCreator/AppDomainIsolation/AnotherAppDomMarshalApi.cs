@@ -18,7 +18,7 @@ namespace MetaCreator.AppDomainIsolation
 			if (result.IsSuccess)
 			{
 				var codeRunner = new Code3Runer();
-				codeRunner.Run(result);
+				codeRunner.Run(result, "Generator", "Run");
 			}
 
 			return result;

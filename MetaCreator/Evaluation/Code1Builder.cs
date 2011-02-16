@@ -469,11 +469,11 @@ public static class Generator
 		}
 
 		bool _errorRemap = true;
-		readonly List<String> _referencesMetaAdditional = new List<string>();
 
 		void Reference(string arg)
 		{
-			_referencesMetaAdditional.Add(arg);
+			_ctx.BuildErrorLogger.LogDebug("@Reference = " + arg);
+			_ctx.ReferencesMetaAdditional.Add(arg);
 		}
 
 		void GenerateBanner(string arg)

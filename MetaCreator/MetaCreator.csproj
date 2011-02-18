@@ -99,6 +99,7 @@
     <Compile Include="ExecuteMetaCreator.cs" />
     <Compile Include="ExecuteMetaCreatorCore.cs" />
     <Compile Include="GetAssemblyPath.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IBuildErrorLogger.cs" />
     <Compile Include="Installer\NgenInstaller.cs">
       <SubType>Component</SubType>

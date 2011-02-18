@@ -36,23 +36,24 @@ namespace MetaCreator.Installer
 			var ngenStr = Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), "ngen");
 			var assemblyPath = Context.Parameters["assemblypath"];
 
-			var process = new Process
+			using (var process = new Process())
+			{
+				process.StartInfo = new ProcessStartInfo
 				{
-					StartInfo =
-						{
-							FileName = ngenStr,
-							Arguments = string.Format(@"{0} ""{1}""", cmd, assemblyPath),
-							CreateNoWindow = true,
-							UseShellExecute = false,
-						}
+					FileName = ngenStr,
+					Arguments = string.Format(@"{0} ""{1}""", cmd, assemblyPath),
+					CreateNoWindow = true,
+					UseShellExecute = false,
 				};
 
-			process.Start();
-			process.WaitForExit();
 
-			if (validate && process.ExitCode != 0)
-			{
-				throw new Exception("Ngen exit code: " + process.ExitCode);
+				process.Start();
+				process.WaitForExit();
+
+				if (validate && process.ExitCode != 0)
+				{
+					throw new Exception("Ngen exit code: " + process.ExitCode);
+				}
 			}
 		}
 	}

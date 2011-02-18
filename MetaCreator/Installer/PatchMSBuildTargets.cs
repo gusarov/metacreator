@@ -67,6 +67,7 @@ namespace MetaCreator.Installer
 			return ProcessFile_CustomAfterMicrosoftCommonCore(fileContent, true);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
 		static string ProcessFile_CustomAfterMicrosoftCommonCore(string fileContent, bool appendOrRemoveOnly)
 		{
 			var xmlDoc = new XmlDocument();

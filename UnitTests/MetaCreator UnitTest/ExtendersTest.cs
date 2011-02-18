@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using MetaCreator;
 using MetaCreator.Evaluation;
 
@@ -14,8 +15,8 @@ namespace MetaCreator_UnitTest
 		{
 			_sut = new MetaCreator.Evaluation.Code1Builder();
 			_logger = new FakeErrorLogger();
-			_ctx = new ProcessFileCtx { BuildErrorLogger = _logger };
-			_sut.GetType().GetField("_ctx", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_sut, _ctx);
+			_ctx = new ProcessFileCtx {BuildErrorLogger = _logger, ProjDir = Path.GetTempPath(), OriginalFileName = "file1.txt"};
+			//_sut.GetType().GetField("_ctx", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_sut, _ctx);
 		}
 
 		FakeErrorLogger _logger;

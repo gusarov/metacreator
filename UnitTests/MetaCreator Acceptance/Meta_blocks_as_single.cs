@@ -74,7 +74,8 @@ class q
 		System.Console.WriteLine(""/*= j */"");
 
 	}
-}");
+}
+");
 
 
 			RunMsbuild(true);

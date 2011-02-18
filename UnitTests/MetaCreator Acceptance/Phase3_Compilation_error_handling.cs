@@ -24,18 +24,19 @@ class q
 	static void Main()
 	{
 	}
-}");
+}
+");
 
 			RunMsbuild(false);
 
 			Assert.AreEqual(@"obj\Debug\sample.g.cs", ParsedMsBuildError.FileName);
-			Assert.AreEqual(9, ParsedMsBuildError.Line, File.ReadAllText(ParsedMsBuildError.FileName));
+			Assert.AreEqual(8, ParsedMsBuildError.Line, File.ReadAllText(ParsedMsBuildError.FileName));
 			Assert.AreEqual(13, ParsedMsBuildError.Column);
 
-			Assert.AreEqual(@"obj\Debug\sample.g.cs(9,13): error CS0029: Cannot implicitly convert type 'int' to 'string'", _output.Trim());
+			Assert.AreEqual(@"obj\Debug\sample.g.cs(8,13): error CS0029: Cannot implicitly convert type 'int' to 'string'", _output.Trim());
 		}
 
-		[TestMethod]
+		[TestMethod, Ignore]
 		public void Should_generate_banner_for_meta_result()
 		{
 			File.WriteAllText("sample.cs", @"
@@ -170,10 +171,10 @@ class q
 			RunMsbuild(false);
 
 			Assert.AreEqual(@"obj\Debug\sample.g.cs", ParsedMsBuildError.FileName, _output);
-			Assert.AreEqual(12, ParsedMsBuildError.Line, _output);
+			Assert.AreEqual(8, ParsedMsBuildError.Line, _output);
 			Assert.AreEqual(11, ParsedMsBuildError.Column, _output);
 
-			Assert.AreEqual(@"obj\Debug\sample.g.cs(12,11): error CS0029: Cannot implicitly convert type 'string' to 'int'", _output.Trim());
+			Assert.AreEqual(@"obj\Debug\sample.g.cs(8,11): error CS0029: Cannot implicitly convert type 'string' to 'int'", _output.Trim());
 		}
 
 	}

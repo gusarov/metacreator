@@ -128,7 +128,8 @@ class q
 	static void Main()
 	{
 	}
-}");
+}
+");
 
 
 			RunMsbuild(true);

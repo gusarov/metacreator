@@ -1,11 +1,9 @@
-﻿using System;
-
-class Program
+﻿class q
 {
+	/*!
+		WriteLine("// hello world");
+	*/
 	static void Main()
 	{
-
-		/*!
-		*/
 	}
 }

@@ -89,6 +89,11 @@ public static class Generator
 		Result.AppendLine(obj == null ? string.Empty : obj.ToString());
 	}}
 
+	public static void WriteLine()
+	{{
+		Result.AppendLine();
+	}}
+
 #endregion
 }}";
 
@@ -134,17 +139,25 @@ public static class Generator
 		readonly StringBuilder _classBody = new StringBuilder();
 
 		// write string from original file to resulting file by metacode
-		void PlainTextWriter(string substring, StringBuilder sb, int line)
+		void PlainTextWriter(string substring, StringBuilder sb, int line = 0)
 		{
-			//sb.Append("WriteLine(@\"");
-			//sb.Append("#line " + line + " \"\"" + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + "\"\"");
-			//sb.AppendLine("\");");
+			if (line > 0 && _errorRemap)
+			{
+				sb.AppendLine("WriteLine();");
+				sb.Append("WriteLine(@\"");
+				sb.Append("#line " + line + " \"\"" + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + "\"\"");
+				sb.AppendLine("\");");
+			}
 
 			sb.Append("Write(@\"");
 			sb.Append(substring.Replace("\"", "\"\""));
 			sb.AppendLine("\");");
 
-			//sb.AppendLine(@"WriteLine(""#line default"");");
+			if (line > 0 && _errorRemap)
+			{
+				sb.AppendLine("WriteLine();");
+				sb.AppendLine(@"WriteLine(""#line default"");");
+			}
 		}
 
 //		static string OriginalLinePredirrectiveAtStartOfMacroBlock(ProcessFileCtx _ctx)
@@ -163,6 +176,7 @@ public static class Generator
 
 //		static string CombineLines(params string[] lines)
 //		{
+
 //			if (lines.Length == 2)
 //			{
 //				var line1 = lines[0];
@@ -220,7 +234,7 @@ public static class Generator
 //					);
 //		}
 
-		static readonly Regex _rxBlock = new Regex(@"(?s)(?<=(?'p'.)?)/\*(?'type'[@+=!])(.+?)\*/");
+		static readonly Regex _rxBlock = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[@+=!])(?'body'.+?)\*/");
 		string[] _namespacesFromOriginalFile;
 		string _code;
 
@@ -237,11 +251,12 @@ public static class Generator
 		{
 			foreach (Match match in _rxBlock.Matches(code))
 			{
+				SaveCaptureState(match);
 				var blockType = match.Groups["type"].Value[0];
 				switch (blockType)
 				{
 					case '@':
-						ExecuteExtender(match.Groups["1"].Value);
+						ExecuteExtender(match.Groups["body"].Value);
 						break;
 				}
 			}
@@ -263,18 +278,26 @@ public static class Generator
 			var blocks = _rxBlock.Matches(code).Cast<Match>().ToArray();
 
 			int from = 0;
-
+			bool isFirstBlock = true;
+			// indicate that it is "something /*! asd */ " but not "/*! asdsad */"
+			bool isInsertion = false;
 			// create metacode
 			foreach (var block in blocks)
 			{
 				_ctx.NumberOfMetaBlocksProcessed++;
-				MarkMacrosAndSaveCaptureState(block);
+				SaveCaptureState(block);
 
 				var type = block.Groups["type"].Value[0];
-				var value = block.Groups[1].Value;
+				var value = block.Groups["body"].Value;
+				var pre = block.Groups["pre"].Value;
 
+				isInsertion = pre.Trim().Any();
+
+				var writeLineRemap = isFirstBlock && !isInsertion;
 				// write previous text as plain
-				PlainTextWriter(code.Substring(from, block.Index - from), _methodBody, GetLineNumberByIndex(code, from));
+				PlainTextWriter(code.Substring(from, block.Index - from), _methodBody, writeLineRemap ? GetLineNumberByIndex(code, from) : 0);
+
+				isFirstBlock = false;
 
 				from = block.Index + block.Length;
 				switch (type)
@@ -308,7 +331,7 @@ public static class Generator
 				}
 			}
 
-			PlainTextWriter(code.Substring(from), _methodBody, GetLineNumberByIndex(code, from));
+			PlainTextWriter(code.Substring(from), _methodBody, isInsertion ? 0 : GetLineNumberByIndex(code, from));
 
 
 			var imports = _namespacesFromOriginalFile.OrEmpty().Concat(_defaultUsings).Concat(_namespaceImportsMetaAdditional.OrEmpty()).Distinct();
@@ -316,7 +339,7 @@ public static class Generator
 			return _skeleton.Arg(importsAsString, _methodBody, _classBody);
 		}
 
-		public void MarkMacrosAndSaveCaptureState(Capture match)
+		public void SaveCaptureState(Capture match)
 		{
 			_currentBlockIndex = match.Index;
 			_currentBlockLength = match.Length;
@@ -345,7 +368,7 @@ public static class Generator
 				var stringValue = match.Groups[1].Value;
 				stringValue = _rxStringInterpolInside.Replace(stringValue, m =>
 				{
-					MarkMacrosAndSaveCaptureState(match);
+					SaveCaptureState(match);
 					var val = m.Groups[1].Value;
 					if(string.IsNullOrEmpty(val))
 					{
@@ -371,7 +394,7 @@ public static class Generator
 				var stringValue = match.Groups[1].Value;
 				stringValue = _rxStringInterpolInside.Replace(stringValue, m =>
 				{
-					MarkMacrosAndSaveCaptureState(match);
+					SaveCaptureState(match);
 					var val = m.Groups[1].Value;
 					if (string.IsNullOrEmpty(val))
 					{

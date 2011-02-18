@@ -40,7 +40,7 @@ namespace MetaCreator.Evaluation
 					{
 						instance = Activator.CreateInstance(type);
 					}
-					returnedValue = (string)method.Invoke(instance, null);
+					returnedValue = method.Invoke(instance, null);
 				}
 				catch (TargetInvocationException ex)
 				{

@@ -18,7 +18,7 @@ static class Generator
 {{
 	public static object Run()
 	{{
-		return {0}
+		return {0};
 	}}
 }}
 ".Arg(expressionCode),

@@ -40,18 +40,7 @@ namespace MetaCreator
 			_buildEngine.LogWarningEvent(ev);
 		}
 
-//		public void LogInformationEvent(BuildErrorEventArgs ev)
-//		{
-//			_buildEngine.LogMessageEvent(new BuildMessageEventArgs() {});
-//		}
 
 	}
 
-	class InformationBuildEventArgs : CustomBuildEventArgs
-	{
-		public override string ToString()
-		{
-			return "test";
-		}
-	}
 }

@@ -26,7 +26,13 @@ namespace MetaCreator.Evaluation
 				{"reference", Reference},
 				{"using", Using},
 				{"generatebanner", GenerateBanner},
+				{"csharpversion", CSharpVersion},
 			};
+		}
+
+		void CSharpVersion(string version)
+		{
+			_ctx.CSharpVersion = version;
 		}
 
 		const string _skeleton = @"// METACODE

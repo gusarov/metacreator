@@ -33,6 +33,12 @@ namespace MetaCreator
 		[Required]
 		public string ProjDir { get; set; }
 
+		[Required]
+		public string TargetsVersion { get; set; }
+
+		[Required]
+		public string TargetFrameworkVersion { get; set; }
+
 		[Output]
 		public ITaskItem[] AddFiles { get { return _core.AddFiles.ToArray(); } }
 
@@ -50,6 +56,9 @@ namespace MetaCreator
 			_core.Sources = Sources;
 			_core.References = References;
 			_core.IntermediateOutputPathRelative = IntermediateOutputPath;
+			_core.ProjDir = ProjDir;
+			_core.TargetsVersion = TargetsVersion;
+			_core.TargetFrameworkVersion = TargetFrameworkVersion;
 			_core.ProjDir = ProjDir;
 			_core.BuildErrorLogger = new BuildErrorLogger(BuildEngine, Log);
 			return _core.Execute();

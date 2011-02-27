@@ -7,11 +7,11 @@ namespace MetaCreator
 {
 	public static class Evaluator
 	{
-		public static object EvaluateExpression(string expressionCode, string[] references = null)
+		public static object EvaluateExpression(string expressionCode, string[] references = null, string cSharpVersion = null)
 		{
 			using(var appDom = AnotherAppDomFactory.AppDomainLiveScope())
 			{
-				var result = appDom.AnotherAppDomMarshal.Evaluate(new AnotherAppDomInputData
+				var args = new AnotherAppDomInputData
 				{
 					Metacode = @"
 static class Generator
@@ -23,7 +23,12 @@ static class Generator
 }}
 ".Arg(expressionCode),
 					References = references,
-				});
+				};
+				if (cSharpVersion != null)
+				{
+					args.CSharpVersion = cSharpVersion;
+				}
+				var result = appDom.AnotherAppDomMarshal.Evaluate(args);
 				if(!result.IsSuccess)
 				{
 					throw new Exception(result.CompileError + result.EvaluationException);

@@ -29,6 +29,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaCreator Acceptance", "UnitTests\MetaCreator Acceptance\MetaCreator Acceptance.csproj", "{CF07BBE3-686C-4383-A666-079B9C8117E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication", "UnitTests\ConsoleApplication\ConsoleApplication.csproj", "{856DEA32-F257-447F-BFA9-6DC85A0958C8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23} = {EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

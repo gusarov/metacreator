@@ -4,6 +4,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 
+using MetaCreator.AppDomainIsolation;
 using MetaCreator.Utils;
 
 using Microsoft.CSharp;
@@ -15,10 +16,28 @@ namespace MetaCreator.Evaluation
 	/// </summary>
 	class Code2Compiler
 	{
-		public EvaluationResult Compile(string source, IEnumerable<string> additionalReferences)
+		public EvaluationResult Compile(AnotherAppDomInputData input)
 		{
-			additionalReferences = additionalReferences ?? Enumerable.Empty<string>();
-			var result = new EvaluationResult { SourceCode = source, AdditionalReferences = additionalReferences.ToArray() };
+			var result = new EvaluationResult();
+
+
+			string source = input.Metacode;
+			string[] references = input.References;
+			string cSharpVersion = input.CSharpVersion;
+
+			if(cSharpVersion == null)
+			{
+				// It is very common (from current runtime version). It should be done based on currently compiling project version
+				if (Environment.Version.Major >= 4)
+				{
+					cSharpVersion = "v4.0";
+				}
+				else
+				{
+					cSharpVersion = "v3.5";
+				}
+				result.DebugLog += "Automatic CSharpVersion using CLR Version = " + cSharpVersion + Environment.NewLine;
+			}
 
 			var metaTempPath = Path.Combine(Path.GetTempPath(), "MetaCreator");
 			var tempPath = Path.Combine(metaTempPath, Ext.GenerateId());
@@ -36,8 +55,6 @@ namespace MetaCreator.Evaluation
 				}
 			}
 
-			result.CompileTempPath = tempPath;
-
 			using (var tempFiles = new TempFileCollection(tempPath))
 			{
 				tempFiles.KeepFiles = true;
@@ -50,23 +67,16 @@ namespace MetaCreator.Evaluation
 					//MainClass = _generatorClassName,
 				};
 
-
-				var alreadyReferencedNames = new List<string>(16);
-				foreach (var reference in typeof(Code2Compiler).Assembly.GetReferencedAssemblies())
+				foreach (var reference in references)
 				{
-					alreadyReferencedNames.Add(reference.Name + ".dll");
-					options.ReferencedAssemblies.Add(reference.Name + ".dll");
-				}
-				foreach (var reference in additionalReferences)
-				{
-					if (!alreadyReferencedNames.Contains(Path.GetFileName(reference), StringComparer.InvariantCultureIgnoreCase))
-					{
-						options.ReferencedAssemblies.Add(reference);
-					}
+					options.ReferencedAssemblies.Add(reference);
 				}
 
-				result.ReferencesUsed = options.ReferencedAssemblies.Cast<string>().ToArray();
-				using (var compiler = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v3.5" } }))
+				result.References = references;
+				result.SourceCode = source;
+				result.CompileTempPath = tempPath;
+
+				using (var compiler = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", cSharpVersion } }))
 				{
 
 					var compilerResults = compiler.CompileAssemblyFromSource(options, source);

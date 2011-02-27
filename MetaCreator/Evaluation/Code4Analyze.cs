@@ -24,6 +24,13 @@ namespace MetaCreator.Evaluation
 
 		void ProcessEvaluationResult(EvaluationResult result)
 		{
+#if DEBUG
+			if (!string.IsNullOrEmpty(result.DebugLog))
+			{
+				_buildErrorLogger.LogDebug("Code4Analyze: Message from evaluation: " + Environment.NewLine + result.DebugLog);
+			}
+#endif
+
 			// Log imformation about metacode and generated code
 			//_buildErrorLogger.LogErrorEvent
 
@@ -72,7 +79,7 @@ namespace MetaCreator.Evaluation
 				var lineString = match.Groups["line"].Value;
 				int line;
 				int.TryParse(lineString, out line);
-				_buildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, match.Groups["file"].Value, line, 0, 0, 0, _metacreatorErrorPrefix + message, null, null));
+				_buildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, match.Groups["file"].Value, line, 0, 0, 0, "Metacode Execution: " + message, null, null));
 
 			}
 
@@ -106,58 +113,11 @@ namespace MetaCreator.Evaluation
 		int BuildError_GetLineNumber(CompilerError error, EvaluationResult result)
 		{
 			return BuildError_GetLineNumberCore(error, result);
-//			if (line == _nonUserCodeSpecialLineNumber)
-//			{
-//				if (_ctx.ErrorRemap)
-//				{
-//					result.NonUserCode = "...";
-//				}
-//			}
-//			return line;
 		}
 
 		static int BuildError_GetLineNumberCore(CompilerError error, EvaluationResult result)
 		{
 			return error.Line;
-//			if (!_ctx.ErrorRemap)
-//			{
-//				return error.Line;
-//			}
-//			if (result.NonUserCode != null)
-//			{
-//				return error.Line;
-//			}
-//
-//			return RemapErrorLineNumber(error.Line, _ctx, result);
-		}
-
-		/// <summary>
-		/// Allow to receive line number for compile time or run time error
-		/// </summary>
-		/// <param name="errorLine"></param>
-		/// <param name="ctx"></param>
-		/// <param name="result"></param>
-		/// <returns></returns>
-		private int RemapErrorLineNumber(int errorLine, EvaluationResult result)
-		{
-			return errorLine;
-			//var userCodeIndex = result.SourceCode.IndexOf("// <UserCode>");
-			//var userCodeLine = result.SourceCode.Substring(0, userCodeIndex).ToCharArray().Count(x => x == '\r') + 2; // +\r + next line
-
-//			if (userCodeIndex < 1)
-//			{
-//				return _nonUserCodeSpecialLineNumber;
-//			}
-//			if (errorLine < userCodeLine)
-//			{
-//				return _nonUserCodeSpecialLineNumber;
-//			}
-//			if (userCodeLine < 0)
-//			{
-//				return _nonUserCodeSpecialLineNumber;
-//			}
-//			return errorLine -
-//				userCodeLine + _ctx.CurrentMacrosLineInOriginalFile;
 		}
 
 		string BuildError_GetMessage(CompilerError error, EvaluationResult result)
@@ -169,12 +129,12 @@ namespace MetaCreator.Evaluation
 				{
 					source = string.Join(Environment.NewLine, source.Split('\r').Select((x, i) => (i + 1).ToString("000") + "| " + x.Trim('\n')).ToArray());
 				}
-				var references = string.Join(Environment.NewLine, result.ReferencesUsed);
+				var references = string.Join(Environment.NewLine, result.References);
 
 				var fullLogEntry = error.ErrorText + " at line " + error.Line + " col " + error.Column + Environment.NewLine + "References:" + Environment.NewLine + references + Environment.NewLine + source;
 				_ctx.BuildErrorLogger.LogOutputMessage(fullLogEntry);
 			}
-			return _metacreatorErrorPrefix + error.ErrorText;
+			return "Metacode Compilation: " + error.ErrorText;
 		}
 
 		string BuildError_GetFile(EvaluationResult result, CompilerError error)
@@ -188,7 +148,7 @@ namespace MetaCreator.Evaluation
 				return error.FileName;
 			}
 
-			// TODO combine with temp files of dynamic buil %tmp%\metacreator\${rnd}
+			// TODO combine with temp files of dynamic build %tmp%\metacreator\${rnd}
 			result.NonUserCode = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(_ctx.OriginalFileName) + ".meta" + Path.GetExtension(_ctx.OriginalFileName));
 			File.WriteAllText(result.NonUserCode, result.SourceCode);
 			return result.NonUserCode;
@@ -205,7 +165,7 @@ namespace MetaCreator.Evaluation
 		ProcessFileCtx _ctx;
 		IBuildErrorLogger _buildErrorLogger;
 
-		const string _metacreatorErrorPrefix = "MetaCode: ";
+		//const string _metacreatorErrorPrefix = "MetaCode: ";
 
 
 	}

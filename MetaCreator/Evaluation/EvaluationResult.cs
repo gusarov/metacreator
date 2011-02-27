@@ -27,11 +27,6 @@ namespace MetaCreator.Evaluation
 		[NonSerialized]
 		public Assembly Assembly;
 
-		public string[] AdditionalReferences;
-
-		// list of references, that used in metacode
-		public string[] ReferencesUsed;
-
 		public bool IsSuccess
 		{
 			get
@@ -39,5 +34,8 @@ namespace MetaCreator.Evaluation
 				return Errors.OrEmpty().Count() == 0 && CompileError == null && EvaluationException == null;
 			}
 		}
+
+		public string DebugLog = string.Empty;
+		public string[] References;
 	}
 }

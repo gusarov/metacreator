@@ -13,7 +13,7 @@ namespace MetaCreator.AppDomainIsolation
 		public EvaluationResult Evaluate(AnotherAppDomInputData input)
 		{
 			var codeCompiler = new Code2Compiler();
-			var result = codeCompiler.Compile(input.Metacode, input.References);
+			var result = codeCompiler.Compile(input);
 
 			if (result.IsSuccess)
 			{

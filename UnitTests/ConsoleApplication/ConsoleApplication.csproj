@@ -40,7 +40,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
@@ -55,6 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="SomeDataForMetacode.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SomeSubProject2\SomeSubProject2.csproj">
+      <Project>{E815FBA6-8434-4272-8A51-88F0AFAD9811}</Project>
+      <Name>SomeSubProject2</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectDir)..\..\MetaCreator.targets" />

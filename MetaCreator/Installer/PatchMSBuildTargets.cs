@@ -30,12 +30,12 @@ namespace MetaCreator.Installer
 		{
 			get
 			{
-				// yield return Get_MSBuild_targets_path("v2.0", false);
+				//yield return GetMsBuildTargetsPath("v2.0", false);
 				yield return GetMsBuildTargetsPath("v3.5", false);
-				// yield return GetMsBuildTargetsPath("v4.0", false);
-				// yield return Get_MSBuild_targets_path("v2.0", true);
-				// yield return GetMsBuildTargetsPath("v3.5", true);
-				// yield return GetMsBuildTargetsPath("v4.0", true);
+				yield return GetMsBuildTargetsPath("v4.0", false);
+				//yield return GetMsBuildTargetsPath("v2.0", true);
+				//yield return GetMsBuildTargetsPath("v3.5", true);
+				//yield return GetMsBuildTargetsPath("v4.0", true);
 			}
 		}
 

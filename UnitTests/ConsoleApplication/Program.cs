@@ -1,9 +1,15 @@
-﻿class q
+﻿using System;
+/*@ CSharpVersion v3.5 */
+
+class q
 {
-	/*!
-		WriteLine("// hello world");
-	*/
 	static void Main()
 	{
+		/*!
+			//dynamic q = 5;
+			var q = "asd";
+		*/
+
+		Console.WriteLine(@"MetaCodeCLR = /*= Environment.Version +" " + q */");
 	}
 }

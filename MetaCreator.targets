@@ -4,6 +4,24 @@
 		<Error Text='* MetaCreator.targets: You can not run MetaCreator.targets dirrectly. Please, include it into your project. MetaCreator injects to the building chain.' />
 	</Target>
 
+	<PropertyGroup>
+		<MetaCreatorVersion>1.4</MetaCreatorVersion>
+	</PropertyGroup>
+
+	<!-- Determine and try to fix double import -->
+	<PropertyGroup>
+		<MCImportedTwice Condition="'$(MCImported)'=='True'">True</MCImportedTwice>
+		<MCImported>True</MCImported>
+		<ItemsGroup Condition="'$(MCImportedTwice)'=='True'">
+			<Error Text="* MetaCreator.targets: Metacreator is imported twice! (Probably it is installed in the system and included into project file at the same time)" />
+			<!-- 
+			set flag and use it as a condition before injectors
+			<BuildDependsOn Remove="ShadowCopyWrapper;ExecuteMetaCreator" />
+			<CleanDependsOn Remove="CleanGeneratedFiles" />
+			-->
+		</ItemsGroup>
+	</PropertyGroup>
+	
 	<!-- Determine dev mode -->
 	<PropertyGroup Condition="Exists('MetaCreator.sln')">
 		<DevMode>True</DevMode>
@@ -60,19 +78,6 @@
 		</ResolveReferencesDependsOn>
 	</PropertyGroup>
 
-	<!-- Determine and try to fix double import -->
-	<PropertyGroup>
-		<MCImportedTwice Condition="'$(MCImported)'=='True'">True</MCImportedTwice>
-		<MCImported>True</MCImported>
-		<ItemsGroup Condition="'$(MCImportedTwice)'=='True'">
-			<Error Text="* MetaCreator.targets: Metacreator is imported twice! (Probably it is installed in the system and included into .proj file at the same time)" />
-			<!-- 
-			<BuildDependsOn Remove="ShadowCopyWrapper;ExecuteMetaCreator" />
-			<CleanDependsOn Remove="CleanGeneratedFiles" />
-			-->
-		</ItemsGroup>
-	</PropertyGroup>
-
 	<!-- Import custom targets -->
 	<Import Project="$(MSBuildProjectDirectory)\..\..\..\..\..\..\..\..\MetaCreator.Custom.targets" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\..\..\..\..\MetaCreator.Custom.targets')"/>
 	<Import Project="$(MSBuildProjectDirectory)\..\..\..\..\..\..\..\MetaCreator.Custom.targets" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\..\..\..\MetaCreator.Custom.targets')"/>
@@ -119,7 +124,7 @@
 	</Target-->
 	
 	<Target Name='GetMetaCreatorRealFullPath' Condition="'$(MetaCreatorRealFullPath)'=='' Or '$(MetaCreatorDLL)'=='' ">
-		<Message Text='* MetaCreator.targets: Execute wrapper with GetMetaCreatorRealFullPath...' />
+		<Message Text='* MetaCreator.targets: Execute wrapper with GetMetaCreatorRealFullPath...' Importance='high'/>
 		<MSBuildWrapper
 			Task = 'MetaCreator.GetAssemblyPath, MetaCreator.dll'
 			Bin = '$(DevCommonBinPath)'
@@ -161,9 +166,11 @@
 			Array1 = '@(Compile)'
 			Array2 = '@(ReferencePath)'
 
-			ParamNames = 'IntermediateOutputPath; ProjDir'
+			ParamNames = 'IntermediateOutputPath; ProjDir; TargetFrameworkVersion; TargetsVersion'
 			Param1 = '$(IntermediateOutputPath)'
 			Param2 = '$(ProjectDir)'
+			Param3 = '$(TargetFrameworkVersion)'
+			Param4 = '$(MetaCreatorVersion)'
 
 			OutputArrayNames = 'AddFiles; RemoveFiles'
 			>
@@ -197,13 +204,14 @@
 			$(Win32Manifest);
 			@(CustomAdditionalCompileInputs)'
 		Outputs='@(IntermediateAssembly)' >
-		<Message Text='* MetaCreator.targets: Execute MetaCreator...' Importance='high'/>
+		<Message Text='* MetaCreator.targets: Execute MetaCreator (Targets v$(MetaCreatorVersion))...' Importance='high'/>
 		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Buld requested, but was not performed in building chain.' />
 		<ExecuteMetaCreator
 			Sources = '@(Compile)'
 			References = '@(ReferencePath)'
 			ProjDir = '$(ProjectDir)'
 			IntermediateOutputPath = '$(IntermediateOutputPath)'
+			TargetFrameworkVersion = '$(TargetFrameworkVersion)'
 			>
 			<Output TaskParameter='AddFiles' ItemName='MCAddFiles' />
 			<Output TaskParameter='RemoveFiles' ItemName='MCRemoveFiles' />

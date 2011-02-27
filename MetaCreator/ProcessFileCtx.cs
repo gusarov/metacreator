@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
-using MetaCreator.AppDomainIsolation;
 using MetaCreator.Utils;
 using System.Collections.Generic;
 
@@ -20,38 +18,28 @@ namespace MetaCreator
 		public bool MacrosFailed;
 
 		public int NumberOfMetaBlocksProcessed;
-		//public bool EnabledStringInterpolation;
-		//public bool ErrorRemap = true;
 		public string ReplacementAbsolutePath;
 		public string ReplacementRelativePath;
 		public string ReplacementFileName;
 
+		// references from project that is currently builging
 		public string[] ReferencesOriginal;
+		// references from /*@ reference meta dirrectives */
 		public List<string> ReferencesMetaAdditional = new List<string>();
-		//public string[] NamespaceImportsOriginal;
-		//public List<string> NamespaceImportsMetaAdditional = new List<string>();
 
-		public string[] References
-		{
-			get
-			{
-				foreach (var refer in ReferencesMetaAdditional.ToArray())
-				{
-					if(!Path.IsPathRooted(refer))
-					{
-						ReferencesMetaAdditional.Remove(refer);
-						ReferencesMetaAdditional.Add(Path.Combine(ProjDir, refer));
-					}
-				}
-				return ReferencesOriginal.OrEmpty().Concat(ReferencesMetaAdditional.OrEmpty()).ToArray();
-			}
-		}
-
-//		public string[] Namespaces
+//		public string[] References
 //		{
 //			get
 //			{
-//				return NamespaceImportsOriginal.OrEmpty().Concat(NamespaceImportsMetaAdditional.OrEmpty()).ToArray();
+//				foreach (var refer in ReferencesMetaAdditional.ToArray())
+//				{
+//					if(!Path.IsPathRooted(refer))
+//					{
+//						ReferencesMetaAdditional.Remove(refer);
+//						ReferencesMetaAdditional.Add(Path.Combine(ProjDir, refer));
+//					}
+//				}
+//				return ReferencesOriginal.OrEmpty().Concat(ReferencesMetaAdditional.OrEmpty()).ToArray();
 //			}
 //		}
 
@@ -72,41 +60,7 @@ namespace MetaCreator
 		}
 
 		public IBuildErrorLogger BuildErrorLogger;
-
-//		string _fileOriginalContent;
-//		public string FileOriginalContent
-//		{
-//			get { return _fileOriginalContent; }
-//			set
-//			{
-//				_fileOriginalContent = value;
-//				_currentMacrosEndLineInOriginalFile = 0;
-//				_currentMacrosLineInOriginalFile = 0;
-//			}
-//		}
-//
-//		public string FileProcessedContent;
-//
-//		int _currentMacrosLineInOriginalFile;
-//		public int CurrentMacrosLineInOriginalFile
-//		{
-//			get
-//			{
-//				return _currentMacrosLineInOriginalFile != 0
-//					? _currentMacrosLineInOriginalFile
-//					: _currentMacrosLineInOriginalFile = FileOriginalContent
-//						.Substring(0, _currentMacrosIndex)
-//						.Split('\r').Length;
-//			}
-//		}
-
-
-//
-
-
-		// public bool GenerateBanner = true;
-//		public TimeSpan MetaCodeExecutionTimeOut = TimeSpan.FromSeconds(10);
-		//public AnotherAppDomFactory AppDomFactory;
-
+		public string CSharpVersion;
+		public string TargetFrameworkVersion;
 	}
 }

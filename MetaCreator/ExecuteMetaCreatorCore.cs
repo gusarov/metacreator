@@ -40,6 +40,8 @@ namespace MetaCreator
 		public string IntermediateOutputPathFull { get; set; }
 		public string IntermediateOutputPathRelative { get; set; }
 		public string ProjDir { get; set; }
+		public string TargetsVersion { get; set; }
+		public string TargetFrameworkVersion { get; set; }
 		public IBuildErrorLogger BuildErrorLogger { get; set; }
 
 		#endregion
@@ -68,6 +70,16 @@ namespace MetaCreator
 			{
 				throw new Exception("ProjDir not defined");
 			}
+			
+			if (string.IsNullOrEmpty(TargetFrameworkVersion))
+			{
+				throw new Exception("TargetFrameworkVersion not defined");
+			}
+
+			if (string.IsNullOrEmpty(TargetsVersion))
+			{
+				throw new Exception("TargetsVersion not defined");
+			}
 
 			if (string.IsNullOrEmpty(IntermediateOutputPathRelative))
 			{
@@ -82,6 +94,13 @@ namespace MetaCreator
 			if (ProjDir != Path.GetFullPath(ProjDir))
 			{
 				throw new Exception("ProjDir is not full path");
+			}
+
+			var dllVersion = typeof(ExecuteMetaCreatorCore).Assembly.GetName().Version.ToString();
+
+			if (!dllVersion.StartsWith(TargetsVersion))
+			{
+				throw new Exception("MetaCreator.targets version is {0}. But MetaCreator.dll version is {1}".Arg(TargetsVersion, dllVersion));
 			}
 
 			IntermediateOutputPathFull = Path.Combine(ProjDir, IntermediateOutputPathRelative);
@@ -113,15 +132,85 @@ namespace MetaCreator
 				return code;
 			}
 			BuildErrorLogger.LogOutputMessage(ctx.OriginalFileName + " - {0} macros processed. Evaluating...".Arg(ctx.NumberOfMetaBlocksProcessed));
-			var evaluationResult = _appDomFactory.AnotherAppDomMarshal.Evaluate(new AnotherAppDomInputData
+
+			if (string.IsNullOrEmpty(ctx.CSharpVersion))
+			{
+				ctx.CSharpVersion = ctx.TargetFrameworkVersion;
+				ctx.BuildErrorLogger.LogDebug("Automatic CSharpVersion using current target framework version = " + ctx.CSharpVersion);
+			}
+
+			var evaluationParameters = new AnotherAppDomInputData
 			{
 				Metacode = metacode,
-				References = ctx.References,
-			});
+				CSharpVersion = ctx.CSharpVersion,
+				References = ConfigureReferences(ctx),
+			};
+
+			var evaluationResult = _appDomFactory.AnotherAppDomMarshal.Evaluate(evaluationParameters);
 			_appDomFactory.MarkDirectoryPathToRemoveAfterUnloadDomain(evaluationResult.CompileTempPath);
 			var codeAnalyzer = new Code4Analyze();
 			codeAnalyzer.Analyze(evaluationResult, ctx);
 			return (string)evaluationResult.ReturnedValue;
+		}
+
+		static string[] ConfigureReferences(ProcessFileCtx ctx)
+		{
+			var alreadyReferencedNames = new List<string>(16) { "mscorlib" }; // always ignore mscorlib
+
+			var name = new Func<string, string>(Path.GetFileNameWithoutExtension);
+			var already = new Func<string, bool>(x => alreadyReferencedNames.Contains(name(x), StringComparer.InvariantCultureIgnoreCase));
+			var alreadyAdd = new Action<string>(x =>
+			{
+				ctx.BuildErrorLogger.LogDebug("Reference: " + x);
+				alreadyReferencedNames.Add(name(x));
+			});
+
+			var referencesTotal = new List<string>(16);
+
+			// first priority - explicit references
+			foreach (var reference in ctx.ReferencesMetaAdditional)
+			{
+				if (!already(reference))
+				{
+					alreadyAdd(reference);
+					referencesTotal.Add(reference);
+				}
+			}
+
+			// reference some required assemblies
+			foreach (var reference in new[] { "System.dll", "System.Core.dll" })
+			{
+				if (!already(reference))
+				{
+					alreadyAdd(reference);
+					referencesTotal.Add(reference);
+				}
+			}
+
+			// required for dynamics in 4.0
+			if (ctx.CSharpVersion.Equals("v4.0", StringComparison.InvariantCultureIgnoreCase))
+			{
+				foreach (var reference in new[] {"Microsoft.CSharp.dll"})
+				{
+					if (!already(reference))
+					{
+						alreadyAdd(reference);
+						referencesTotal.Add(reference);
+					}
+				}
+			}
+
+			// all other references from target project
+			foreach (var reference in ctx.ReferencesOriginal)
+			{
+				if (!already(reference))
+				{
+					alreadyAdd(reference);
+					referencesTotal.Add(reference);
+				}
+			}
+
+			return referencesTotal.ToArray();
 		}
 
 		AnotherAppDomFactory _appDomFactory;
@@ -151,7 +240,7 @@ namespace MetaCreator
 					var replacementFileRelativePath = Path.Combine(IntermediateOutputPathRelative, replacementFile);
 					var replacementFileAbsolutePath = Path.GetFullPath(replacementFileRelativePath);
 
-					var ctx = new ProcessFileCtx()
+					var ctx = new ProcessFileCtx
 					{
 						//AppDomFactory = appDomFactory,
 						BuildErrorLogger = BuildErrorLogger,
@@ -161,6 +250,7 @@ namespace MetaCreator
 						IntermediateOutputPathRelative = IntermediateOutputPathRelative,
 						IntermediateOutputPathFull = IntermediateOutputPathFull,
 						ProjDir = ProjDir,
+						TargetFrameworkVersion = TargetFrameworkVersion,
 						ReferencesOriginal = References.Select(x => x.ItemSpec).ToArray(),
 					};
 
@@ -180,10 +270,10 @@ namespace MetaCreator
 					if (ctx.NumberOfMetaBlocksProcessed > 0)
 					{
 						BuildErrorLogger.LogDebug("fileName = " + fileName);
-						BuildErrorLogger.LogDebug("replacementFile = " + replacementFile);
-						BuildErrorLogger.LogDebug("IntermediateOutputPathRelative = " + IntermediateOutputPathRelative);
-						BuildErrorLogger.LogDebug("replacementFileRelativePath = " + replacementFileRelativePath);
-						BuildErrorLogger.LogDebug("replacementFileAbsolutePath = " + replacementFileAbsolutePath);
+						//BuildErrorLogger.LogDebug("replacementFile = " + replacementFile);
+						//BuildErrorLogger.LogDebug("IntermediateOutputPathRelative = " + IntermediateOutputPathRelative);
+						//BuildErrorLogger.LogDebug("replacementFileRelativePath = " + replacementFileRelativePath);
+						//BuildErrorLogger.LogDebug("replacementFileAbsolutePath = " + replacementFileAbsolutePath);
 
 						totalMacrosProcessed += ctx.NumberOfMetaBlocksProcessed;
 

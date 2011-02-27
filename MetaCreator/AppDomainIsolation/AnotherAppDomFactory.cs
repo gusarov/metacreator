@@ -24,7 +24,7 @@ namespace MetaCreator.AppDomainIsolation
 			IAnotherAppDomMarshalApi result;
 			using (new Resolver(delegate { throw null; }))
 			{
-				//result = (IAnotherAppDomMarshalApi)_appDomain.CreateInstanceFromAndUnwrap(typeof(AnotherAppDomMarshalApi).Assembly.Location, typeof(AnotherAppDomMarshalApi).FullName);
+				// result = (IAnotherAppDomMarshalApi)_appDomain.CreateInstanceFromAndUnwrap(typeof(AnotherAppDomMarshalApi).Assembly.Location, typeof(AnotherAppDomMarshalApi).FullName);
 				result = new AnotherAppDomMarshalApi();
 			}
 			if (result == null)

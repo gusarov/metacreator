@@ -168,8 +168,14 @@ namespace MetaCreator
 			var referencesTotal = new List<string>(16);
 
 			// first priority - explicit references
-			foreach (var reference in ctx.ReferencesMetaAdditional)
+			foreach (var reference_ in ctx.ReferencesMetaAdditional)
 			{
+				var reference = reference_;
+				if (reference.Contains("..") || reference.Contains(Path.DirectorySeparatorChar))
+				{
+					reference = Path.Combine(ctx.ProjDir, reference);
+				}
+
 				if (!already(reference))
 				{
 					alreadyAdd(reference);
@@ -205,7 +211,7 @@ namespace MetaCreator
 			{
 				if (!already(reference))
 				{
-					alreadyAdd(reference);
+					alreadyAdd(reference);	
 					referencesTotal.Add(reference);
 				}
 			}

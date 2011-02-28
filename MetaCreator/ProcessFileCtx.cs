@@ -27,21 +27,6 @@ namespace MetaCreator
 		// references from /*@ reference meta dirrectives */
 		public List<string> ReferencesMetaAdditional = new List<string>();
 
-//		public string[] References
-//		{
-//			get
-//			{
-//				foreach (var refer in ReferencesMetaAdditional.ToArray())
-//				{
-//					if(!Path.IsPathRooted(refer))
-//					{
-//						ReferencesMetaAdditional.Remove(refer);
-//						ReferencesMetaAdditional.Add(Path.Combine(ProjDir, refer));
-//					}
-//				}
-//				return ReferencesOriginal.OrEmpty().Concat(ReferencesMetaAdditional.OrEmpty()).ToArray();
-//			}
-//		}
 
 		/// <summary>
 		/// Get file name relative to intermediate path (Now it returns absolute path to original file name)

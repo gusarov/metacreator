@@ -4,9 +4,9 @@
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
 "ProjectName" = "8:MetaCreator"
-"LanguageId" = "3:1033"
+"LanguageId" = "3:0"
 "CodePage" = "3:1252"
-"UILanguageId" = "3:1033"
+"UILanguageId" = "3:0"
 "SccProjectName" = "8:"
 "SccLocalPath" = "8:"
 "SccAuxPath" = "8:"
@@ -28,6 +28,12 @@
         "Entry"
         {
         "MsmKey" = "8:_AB118E27D3BD482A9663F0E4B440398A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B51EB924D2F2423584F57C49DC6AEA02"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -63,7 +69,7 @@
         "InstallerBootstrapper" = "3:2"
             "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
             {
-            "Enabled" = "11:TRUE"
+            "Enabled" = "11:FALSE"
             "PromptEnabled" = "11:TRUE"
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
@@ -92,7 +98,7 @@
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
-        "Compression" = "3:3"
+        "Compression" = "3:2"
         "SignOutput" = "11:FALSE"
         "CertificateFile" = "8:"
         "PrivateKeyFile" = "8:"
@@ -100,7 +106,7 @@
         "InstallerBootstrapper" = "3:2"
             "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
             {
-            "Enabled" = "11:TRUE"
+            "Enabled" = "11:FALSE"
             "PromptEnabled" = "11:TRUE"
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
@@ -168,7 +174,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "Version" = "8:3.5.30729"
+                "FrameworkVersion" = "8:.NETFramework,Version=v3.5"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=76617"
                 }
@@ -180,6 +186,26 @@
             {
             "SourcePath" = "8:..\\..\\MetaCreator.targets"
             "TargetName" = "8:MetaCreator.targets"
+            "Tag" = "8:"
+            "Folder" = "8:_C26FF7D32D2D4F33BD883C5AC0A15334"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B51EB924D2F2423584F57C49DC6AEA02"
+            {
+            "SourcePath" = "8:..\\..\\metaball.ico"
+            "TargetName" = "8:metaball.ico"
             "Tag" = "8:"
             "Folder" = "8:_C26FF7D32D2D4F33BD883C5AC0A15334"
             "Condition" = "8:"
@@ -234,7 +260,7 @@
         }
         "MsiBootstrapper"
         {
-        "LangId" = "3:1033"
+        "LangId" = "3:0"
         "RequiresElevation" = "11:FALSE"
         }
         "Product"
@@ -242,8 +268,9 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MetaCreator"
         "ProductCode" = "8:{7589395D-D8E6-4CB4-8AF0-445094661D86}"
-        "PackageCode" = "8:{E2652113-8E15-4F9A-A82D-7B1A3BA1998B}"
+        "PackageCode" = "8:{90BE2D7F-E1F3-4AE0-8D82-9EF61965C28F}"
         "UpgradeCode" = "8:{4213E4C7-BD72-4DDA-A6C8-31D5F619BF53}"
+        "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
@@ -258,7 +285,7 @@
         "Keywords" = "8:Meta"
         "ARPCOMMENTS" = "8:Metaprogramming for .Net"
         "ARPURLINFOABOUT" = "8:http://metacreator.googlecode.com/"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_B51EB924D2F2423584F57C49DC6AEA02"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -627,37 +654,9 @@
                 {
                 }
             }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_76A405B2FB5645A7AF3C42A4A87358DB"
-            {
-            "SourcePath" = "8:"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_C26FF7D32D2D4F33BD883C5AC0A15334"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:"
-            "OutputGroupCanonicalName" = "8:Symbols"
-            "OutputProjectGuid" = "8:{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}"
-            "ShowKeyOutput" = "11:TRUE"
-                "ExcludeFilters"
-                {
-                }
-            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9B7F89E46E8B474EA0D188488848F7DD"
             {
-            "SourcePath" = "8:..\\..\\MetaCreator\\obj\\Debug\\MetaCreator.dll"
+            "SourcePath" = "8:..\\..\\MetaCreator\\obj\\Release\\MetaCreator.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4761EF7495CC4345B2BE26807E545465"
@@ -685,7 +684,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_AB118E27D3BD482A9663F0E4B440398A"
             {
-            "SourcePath" = "8:..\\..\\MetaCreator\\obj\\Debug\\MetaCreator.dll"
+            "SourcePath" = "8:..\\..\\MetaCreator\\obj\\Release\\MetaCreator.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_C26FF7D32D2D4F33BD883C5AC0A15334"

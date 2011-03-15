@@ -27,7 +27,7 @@ class q
 
 			Assert.AreEqual("sample.cs", Path.GetFileName(ParsedMsBuildError.FileName));
 			Assert.AreEqual(5, ParsedMsBuildError.Line);
-			Assert.IsTrue(_output.Trim().EndsWith("sample.cs(5): error : MetaCode: System.ApplicationException: test13"));
+			Assert.IsTrue(_output.Trim().EndsWith("sample.cs(5): error : Metacode Execution: System.ApplicationException: test13"));
 
 		}
 

@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
+using System.Security.Policy;
 using MetaCreator.Utils;
 
 namespace MetaCreator.AppDomainIsolation
@@ -17,16 +18,16 @@ namespace MetaCreator.AppDomainIsolation
 			_id = Ext.GenerateId();
 			_anotherAppDomMarshal = Lazy.New(Initialize);
 		}
-
+		
 		IAnotherAppDomMarshalApi Initialize()
 		{
-			_appDomain = AppDomain.CreateDomain("MetaCreator Evaluation " + _id);
-			IAnotherAppDomMarshalApi result;
-			using (new Resolver(delegate { throw null; }))
+			_appDomain = AppDomain.CreateDomain("MetaCreator Evaluation " + _id, AppDomain.CurrentDomain.Evidence, new AppDomainSetup
 			{
-				// result = (IAnotherAppDomMarshalApi)_appDomain.CreateInstanceFromAndUnwrap(typeof(AnotherAppDomMarshalApi).Assembly.Location, typeof(AnotherAppDomMarshalApi).FullName);
-				result = new AnotherAppDomMarshalApi();
-			}
+				ApplicationBase = Path.GetDirectoryName(typeof(AnotherAppDomFactory).Assembly.Location),
+			});
+
+			var result = (IAnotherAppDomMarshalApi)_appDomain.CreateInstanceFromAndUnwrap(typeof(AnotherAppDomMarshalApi).Assembly.Location, typeof(AnotherAppDomMarshalApi).FullName);
+
 			if (result == null)
 			{
 				throw new Exception("Can not create another app domain");
@@ -45,7 +46,11 @@ namespace MetaCreator.AppDomainIsolation
 				{
 					throw new ObjectDisposedException("App dom is not initialized or already disposed");
 				}
-				return _anotherAppDomMarshal.Value;
+				var dom = _anotherAppDomMarshal.Value;
+
+				var test = _appDomain.GetAssemblies();
+
+				return dom;
 			}
 		}
 

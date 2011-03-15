@@ -8,7 +8,7 @@ namespace MetaCreator.AppDomainIsolation
 	///<summary>
 	/// Allows you to evaluate and run code in another app domain
 	///</summary>
-	public class AnotherAppDomMarshalApi : MarshalByRefObject, IAnotherAppDomMarshalApi
+	class AnotherAppDomMarshalApi : MarshalByRefObject, IAnotherAppDomMarshalApi
 	{
 		public EvaluationResult Evaluate(AnotherAppDomInputData input)
 		{

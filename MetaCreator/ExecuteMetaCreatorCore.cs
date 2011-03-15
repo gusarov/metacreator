@@ -193,6 +193,11 @@ namespace MetaCreator
 				}
 			}
 
+			if(string.IsNullOrEmpty(ctx.CSharpVersion))
+			{
+				throw new Exception("CSharpVersion is unknown");
+			}
+
 			// required for dynamics in 4.0
 			if (ctx.CSharpVersion.Equals("v4.0", StringComparison.InvariantCultureIgnoreCase))
 			{
@@ -204,6 +209,11 @@ namespace MetaCreator
 						referencesTotal.Add(reference);
 					}
 				}
+			}
+
+			if (ctx.ReferencesOriginal == null)
+			{
+				throw new Exception("Original proj references if unknown");
 			}
 
 			// all other references from target project
@@ -246,19 +256,7 @@ namespace MetaCreator
 					var replacementFileRelativePath = Path.Combine(IntermediateOutputPathRelative, replacementFile);
 					var replacementFileAbsolutePath = Path.GetFullPath(replacementFileRelativePath);
 
-					var ctx = new ProcessFileCtx
-					{
-						//AppDomFactory = appDomFactory,
-						BuildErrorLogger = BuildErrorLogger,
-						OriginalFileName = fileName,
-						ReplacementRelativePath = replacementFileRelativePath,
-						ReplacementAbsolutePath = replacementFileAbsolutePath,
-						IntermediateOutputPathRelative = IntermediateOutputPathRelative,
-						IntermediateOutputPathFull = IntermediateOutputPathFull,
-						ProjDir = ProjDir,
-						TargetFrameworkVersion = TargetFrameworkVersion,
-						ReferencesOriginal = References.Select(x => x.ItemSpec).ToArray(),
-					};
+					var ctx = GetCtx(this, fileName, replacementFileRelativePath, replacementFileAbsolutePath);
 
 					var code = File.ReadAllText(fileName);
 
@@ -318,5 +316,21 @@ namespace MetaCreator
 			}
 		}
 
+		static public ProcessFileCtx GetCtx(ExecuteMetaCreatorCore core, string fileName, string replacementFileRelativePath, string replacementFileAbsolutePath)
+		{
+			return new ProcessFileCtx
+			{
+				//AppDomFactory = appDomFactory,
+				BuildErrorLogger = core.BuildErrorLogger,
+				OriginalFileName = fileName,
+				ReplacementRelativePath = replacementFileRelativePath,
+				ReplacementAbsolutePath = replacementFileAbsolutePath,
+				IntermediateOutputPathRelative = core.IntermediateOutputPathRelative,
+				IntermediateOutputPathFull = core.IntermediateOutputPathFull,
+				ProjDir = core.ProjDir,
+				TargetFrameworkVersion = core.TargetFrameworkVersion,
+				ReferencesOriginal = core.References.Select(x => x.ItemSpec).ToArray(),
+			};
+		}
 	}
 }

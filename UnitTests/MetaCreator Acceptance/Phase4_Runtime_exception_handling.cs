@@ -75,8 +75,6 @@ class q
 		[TestMethod]
 		public void Should_jump_to_original_source_on_exception_in_user_code_after()
 		{
-			Assert.Inconclusive();
-
 			File.WriteAllText("sample.cs", @"
 class q
 {
@@ -85,23 +83,25 @@ class q
 		//string q = 5;
 	*/
 
-	static q()
-	{
-		throw new System.Exception(""test13"");
-	}
-
 	static void Main()
 	{
+		try
+		{
+			throw new System.Exception(""test13"");
+		}
+		catch (System.Exception ex)
+		{
+			System.Console.WriteLine(ex.ToString());
+		}
 	}
 }");
 
-			RunMsbuild(false);
+			RunMsbuild(true);
 
-			Assert.AreEqual(Path.GetTempPath() + "sample.cs", ParsedMsBuildError.FileName, _output);
-			Assert.AreEqual(9, ParsedMsBuildError.Line, _output);
-			Assert.AreEqual(2, ParsedMsBuildError.Column, _output);
+			Run("bin\\debug\\sample.exe", "", true);
 
-			Assert.AreEqual(Path.GetTempPath() + "sample.cs(9,2): System.Exception: test13", _output.Trim());
+			StringAssert.Contains(_output, "test13");
+			StringAssert.Contains(_output, "sample.cs:line 13");
 		}
 
 		[TestMethod]

@@ -11,20 +11,29 @@ namespace MetaCreator.AppDomainIsolation
 	{
 		readonly Func<ResolveEventArgs, Assembly> _func;
 		readonly IEnumerable<string> _currentDomainAdditionalReferences;
+		readonly AppDomain _domain;
 
-		Resolver()
+		Resolver(AppDomain domain)
 		{
-			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
+			if (domain == null)
+			{
+				_domain = AppDomain.CurrentDomain;
+			}
+			else
+			{
+				_domain = domain;
+			}
+			_domain.AssemblyResolve += AssemblyResolve;
 		}
 
-		public Resolver(IEnumerable<string> additionalReferences)
-			: this()
+		public Resolver(IEnumerable<string> additionalReferences, AppDomain domain = null)
+			: this(domain)
 		{
 			_currentDomainAdditionalReferences = additionalReferences.OrEmpty();
 		}
 
-		public Resolver(Func<ResolveEventArgs, Assembly> func)
-			: this()
+		public Resolver(Func<ResolveEventArgs, Assembly> func, AppDomain domain = null)
+			: this(domain)
 		{
 			_func = func;
 		}
@@ -51,7 +60,7 @@ namespace MetaCreator.AppDomainIsolation
 
 		void IDisposable.Dispose()
 		{
-			AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
+			_domain.AssemblyResolve -= AssemblyResolve;
 		}
 
 	}

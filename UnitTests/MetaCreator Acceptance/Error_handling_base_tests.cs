@@ -107,7 +107,7 @@ namespace MetaCreator_Acceptance
 
 		string _parsedMsBuildErrorSource;
 		Match _parsedMsBuildError;
-		string _error;
+		protected string _error;
 
 		protected class ParsedError
 		{

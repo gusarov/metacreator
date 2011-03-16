@@ -16,39 +16,66 @@ namespace MetaCreator.AppDomainIsolation
 		AnotherAppDomFactory()
 		{
 			_id = Ext.GenerateId();
-			_anotherAppDomMarshal = Lazy.New(Initialize);
+			_anotherAppDomMarshal = new Lazy<IAnotherAppDomMarshalApi>(Initialize);
 		}
-		
+
 		IAnotherAppDomMarshalApi Initialize()
 		{
-			_appDomain = AppDomain.CreateDomain("MetaCreator Evaluation " + _id, AppDomain.CurrentDomain.Evidence, new AppDomainSetup
-			{
-				ApplicationBase = Path.GetDirectoryName(typeof(AnotherAppDomFactory).Assembly.Location),
-			});
+			// supposed that id current domain is not default - we can skip creation of another app dom
 
-			var result = (IAnotherAppDomMarshalApi)_appDomain.CreateInstanceFromAndUnwrap(typeof(AnotherAppDomMarshalApi).Assembly.Location, typeof(AnotherAppDomMarshalApi).FullName);
-
-			if (result == null)
+			if (AppDomain.CurrentDomain.IsDefaultAppDomain())
 			{
-				throw new Exception("Can not create another app domain");
+				_appDomain = AppDomain.CreateDomain("MetaCreator Evaluation " + _id, AppDomain.CurrentDomain.Evidence,
+					new AppDomainSetup
+					{
+						ApplicationBase = Path.GetDirectoryName(typeof(AnotherAppDomFactory).Assembly.Location),
+					});
+
+				// _appDomain.AssemblyResolve += Resolver2._appDomain_TypeResolve;
+				// _appDomain.AssemblyLoad += Resolver2._appDomain_TypeResolve2;
+				// _appDomain.Load(File.ReadAllBytes(typeof(AnotherAppDomFactory).Assembly.Location));
+				// _appDomain.Load()
+				//			var basee = _appDomain.BaseDirectory;
+				//
+				//			var si = _appDomain.SetupInformation;
+
+				//			if(typeof(IAnotherAppDomMarshalApi).Assembly.HostContext>0)
+				//			{
+				//				throw new Exception("Assembly.HostContext>0");
+				//			}
+
+				var remoteType = typeof(AnotherAppDomMarshalApi);
+
+				var remoteObj = _appDomain.CreateInstanceAndUnwrap(remoteType.Assembly.FullName, remoteType.FullName);
+				var result = (AnotherAppDomMarshalApi)remoteObj;
+#if DEBUG
+				if (result == null)
+				{
+					throw new Exception("Can not create another app domain");
+				}
+#endif
+				return result;
 			}
-			return result;
+			else
+			{
+				return new AnotherAppDomMarshalApi();
+			}
 		}
 
 		AppDomain _appDomain;
-		bool isDisposed;
+		bool _isDisposed;
 		readonly Lazy<IAnotherAppDomMarshalApi> _anotherAppDomMarshal;
 		public IAnotherAppDomMarshalApi AnotherAppDomMarshal
 		{
 			get
 			{
-				if (isDisposed)
+				if (_isDisposed)
 				{
 					throw new ObjectDisposedException("App dom is not initialized or already disposed");
 				}
 				var dom = _anotherAppDomMarshal.Value;
 
-				var test = _appDomain.GetAssemblies();
+				// var test = _appDomain.GetAssemblies();
 
 				return dom;
 			}
@@ -83,23 +110,24 @@ namespace MetaCreator.AppDomainIsolation
 
 		public void Dispose()
 		{
-			isDisposed = true;
+			_isDisposed = true;
 			if (_appDomain != null)
 			{
 				AppDomain.Unload(_appDomain);
 				_appDomain = null;
-				foreach (var dir in _tempDirrectoriesToRemoveAfterUnloadAppDomain)
-				{
-					try
-					{
-						Directory.Delete(dir, true);
-					}
-					catch
-					{
-					}
-				}
-				_tempDirrectoriesToRemoveAfterUnloadAppDomain.Clear();
 			}
+			foreach (var dir in _tempDirrectoriesToRemoveAfterUnloadAppDomain)
+			{
+				try
+				{
+					Directory.Delete(dir, true);
+				}
+				catch
+				{
+				}
+			}
+			_tempDirrectoriesToRemoveAfterUnloadAppDomain.Clear();
 		}
 	}
+
 }

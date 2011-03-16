@@ -1,26 +1,22 @@
 ﻿using System;
-
-/*@ reference System.Xml.dll */
-/*@ using System.Xml */
-
-/*@ reference ..\..\ThirdParty\SomeThirdPartyProject.dll */
-/*@ using SomeThirdPartyProject */
+using MetaCreator.AppDomainIsolation;
 
 
 class q
 {
 	static void Main()
 	{
-		string macroResult = null;
+//		using(var appDom = MetaCreator.AppDomainIsolation.AnotherAppDomFactory.AppDomainLiveScope())
+//		{
+//			appDom.AnotherAppDomMarshal.Evaluate(null);
+//		}
 
-		var q = SomeThirdPartyProject.TestThirdPartyAPI.Test();
-		
+		var q = 5;
+
 		/*!
-			var doc = new XmlDocument();
-
-			WriteLine("macroResult = \"" + TestThirdPartyAPI.Test()+"\";");
+			WriteLine("q= 6;");
 		*/
 
-		Console.WriteLine(macroResult);
+		Console.WriteLine(q);
 	}
 }

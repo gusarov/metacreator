@@ -1,10 +1,10 @@
 ﻿using System;
 
-/*@ reference System.Xml.dll */
-/*@ using System.Xml */
+/* @ reference System.Xml.dll */
+/* @ using System.Xml */
 
-/*@ reference ..\..\ThirdParty\SomeThirdPartyProject.dll */
-/*@ using SomeThirdPartyProject */
+/* @ reference ..\..\ThirdParty\SomeThirdPartyProject.dll */
+/* @ using SomeThirdPartyProject */
 
 
 class q
@@ -15,7 +15,7 @@ class q
 
 		var q = SomeThirdPartyProject.TestThirdPartyAPI.Test();
 		
-		/*!
+		/* !
 			var doc = new XmlDocument();
 
 			WriteLine("macroResult = \"" + TestThirdPartyAPI.Test()+"\";");

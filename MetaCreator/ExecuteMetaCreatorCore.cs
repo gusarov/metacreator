@@ -294,7 +294,7 @@ namespace MetaCreator
 							//{
 							//   File.SetAttributes(replacementFileName, File.GetAttributes(replacementFileName) & ~FileAttributes.ReadOnly);
 							//}
-							File.WriteAllText(replacementFileAbsolutePath, processedCode);
+							File.WriteAllText(replacementFileAbsolutePath, processedCode, ctx.OverrideEncoding ?? Encoding.UTF8);
 							//File.SetAttributes(replacementFileName, File.GetAttributes(replacementFileName) | FileAttributes.ReadOnly);
 						}
 

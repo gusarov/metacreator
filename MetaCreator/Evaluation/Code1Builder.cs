@@ -27,7 +27,33 @@ namespace MetaCreator.Evaluation
 				{"using", Using},
 				{"generatebanner", GenerateBanner},
 				{"csharpversion", CSharpVersion},
+				{"encoding", OverrideEncoding},
 			};
+		}
+
+		private void OverrideEncoding(string encName)
+		{
+			encName = encName.Trim();
+
+			int i;
+			if (int.TryParse(encName, out i))
+			{
+				_ctx.OverrideEncoding = Encoding.GetEncoding(i);
+			}
+			else
+			{
+				var encs = Encoding.GetEncodings();
+				var enc = encs.FirstOrDefault(x => string.Equals(encName, x.Name, StringComparison.OrdinalIgnoreCase));
+				if (enc == null)
+				{
+					WriteError("Unknown encoding. Use one of:" +
+					           string.Join("", encs.Select(x => Environment.NewLine + x.Name).ToArray()));
+				}
+				else
+				{
+					_ctx.OverrideEncoding = enc.GetEncoding();
+				}
+			}
 		}
 
 		void CSharpVersion(string version)

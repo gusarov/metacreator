@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-
+using System.Text;
 using MetaCreator.Utils;
 using System.Collections.Generic;
 
@@ -47,5 +47,6 @@ namespace MetaCreator
 		public IBuildErrorLogger BuildErrorLogger;
 		public string CSharpVersion;
 		public string TargetFrameworkVersion;
+		public Encoding OverrideEncoding;
 	}
 }

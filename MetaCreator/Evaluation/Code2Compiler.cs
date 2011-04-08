@@ -22,7 +22,7 @@ namespace MetaCreator.Evaluation
 
 
 			string source = input.Metacode;
-			string[] references = input.References;
+			string[] references = input.References ?? new string[0];
 			string cSharpVersion = input.CSharpVersion;
 
 			if(cSharpVersion == null)

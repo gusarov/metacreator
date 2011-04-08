@@ -12,7 +12,7 @@ namespace MetaCreator_UnitTest
 	{
 		readonly MetaCreator.Evaluation.Code1Builder _builder = new MetaCreator.Evaluation.Code1Builder();
 
-		[TestMethod]
+		[TestMethod, Ignore]
 		public void Should_generate_metacode_from_surogate_syntax()
 		{
 			const string surogate = @"
@@ -30,13 +30,7 @@ public class Class1
 
 			SimulateBuild(surogate);
 
-
-
-			//var metacode = _builder.Build(surogate, new ProcessFileCtx());
-			//File.WriteAllText(Path.GetTempFileName(), metacode);
-
 			Assert.Inconclusive();
-			//Assert.AreEqual(Resources.Should_generate_metacode_from_surogate_syntax, metacode);
 		}
 
 	}

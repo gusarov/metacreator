@@ -47,6 +47,5 @@ namespace MetaCreator
 		public IBuildErrorLogger BuildErrorLogger;
 		public string CSharpVersion;
 		public string TargetFrameworkVersion;
-		public Encoding OverrideEncoding;
 	}
 }

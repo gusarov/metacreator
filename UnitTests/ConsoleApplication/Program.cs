@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Text;
 
 class q
 {
 	static void Main()
 	{
-		string macroResult = null;
-
-		Console.WriteLine(macroResult);
+		Console.OutputEncoding = Encoding.UTF8;
+		Console.WriteLine(/*! Write("\"Привет\""); */);
 	}
 }

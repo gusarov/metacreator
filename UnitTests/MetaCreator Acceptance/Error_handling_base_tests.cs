@@ -18,6 +18,9 @@ namespace MetaCreator_Acceptance
 
 			File.WriteAllText("sample.targets", @"
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
+	<PropertyGroup>
+		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include='sample.cs' />
 	</ItemGroup>
@@ -104,7 +107,7 @@ namespace MetaCreator_Acceptance
 
 		string _parsedMsBuildErrorSource;
 		Match _parsedMsBuildError;
-		string _error;
+		protected string _error;
 
 		protected class ParsedError
 		{

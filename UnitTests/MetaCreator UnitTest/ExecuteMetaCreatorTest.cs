@@ -212,6 +212,7 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 		public void SimulateBuild(string code)
 		{
 			logger = new FakeErrorLogger();
+
 			sut = new ExecuteMetaCreatorCore
 			{
 				BuildErrorLogger = logger,
@@ -219,19 +220,26 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 				IntermediateOutputPathRelative = "obj\\Debug",
 				IntermediateOutputPathFull = Path.GetFullPath("obj\\Debug"),
 				Sources = new ITaskItem[] {new TaskItem("1.tmp")},
+				TargetFrameworkVersion = "v3.5",
+				TargetsVersion = typeof(ExecuteMetaCreatorCore).Assembly.GetName().Version.ToString(),
 			};
 			sut.Initialize();
 			buildFailed = false;
 			try
 			{
-				result = sut.ProcessFile(code, new ProcessFileCtx
-				{
+				var ctx = ExecuteMetaCreatorCore.GetCtx(sut, "1.tmp", "~", "~");
+
+				result = sut.ProcessFile(code, ctx);
+//				result = sut.ProcessFile(code, new ProcessFileCtx
+//				{
+//
 					//FileOriginalContent = code,
-					BuildErrorLogger = logger,
-					OriginalFileName = "1.tmp",
-					ProjDir = sut.ProjDir,
+//					BuildErrorLogger = logger,
+//					OriginalFileName = "1.tmp",
+//					ProjDir = sut.ProjDir,
+//					TargetFrameworkVersion = "v3.5",
 					//AppDomFactory = AnotherAppDomFactory.AppDomainLiveScope(),
-				});
+//				});
 			}
 			catch (FailBuildingException ex)
 			{

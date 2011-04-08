@@ -1,0 +1,32 @@
+Version 1.4
+
+1. Support for net 4.0 in metacode
+2. MSBuild 4.0 extension installation by MSI (VisualStudio 2010)
+3. New dirrective /*@ CSharpVersion vX.X */
+
+Version 1.3
+
+1. Now you can use coupled  metablocks:
+
+/*! for (int i = 0; i < 10; i++) { */
+
+public static string Pro/*= i */ { get; set; }
+
+/*! } */
+
+3. Support for files, linked to the project ("add existing files as link", with relative path)
+
+4. Files with build action "None" (very typicatl for xml files, that used only inside metacode) now affects incremental building.
+
+5. Finally, you can inject generator class body, like in T4:
+
+/*+
+class MyMetaClass_PropertyInfo
+{
+	public string PropertyName { get; set; }
+	public string PropertyType { get; set; }
+	public string BackingFieldName { get; set; }
+	public bool GenerateNotification { get; set; }
+}
+*/
+

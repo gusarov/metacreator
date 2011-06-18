@@ -86,9 +86,9 @@ namespace MetaCreator
 				throw new Exception("IntermediateOutputPathRelative not defined");
 			}
 
-			if (Sources.OrEmpty().Count() <= 0)
+			if (Sources == null)
 			{
-				throw new Exception("Sources not specified");
+				throw new Exception("Sources is not specified");
 			}
 
 			if (ProjDir != Path.GetFullPath(ProjDir))
@@ -104,11 +104,6 @@ namespace MetaCreator
 			}
 
 			IntermediateOutputPathFull = Path.Combine(ProjDir, IntermediateOutputPathRelative);
-
-			if (Sources == null)
-			{
-				Sources = new ITaskItem[0];
-			}
 
 			if (References == null)
 			{

@@ -71,7 +71,6 @@ namespace MetaCreator.Evaluation
 				var stack = result.EvaluationException.StackTrace.Substring(0, i).Trim();
 
 				// at Generator.Run() in c:\Kip\Projects\MetaCreatorRep\UnitTests\ConsoleApplication\Program.cs:line 19
-
 				var match = Regex.Match(stack, @"(?i)at (?'method'[^\s]+) in (?'file'.+):line (?'line'\d+)");
 //				if (match.Success)
 //				{
@@ -79,7 +78,14 @@ namespace MetaCreator.Evaluation
 				var lineString = match.Groups["line"].Value;
 				int line;
 				int.TryParse(lineString, out line);
-				_buildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, match.Groups["file"].Value, line, 0, 0, 0, "Metacode Execution: " + message, null, null));
+
+				var fileName = match.Groups["file"].Value;
+				if(TempFiles.IsTemp(fileName))
+				{
+					fileName = GetMetaCodeFile(result);
+				}
+
+				_buildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, fileName, line, 0, 0, 0, "Metacode Execution: " + message, null, null));
 
 			}
 
@@ -137,6 +143,13 @@ namespace MetaCreator.Evaluation
 			return "Metacode Compilation: " + error.ErrorText;
 		}
 
+		string GetMetaCodeFile(EvaluationResult result)
+		{
+			var fileName = TempFiles.GetNewTempFile(Path.GetFileNameWithoutExtension(_ctx.OriginalFileName) + ".meta" + Path.GetExtension(_ctx.OriginalFileName));
+			File.WriteAllText(fileName, result.SourceCode);
+			return fileName;
+		}
+
 		string BuildError_GetFile(EvaluationResult result, CompilerError error)
 		{
 			// detect that error is redirrected from random name of dynamic file
@@ -148,9 +161,9 @@ namespace MetaCreator.Evaluation
 				return error.FileName;
 			}
 
-			// TODO combine with temp files of dynamic build %tmp%\metacreator\${rnd}
-			result.NonUserCode = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(_ctx.OriginalFileName) + ".meta" + Path.GetExtension(_ctx.OriginalFileName));
-			File.WriteAllText(result.NonUserCode, result.SourceCode);
+
+
+			result.NonUserCode = GetMetaCodeFile(result);
 			return result.NonUserCode;
 
 		//if (result.NonUserCode != null || !_ctx.ErrorRemap)

@@ -1,5 +1,7 @@
 ﻿using System.Linq;
-using MetaCreator.Installer;
+
+using MetaCreatorInstallers;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 //using MetaCreatorInstallerHelper;

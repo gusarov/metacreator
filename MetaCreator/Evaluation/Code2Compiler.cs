@@ -3,6 +3,7 @@ using System.Linq;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 using MetaCreator.AppDomainIsolation;
 using MetaCreator.Utils;
@@ -39,30 +40,15 @@ namespace MetaCreator.Evaluation
 				result.DebugLog += "Automatic CSharpVersion using CLR Version = " + cSharpVersion + Environment.NewLine;
 			}
 
-			var metaTempPath = Path.Combine(Path.GetTempPath(), "MetaCreator");
-			var tempPath = Path.Combine(metaTempPath, Ext.GenerateId());
-			Directory.CreateDirectory(tempPath);
+			var tempPath = TempFiles.GetNewTempFolder();
 
-			var dtn = DateTime.UtcNow;
-			foreach (var dir in new DirectoryInfo(metaTempPath).GetDirectories().Where(x => (dtn - x.CreationTimeUtc) > TimeSpan.FromDays(1)))
+			using (var tempFiles = new TempFileCollection(tempPath, true))
 			{
-				try
-				{
-					dir.Delete(true);
-				}
-				catch
-				{
-				}
-			}
-
-			using (var tempFiles = new TempFileCollection(tempPath))
-			{
-				tempFiles.KeepFiles = true;
 				var options = new CompilerParameters
 				{
 					//GenerateInMemory = true,
 					//IncludeDebugInformation = true,
-					CompilerOptions = "/debug:full",
+					CompilerOptions = "/debug:full /optimize-",
 					TempFiles = tempFiles,
 					//MainClass = _generatorClassName,
 				};
@@ -93,6 +79,12 @@ namespace MetaCreator.Evaluation
 						return result;
 					}
 					result.Assembly = compilerResults.CompiledAssembly;
+					//var path = result.Assembly.Location;
+					//var ini = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".ini");
+//					File.WriteAllText(ini, @"[.NET Framework Debugging Control] 
+//GenerateTrackingInfo=1 
+//AllowOptimize=0 ");
+					//Thread.Sleep(5000);
 					return result;
 				}
 			}

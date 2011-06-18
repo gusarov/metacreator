@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_183C30AC6A164BC0A7366664B3AE78C4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_61C19FC008E24DDB99E28A623C5758E3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -33,14 +39,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B51EB924D2F2423584F57C49DC6AEA02"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_9B7F89E46E8B474EA0D188488848F7DD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9B7F89E46E8B474EA0D188488848F7DD"
+        "OwnerKey" = "8:_183C30AC6A164BC0A7366664B3AE78C4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -131,31 +137,31 @@
     {
         "CustomAction"
         {
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_7882A2AFA8C649B4BB2E5619E62C00FD"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_5603DAC2ABCF44CFAAE14B9ED479B8BB"
             {
-            "Name" = "8:Primary output from MetaCreator (Active)"
+            "Name" = "8:Primary output from MetaCreatorInstallers (Active)"
             "Condition" = "8:"
-            "Object" = "8:_AB118E27D3BD482A9663F0E4B440398A"
-            "FileType" = "3:1"
-            "InstallAction" = "3:1"
-            "Arguments" = "8:"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:1"
-            "Identifier" = "8:_B8A32F90_C7F0_4210_9FB9_4A8283565014"
-            "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:"
-            }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_AC98D351D4B94E4BA4093C2F1F15F7E6"
-            {
-            "Name" = "8:Primary output from MetaCreator (Active)"
-            "Condition" = "8:"
-            "Object" = "8:_AB118E27D3BD482A9663F0E4B440398A"
+            "Object" = "8:_183C30AC6A164BC0A7366664B3AE78C4"
             "FileType" = "3:1"
             "InstallAction" = "3:4"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
-            "Identifier" = "8:_B1F94779_1D2A_48AD_9648_22C9414E0163"
+            "Identifier" = "8:_CF37F0B9_995E_4050_A604_36A84FAAD50E"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_7798D40A40B84851B431536471CF7109"
+            {
+            "Name" = "8:Primary output from MetaCreatorInstallers (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_183C30AC6A164BC0A7366664B3AE78C4"
+            "FileType" = "3:1"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_B6CC874D_9964_41FC_9AFA_B7E06685A6C0"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:"
             }
@@ -186,26 +192,6 @@
             {
             "SourcePath" = "8:..\\..\\MetaCreator.targets"
             "TargetName" = "8:MetaCreator.targets"
-            "Tag" = "8:"
-            "Folder" = "8:_C26FF7D32D2D4F33BD883C5AC0A15334"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B51EB924D2F2423584F57C49DC6AEA02"
-            {
-            "SourcePath" = "8:..\\..\\metaball.ico"
-            "TargetName" = "8:metaball.ico"
             "Tag" = "8:"
             "Folder" = "8:_C26FF7D32D2D4F33BD883C5AC0A15334"
             "Condition" = "8:"
@@ -268,7 +254,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MetaCreator"
         "ProductCode" = "8:{7589395D-D8E6-4CB4-8AF0-445094661D86}"
-        "PackageCode" = "8:{90BE2D7F-E1F3-4AE0-8D82-9EF61965C28F}"
+        "PackageCode" = "8:{5C3531B8-5BB2-41B3-ABDB-AD5C01141102}"
         "UpgradeCode" = "8:{4213E4C7-BD72-4DDA-A6C8-31D5F619BF53}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -285,8 +271,8 @@
         "Keywords" = "8:Meta"
         "ARPCOMMENTS" = "8:Metaprogramming for .Net"
         "ARPURLINFOABOUT" = "8:http://metacreator.googlecode.com/"
-        "ARPPRODUCTICON" = "8:_B51EB924D2F2423584F57C49DC6AEA02"
-        "ARPIconIndex" = "3:0"
+        "ARPPRODUCTICON" = "8:_AB118E27D3BD482A9663F0E4B440398A"
+        "ARPIconIndex" = "3:32512"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
@@ -626,6 +612,34 @@
         }
         "ProjectOutput"
         {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_183C30AC6A164BC0A7366664B3AE78C4"
+            {
+            "SourcePath" = "8:..\\..\\MetaCreatorInstallers\\obj\\Release\\MetaCreatorInstallers.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_C26FF7D32D2D4F33BD883C5AC0A15334"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:FALSE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{71D11B2C-762B-401D-8D63-07F90570E3BD}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_1EE490187AEE45398BCBBB4DF295FBF7"
             {
             "SourcePath" = "8:"

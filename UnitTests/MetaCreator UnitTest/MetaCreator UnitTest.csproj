@@ -92,6 +92,10 @@
     <Compile Include="Test Installer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\MetaCreatorInstallers\MetaCreatorInstallers.csproj">
+      <Project>{71D11B2C-762B-401D-8D63-07F90570E3BD}</Project>
+      <Name>MetaCreatorInstallers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MetaCreator\MetaCreator.csproj">
       <Project>{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}</Project>
       <Name>MetaCreator %28Core\MetaCreator%29</Name>

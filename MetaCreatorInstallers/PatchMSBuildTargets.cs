@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace MetaCreator.Installer
+namespace MetaCreatorInstallers
 {
 	/// <summary>
 	/// Meta creator installer
@@ -62,7 +62,7 @@ namespace MetaCreator.Installer
 			File.WriteAllText(fileName, ProcessFile_CustomAfterMicrosoftCommonCore(content, appendOrRemoveOnly));
 		}
 
-		internal static string AppendToCustomAfterMicrosoftCommonCore(string fileContent)
+		public static string AppendToCustomAfterMicrosoftCommonCore(string fileContent)
 		{
 			return ProcessFile_CustomAfterMicrosoftCommonCore(fileContent, true);
 		}

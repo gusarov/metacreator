@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace MetaCreator.Installer
+namespace MetaCreatorInstallers
 {
 	///<summary>
 	/// Installer
 	///</summary>
-	[RunInstaller(true)]
+	//[RunInstaller(true)]
 	public class NgenInstaller : System.Configuration.Install.Installer
 	{
 		/// <summary>

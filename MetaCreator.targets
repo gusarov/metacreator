@@ -5,7 +5,7 @@
 	</Target>
 
 	<PropertyGroup>
-		<MetaCreatorVersion>1.4</MetaCreatorVersion>
+		<MetaCreatorVersion>1.5</MetaCreatorVersion>
 	</PropertyGroup>
 
 	<!-- Determine and try to fix double import -->

@@ -54,6 +54,28 @@ test 9
 		}
 
 		[TestMethod]
+		public void Issue_38_should_work_with_empty_blocks()
+		{
+			File.WriteAllText("sample.cs", @"
+class q
+{
+	static void Main()
+	{
+		/*@ errorremap off */
+		/*! */
+		/*!*/
+		/*! */
+	}
+}");
+
+
+			RunMsbuild(true);
+
+			Assert.IsTrue(File.Exists("bin/debug/sample.exe"));
+
+		}
+
+		[TestMethod]
 		public void Should_use_several_groups_of_block()
 		{
 			File.WriteAllText("sample.cs", @"

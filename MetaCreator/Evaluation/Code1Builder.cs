@@ -240,7 +240,7 @@ public static class Generator
 //					);
 //		}
 
-		static readonly Regex _rxBlock = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[@+=!])(?'body'.+?)\*/");
+		static readonly Regex _rxBlock = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[@+=!])(?'body'.*?)\*/");
 		string[] _namespacesFromOriginalFile;
 		string _code;
 

@@ -307,8 +307,7 @@ public static class Generator
 				var innerCode = code.Substring(from, block.Index - from);
 				if (trap != null)
 				{
-					// PlainTextWriter(innerCode, _methodBody, writeLineRemap ? GetLineNumberByIndex(code, from) : 0);
-					var lines = innerCode.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+					var lines = innerCode.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x));
 					var trapped = new StringBuilder();
 					foreach (var line in lines)
 					{
@@ -317,6 +316,7 @@ public static class Generator
 						trapped.AppendLine("}");
 						trapped.AppendLine(trap);
 					}
+					innerCode = trapped.ToString();
 				}
 				PlainTextWriter(innerCode, _methodBody, writeLineRemap ? GetLineNumberByIndex(code, from) : 0);
 
@@ -329,12 +329,15 @@ public static class Generator
 						var bodyParts = value.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
 						if (bodyParts.Length > 0)
 						{
-							var command = bodyParts[0].ToUpperInvariant();
+							var command = bodyParts[0].ToUpperInvariant().Trim();
 							switch (command)
 							{
 								case "TRAP":
-									// trap ="[" + value.Substring(value.IndexOf(bodyParts[0]) + bodyParts[0].Length) + "]";
-									trap = "catch{}";
+									trap = value.Substring(value.IndexOf(bodyParts[0]) + bodyParts[0].Length);
+									if (string.IsNullOrEmpty(trap.Trim()))
+									{
+										trap = "catch{}";
+									}
 									break;
 								case "STOP":
 									trap = null;
@@ -342,7 +345,6 @@ public static class Generator
 								default:
 									// TODO betted reporting
 									throw new Exception("# unknown block: " + command);
-									break;
 							}
 						}
 						else

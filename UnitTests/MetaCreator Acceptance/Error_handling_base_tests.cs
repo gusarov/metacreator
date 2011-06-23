@@ -45,7 +45,7 @@ namespace MetaCreator_Acceptance
 		{
 			Run(msBuildPath, "/nologo /clp:errorsonly sample.targets", expectedSuccess);
 		}
-
+		//
 		protected void Run(string prog, string arg, bool expectedSuccess)
 		{
 			var p = Process.Start(new ProcessStartInfo

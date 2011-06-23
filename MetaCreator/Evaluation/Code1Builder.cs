@@ -240,7 +240,7 @@ public static class Generator
 //					);
 //		}
 
-		static readonly Regex _rxBlock = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[@+=!])(?'body'.+?)\*/");
+		static readonly Regex _rxBlock = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[@+=!#])(?'body'.+?)\*/");
 		string[] _namespacesFromOriginalFile;
 		string _code;
 
@@ -287,6 +287,9 @@ public static class Generator
 			bool isFirstBlock = true;
 			// indicate that it is "something /*! asd */ " but not "/*! asdsad */"
 			bool isInsertion = false;
+
+			string trap = null;
+
 			// create metacode
 			foreach (var block in blocks)
 			{
@@ -301,13 +304,53 @@ public static class Generator
 
 				var writeLineRemap = isFirstBlock && !isInsertion;
 				// write previous text as plain
-				PlainTextWriter(code.Substring(from, block.Index - from), _methodBody, writeLineRemap ? GetLineNumberByIndex(code, from) : 0);
+				var innerCode = code.Substring(from, block.Index - from);
+				if (trap != null)
+				{
+					// PlainTextWriter(innerCode, _methodBody, writeLineRemap ? GetLineNumberByIndex(code, from) : 0);
+					var lines = innerCode.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+					var trapped = new StringBuilder();
+					foreach (var line in lines)
+					{
+						trapped.AppendLine("try {");
+						trapped.AppendLine(line);
+						trapped.AppendLine("}");
+						trapped.AppendLine(trap);
+					}
+				}
+				PlainTextWriter(innerCode, _methodBody, writeLineRemap ? GetLineNumberByIndex(code, from) : 0);
 
 				isFirstBlock = false;
 
 				from = block.Index + block.Length;
 				switch (type)
 				{
+					case '#':
+						var bodyParts = value.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+						if (bodyParts.Length > 0)
+						{
+							var command = bodyParts[0].ToUpperInvariant();
+							switch (command)
+							{
+								case "TRAP":
+									// trap ="[" + value.Substring(value.IndexOf(bodyParts[0]) + bodyParts[0].Length) + "]";
+									trap = "catch{}";
+									break;
+								case "STOP":
+									trap = null;
+									break;
+								default:
+									// TODO betted reporting
+									throw new Exception("# unknown block: " + command);
+									break;
+							}
+						}
+						else
+						{
+							// TODO betted reporting
+							throw new Exception("# Block should contain at least one line");
+						}
+						break;
 					case '@':
 						//ExecuteExtender(value);
 						break;

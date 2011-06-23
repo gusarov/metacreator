@@ -1,0 +1,36 @@
+﻿Some languages, like sh, BAT have not exception handling
+
+for example, I'd like to have similar behaviour in line:
+
+Dispose()
+{
+	_client.GetStream().Close();
+	_client.Client.Close();
+	_client.Close();
+	_receivedResponsesNew.Dispose();
+	_receivedResponsesReaded.Dispose();
+	_threadReceiver.Dispose();
+	_sendingQueueNew.Dispose();
+}
+
+If I wrap around every line with catch and null comparer - I'l get 11 lines from 1, totally 77 lines of code instead of thouse 7.
+
+To simplify that, I'd like to use block
+
+Dispose()
+{
+	/*# trap
+	catch(Exception ex)
+	{
+		// Statements that execute in the event of an exception
+	}*/
+	{
+		_client.GetStream().Close();
+		_client.Client.Close();
+		_client.Close();
+		_receivedResponsesNew.Dispose();
+		_receivedResponsesReaded.Dispose();
+		_threadReceiver.Dispose();
+		_sendingQueueNew.Dispose();
+	}
+}

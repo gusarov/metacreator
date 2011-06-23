@@ -23,16 +23,10 @@ class q
 	{
 		try
 		{
-			/*# trap
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-			}
-			*/
-			{
-				new Object1().Object2.Object.ToString();
-				new Object1().Object2.Object.ToString();
-			}
+			/*# trap */
+			new Object1().Object2.Object.ToString();
+			new Object1().Object2.Object.ToString();
+			new Object1().Object2.Object.ToString();
 			/*# stop */
 		}
 		catch
@@ -69,7 +63,7 @@ class Object2
 			Run("bin\\Debug\\sample", null, true);
 
 			// Verify
-			Assert.AreEqual("Good\r\nGood\r\n", _output);
+			Assert.AreEqual("Good\r\nGood\r\nGood\r\n", _output);
 		}
 
 

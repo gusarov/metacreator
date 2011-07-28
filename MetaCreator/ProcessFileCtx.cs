@@ -47,13 +47,5 @@ namespace MetaCreator
 		public IBuildErrorLogger BuildErrorLogger;
 		public string CSharpVersion;
 		public string TargetFrameworkVersion;
-
-		TimeSpan _timeout = TimeSpan.FromSeconds(10);
-
-		public TimeSpan Timeout
-		{
-			get { return _timeout; }
-			set { _timeout = value; }
-		}
 	}
 }

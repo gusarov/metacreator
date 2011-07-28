@@ -25,7 +25,7 @@ namespace MetaCreator.AppDomainIsolation
 
 				thread.Start();
 
-				if (!thread.Join(input.Timeout))
+				if (!thread.Join(10000))
 				{
 					try
 					{

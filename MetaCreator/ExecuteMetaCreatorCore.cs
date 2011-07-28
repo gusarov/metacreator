@@ -139,7 +139,6 @@ namespace MetaCreator
 				Metacode = metacode,
 				CSharpVersion = ctx.CSharpVersion,
 				References = ConfigureReferences(ctx),
-				Timeout = ctx.Timeout,
 			};
 
 			var evaluationResult = _appDomFactory.AnotherAppDomMarshal.Evaluate(evaluationParameters);

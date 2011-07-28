@@ -27,13 +27,7 @@ namespace MetaCreator.Evaluation
 				{"using", Using},
 				{"generatebanner", GenerateBanner},
 				{"csharpversion", CSharpVersion},
-				{"timeout", Timeout},
 			};
-		}
-
-		void Timeout(string value)
-		{
-			_ctx.Timeout = TimeSpan.Parse(value);
 		}
 
 		void CSharpVersion(string version)

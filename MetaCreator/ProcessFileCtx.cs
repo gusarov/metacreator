@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using MetaCreator.Evaluation;
 using MetaCreator.Utils;
 using System.Collections.Generic;
 
@@ -9,8 +11,9 @@ namespace MetaCreator
 {
 	sealed class ProcessFileCtx
 	{
+		internal Code1Builder.BlockParser BlockParser;
 
-		public string OriginalFileName;
+		public string OriginalRelativeFileName;
 		public string IntermediateOutputPathRelative;
 		public string IntermediateOutputPathFull;
 		public string ProjDir;
@@ -21,6 +24,12 @@ namespace MetaCreator
 		public string ReplacementAbsolutePath;
 		public string ReplacementRelativePath;
 		public string ReplacementFileName;
+
+		/// <summary>
+		/// Specify that generated file should be placed into proj dir, instead of intermediate output
+		/// </summary>
+		public bool FileInProject;
+		public string ReplacementExtension = ".cs";
 
 		// references from project that is currently builging
 		public string[] ReferencesOriginal;
@@ -41,7 +50,7 @@ namespace MetaCreator
 //			var intermFileName = ReplacementFileName.Substring(IntermediateOutputPath.Length).Trim('/', '\\');
 
 			// todo Now it returns absolute path to original file name
-			return Path.Combine(ProjDir, OriginalFileName);
+			return Path.Combine(ProjDir, OriginalRelativeFileName);
 		}
 
 		public IBuildErrorLogger BuildErrorLogger;

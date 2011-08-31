@@ -19,16 +19,105 @@ namespace MetaCreator.Evaluation
 
 		public Code1Builder()
 		{
-			_mapExtenders = new Dictionary<string, Action<string>>
+			_mapExtenders = new Dictionary<string, Action<string>>(StringComparer.InvariantCultureIgnoreCase)
 			{
-				{"stringinterpolation", StringInterpolation},
-				{"errorremap", ErrorRemap},
+				{"StringInterpolation", StringInterpolation},
+				{"ErrorRemap", ErrorRemap},
 				{"reference", Reference},
+				{"assembly", ReferenceT4},
 				{"using", Using},
-				{"generatebanner", GenerateBanner},
-				{"csharpversion", CSharpVersion},
-				{"timeout", Timeout},
+				{"import", UsingT4},
+				{"GenerateBanner", GenerateBanner},
+				{"CSharpVersion", CSharpVersion},
+				{"Timeout", Timeout},
+				{"FileExtension", FileExtension},
+				{"Comment", Comment},
+				{"FileInProject", FileInProject},
+				{"Convert", Convert},
 			};
+		}
+
+		void Convert(string value)
+		{
+			const string formatT4 = "<#";
+			const string formatMC = "/*";
+			var body = File.ReadAllText(_ctx.OriginalRelativeFileName);
+			var bodyOriginal = body;
+			var from = Path.GetExtension(_ctx.OriginalRelativeFileName).Equals(".tt", StringComparison.InvariantCultureIgnoreCase) ? formatT4 : formatMC;
+			var to = from == formatT4 ? formatMC : formatT4;
+
+			#region Replace
+
+			body = body.Replace(from + "@", to + "@");
+			body = body.Replace(from + "+", to + "+");
+			body = body.Replace(from + "=", to + "=");
+			if (from == formatT4)
+			{
+				body = body.Replace(from + "", to + "!");
+			}
+			else
+			{
+				body = body.Replace(from + "!", to + "");
+			}
+
+			// closing tags
+			body = body.Replace(ClosingTag(from), ClosingTag(to));
+
+			#endregion
+
+			var backupFile = _ctx.OriginalRelativeFileName + "_" + new Random().Next() + ".bak";
+			File.WriteAllText(backupFile, bodyOriginal);
+
+			if ((File.GetAttributes(_ctx.OriginalRelativeFileName) & FileAttributes.ReadOnly) != 0)
+			{
+				File.SetAttributes(_ctx.OriginalRelativeFileName, File.GetAttributes(_ctx.OriginalRelativeFileName) & ~FileAttributes.ReadOnly);
+			}
+			File.WriteAllText(_ctx.OriginalRelativeFileName, body);
+		}
+
+		string ClosingTag(string tag)
+		{
+			switch (tag.ToLowerInvariant())
+			{
+				case "/*":
+					return "*/";
+				case "<#":
+					return "#>";
+				default:
+					throw new ArgumentException("Unknown Tag");
+			}
+		}
+
+		void FileInProject(string name)
+		{
+			_ctx.FileInProject = true;
+			if (!string.IsNullOrEmpty(name))
+			{
+				_ctx.ReplacementFileName = name;
+			}
+		}
+
+		void Comment(string value)
+		{
+			
+		}
+
+		void FileExtension(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+			{
+				throw new ArgumentException("FileExtension not specified", "value");
+			}
+			if (string.IsNullOrEmpty(value.Trim()))
+			{
+				throw new ArgumentException("FileExtension not specified", "value");
+			}
+			// ensure start with dot
+			if (value[0] != '.')
+			{
+				value = '.' + value;
+			}
+			_ctx.ReplacementExtension = value;
 		}
 
 		void Timeout(string value)
@@ -172,81 +261,136 @@ public static class Generator
 			}
 		}
 
-//		static string OriginalLinePredirrectiveAtStartOfMacroBlock(ProcessFileCtx _ctx)
-//		{
-			//			var banner = (_ctx.GenerateBanner) ? @"// <MetaCreator>
-//			//// DO NOT MODIFY THIS GENERATED CODE
-//			//// You can use /*@ GenerateBanner off */ to disable this message
-			//" : null;
-//			string lineRemap = null;
-//			if (_ctx.ErrorRemap)
-//			{
-//				lineRemap = "#line default";
-//			}
-//			return CombineLines(lineRemap, banner);
-//		}
+		internal class BlockParser
+		{
+			protected Regex Rx;
 
-//		static string CombineLines(params string[] lines)
-//		{
+			public static BlockParser GetBlockParser(ProcessFileCtx ctx)
+			{
+				if (ctx.OriginalRelativeFileName.EndsWith(".tt", StringComparison.InvariantCultureIgnoreCase))
+				{
+					return new T4BlockParser();
+				}
+				return new CommentBlockParser();
+			}
 
-//			if (lines.Length == 2)
-//			{
-//				var line1 = lines[0];
-//				var line2 = lines[1];
-//				if (line1 != null && line1[line1.Length - 1] != Environment.NewLine[Environment.NewLine.Length - 1])
-//				{
-//					line1 += Environment.NewLine;
-//				}
-//				return line1 + line2;
-//			}
-//			if (lines.Length < 2)
-//			{
-//				throw new Exception();
-//			}
-//			var linea = lines[0];
-//			foreach (var line in lines.Skip(1))
-//			{
-//				linea = CombineLines(linea, line);
-//			}
-//			return linea;
-//		}
+			public IEnumerable<Block> Parse(string data)
+			{
+				return Rx.Matches(data).Cast<Match>().Select(x => new Block(this, x));
+			}
 
-//		static string OriginalLinePredirrectiveAtEndOfMacroBlock(ProcessFileCtx _ctx)
-//		{
-//			var banner = (_ctx.GenerateBanner) ? @"// </MetaCreator>" : null;
-//			string lineRemap = null;
-//			if (_ctx.ErrorRemap)
-//			{
-//				lineRemap = "#line {0} \"{1}\"".Arg(_ctx.CurrentMacrosEndLineInOriginalFile + 1, _ctx.GetOriginalFileNameRelativeToIntermediatePath());
-//			}
-//			return CombineLines(banner, lineRemap);
-//		}
 
-//		string GetCode(string methodBody, string classBody, string returnType, IEnumerable<string> imports)
-//		{
-			//							var result = Evaluate(match.Groups[1].Value, false, _ctx);
-//							if (!Environment.NewLine.Contains(match.Groups["p"].Value))
-//							{
-//								result = Environment.NewLine + result;
-//							}
-//							return result;
-//							return Evaluate(match.Groups[1].Value, true, _ctx);
-//
-//
-//			return
-//				string.Format(@"
-//
-//",
-//				              string.Join(Environment.NewLine, imports.Select(x => "using " + x + ";").ToArray()),
-//				              _generatorClassName,
-//				              methodBody,
-//				              _generatorMethodName,
-//				              returnType,
-//				              _generatorResultPropertyName,
-//					);
-//		}
+			internal enum BlockType
+			{
+				Unknown,
+				GenMethodBody,
+				GenExpressionBody,
+				GenClassBody,
+				Extensibility,
+			}
 
-		static readonly Regex _rxBlock = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[@+=!])(?'body'.*?)\*/");
+			internal class Block
+			{
+				readonly BlockParser _parser;
+				readonly Match _match;
+				public readonly int Index;
+				public readonly int Length;
+
+				public Block(BlockParser parser, Match match)
+				{
+					_parser = parser;
+					_match = match;
+					Index = match.Index;
+					Length = match.Length;
+				}
+
+				public BlockType Type
+				{
+					get { return _parser.GetBlockType(_match); }
+				}
+
+				public string Body
+				{
+					get { return _parser.GetBlockBody(_match); }
+				}
+
+				public string Pre
+				{
+					get { return _parser.GetBlockPre(_match); }
+				}
+
+			}
+
+			protected virtual BlockType GetBlockType(Match match)
+			{
+				var suc = match.Groups["type"].Success;
+				var val = match.Groups["type"].Value;
+				return GetBlockTypeFromChar(suc ? (val.Length > 0 ? val[0] : default(char)) : default(char));
+			}
+
+			protected virtual BlockType GetBlockTypeFromChar(char c)
+			{
+				switch (c)
+				{
+					case '@':
+						return BlockType.Extensibility;
+					case '!':
+						return BlockType.GenMethodBody;
+					case '=':
+						return BlockType.GenExpressionBody;
+					case '+':
+						return BlockType.GenClassBody;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+
+			protected virtual string GetBlockBody(Match match)
+			{
+				return match.Groups["body"].Value;
+			}
+
+			protected virtual string GetBlockPre(Match match)
+			{
+				return match.Groups["pre"].Value;
+			}
+
+			class CommentBlockParser : BlockParser
+			{
+				public CommentBlockParser()
+				{
+					Rx = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[@+=!])(?'body'.*?)\*/");
+				}
+			}
+
+			class T4BlockParser : BlockParser
+			{
+				public T4BlockParser()
+				{
+					Rx = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)<#(?'type'[@+=])?(?'body'.*?)#>");
+				}
+
+				protected override BlockType GetBlockTypeFromChar(char c)
+				{
+					switch (c)
+					{
+						case '@':
+							return BlockType.Extensibility;
+						case '!':
+						case ' ':
+						case default(char):
+							return BlockType.GenMethodBody;
+						case '=':
+							return BlockType.GenExpressionBody;
+						case '+':
+							return BlockType.GenClassBody;
+						default:
+							throw new NotSupportedException("Type = " + c + " - " + (int)c);
+					}
+				}
+			}
+		}
+
 		string[] _namespacesFromOriginalFile;
 		string _code;
 
@@ -254,21 +398,22 @@ public static class Generator
 		{
 			_ctx = ctx;
 			_code = code;
-			code = Preprocess(code);
+			_ctx.BlockParser = BlockParser.GetBlockParser(ctx);
+			code = Preprocess(ctx, code);
 			var metacode = BuildMetacode(ctx, code);
 			return metacode;
 		}
 
-		string Preprocess(string code)
+		string Preprocess(ProcessFileCtx ctx, string code)
 		{
-			foreach (Match match in _rxBlock.Matches(code))
+			foreach (var block in ctx.BlockParser.Parse(code))
 			{
-				SaveCaptureState(match);
-				var blockType = match.Groups["type"].Value[0];
+				SaveCaptureState(block);
+				var blockType = block.Type;
 				switch (blockType)
 				{
-					case '@':
-						ExecuteExtender(match.Groups["body"].Value);
+					case BlockParser.BlockType.Extensibility:
+						ExecuteExtender(block.Body);
 						break;
 				}
 			}
@@ -287,7 +432,7 @@ public static class Generator
 			// auto import same namespaces
 			_namespacesFromOriginalFile = Regex.Matches(code, @"(?m)^using\s+([^;]+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
 
-			var blocks = _rxBlock.Matches(code).Cast<Match>().ToArray();
+			var blocks = ctx.BlockParser.Parse(code);
 
 			int from = 0;
 			bool isFirstBlock = true;
@@ -299,9 +444,11 @@ public static class Generator
 				_ctx.NumberOfMetaBlocksProcessed++;
 				SaveCaptureState(block);
 
-				var type = block.Groups["type"].Value[0];
-				var value = block.Groups["body"].Value;
-				var pre = block.Groups["pre"].Value;
+				var type = block.Type;
+				var value = block.Body;
+				var pre = block.Pre;
+
+				ctx.BuildErrorLogger.LogDebug("Block at {0}:{4} type {1}\r\nBody = {2}\r\nPre = {3}".Arg(block.Index, block.Type, block.Body, block.Pre, block.Length));
 
 				isInsertion = pre.Trim().Any();
 
@@ -314,10 +461,10 @@ public static class Generator
 				from = block.Index + block.Length;
 				switch (type)
 				{
-					case '@':
-						//ExecuteExtender(value);
+					case BlockParser.BlockType.Extensibility:
+						// extender already preprocessed
 						break;
-					case '!':
+					case BlockParser.BlockType.GenMethodBody:
 						// TODO detect, is it new line or just some insertion
 						if (_errorRemap)
 						{
@@ -330,10 +477,10 @@ public static class Generator
 							_methodBody.AppendLine("#line default");
 						}
 						break;
-					case '=':
+					case BlockParser.BlockType.GenExpressionBody:
 						_methodBody.AppendLine("Write(" + value + ");");
 						break;
-					case '+':
+					case BlockParser.BlockType.GenClassBody:
 						_classBody.AppendLine("#line " + GetLineNumberByIndex(code, _currentBlockIndex) + ' ' + '"' + _ctx.GetOriginalFileNameRelativeToIntermediatePath() + '"');
 						_classBody.AppendLine(value);
 						_classBody.AppendLine("#line default");
@@ -351,10 +498,22 @@ public static class Generator
 			return _skeleton.Arg(importsAsString, _methodBody, _classBody);
 		}
 
-		public void SaveCaptureState(Capture match)
+		public void SaveCaptureState(BlockParser.Block block)
+		{
+			_currentBlockIndex = block.Index;
+			_currentBlockLength = block.Length;
+			SaveCaptureStateRest();
+		}
+
+		public void SaveCaptureState(Match match)
 		{
 			_currentBlockIndex = match.Index;
 			_currentBlockLength = match.Length;
+			SaveCaptureStateRest();
+		}
+
+		void SaveCaptureStateRest()
+		{
 			_currentBlockFinishIndex = _currentBlockIndex + _currentBlockLength;
 		}
 
@@ -505,6 +664,47 @@ public static class Generator
 
 		bool _errorRemap = true;
 
+		void ReferenceT4(string arg)
+		{
+			var value = ParseT4Dog("name", arg);
+			if (value != null)
+			{
+				Reference(value);
+			}
+			else
+			{
+				_ctx.BuildErrorLogger.LogDebug("Wrong ReferenceT4 Attribute: " + arg);
+			}
+		}
+
+		void UsingT4(string arg)
+		{
+			var value = ParseT4Dog("namespace", arg);
+			if (value != null)
+			{
+				Using(value);
+			}
+			else
+			{
+				_ctx.BuildErrorLogger.LogDebug("Wrong UsingT4 Attribute: " + arg);
+			}
+		}
+
+		/// <summary>
+		/// Only one pair is supported
+		/// </summary>
+		string ParseT4Dog(string parameterName, string line)
+		{
+			var parts = line.Split('=');
+			var field = parts[0];
+			var value = parts[1].Trim('"');
+			if (field.Equals(parameterName, StringComparison.InvariantCultureIgnoreCase))
+			{
+				return value;
+			}
+			return null;
+		}
+
 		void Reference(string arg)
 		{
 			_ctx.BuildErrorLogger.LogDebug("@Reference = " + arg);
@@ -519,12 +719,12 @@ public static class Generator
 
 		void WriteWarning(string message, params object[] args)
 		{
-			_ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, _ctx.OriginalFileName, GetLineNumberByIndex(_code, _currentBlockIndex), 0, GetLineNumberByIndex(_code, _currentBlockFinishIndex), 0, message.Arg(args), null, "MetaCreator.dll"));
+			_ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, _ctx.OriginalRelativeFileName, GetLineNumberByIndex(_code, _currentBlockIndex), 0, GetLineNumberByIndex(_code, _currentBlockFinishIndex), 0, message.Arg(args), null, "MetaCreator.dll"));
 		}
 
 		void WriteError(string message, params object[] args)
 		{
-			_ctx.BuildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, _ctx.OriginalFileName, GetLineNumberByIndex(_code, _currentBlockIndex), 0, GetLineNumberByIndex(_code, _currentBlockFinishIndex), 0, message.Arg(args), null, "MetaCreator.dll"));
+			_ctx.BuildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, _ctx.OriginalRelativeFileName, GetLineNumberByIndex(_code, _currentBlockIndex), 0, GetLineNumberByIndex(_code, _currentBlockFinishIndex), 0, message.Arg(args), null, "MetaCreator.dll"));
 		}
 
 		void Using(string arg)

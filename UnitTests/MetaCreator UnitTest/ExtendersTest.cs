@@ -15,7 +15,7 @@ namespace MetaCreator_UnitTest
 		{
 			_sut = new MetaCreator.Evaluation.Code1Builder();
 			_logger = new FakeErrorLogger();
-			_ctx = new ProcessFileCtx {BuildErrorLogger = _logger, ProjDir = Path.GetTempPath(), OriginalFileName = "file1.txt"};
+			_ctx = new ProcessFileCtx {BuildErrorLogger = _logger, ProjDir = Path.GetTempPath(), OriginalRelativeFileName = "file1.txt"};
 			//_sut.GetType().GetField("_ctx", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_sut, _ctx);
 		}
 

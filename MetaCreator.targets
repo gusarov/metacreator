@@ -5,7 +5,7 @@
 	</Target>
 
 	<PropertyGroup>
-		<MetaCreatorVersion>1.5</MetaCreatorVersion>
+		<MetaCreatorVersion>1.6</MetaCreatorVersion>
 	</PropertyGroup>
 
 	<!-- Determine and try to fix double import -->
@@ -67,15 +67,23 @@
 			Performed	- defined in ExecuteMetacreator, after ResolveReferencesDependsOn, if Requested
 			Done     	- defined in after_BuildDependsOn injection, check that requested build is performed and change state
 		-->
+		<CompileDependsOn>
+			MC_BeforeCompile_Aspect;
+			$(MC_Steps);
+			$(CompileDependsOn);
+			MC_AfterCompile_Aspect;
+		</CompileDependsOn>
+<!--
 		<BuildDependsOn>
-			MC_BeforeBuild_Aspect;
-			$(BuildDependsOn);
-			MC_AfterBuild_Aspect;
-		</BuildDependsOn>		
+			MC_BeforeCompile_Aspect;
+			$(CompileDependsOn);
+			MC_AfterCompile_Aspect;
+		</BuildDependsOn>
 		<ResolveReferencesDependsOn>
 			$(ResolveReferencesDependsOn);
 			$(MC_Steps);
 		</ResolveReferencesDependsOn>
+-->
 	</PropertyGroup>
 
 	<!-- Import custom targets -->
@@ -95,14 +103,14 @@
 		<MetaCreatorDLL Condition="'$(MetaCreatorDLL)'==''">MetaCreator.dll</MetaCreatorDLL>
 	</PropertyGroup>
 	
-	<Target Name='MC_BeforeBuild_Aspect'>
+	<Target Name='MC_BeforeCompile_Aspect'>
 		<PropertyGroup>
 			<MC_Build>Requested</MC_Build>
 		</PropertyGroup>
 	</Target>
 
-	<Target Name='MC_AfterBuild_Aspect'>
-		<Error Condition="'$(MC_Build)'!='Performed'" Text='* MetaCreator.targets: Assert: Buld requested, but was not performed in building chain.' />
+	<Target Name='MC_AfterCompile_Aspect'>
+		<Error Condition="'$(MC_Build)'!='Performed'" Text='* MetaCreator.targets: Assert: Build requested, but was not performed in building chain.' />
 		<PropertyGroup>
 			<MC_Build>Done</MC_Build>
 		</PropertyGroup>
@@ -156,21 +164,22 @@
 			@(CustomAdditionalCompileInputs)'
 		Outputs='@(IntermediateAssembly)' >
 		<Message Text='* MetaCreator.targets: Execute wrapper with MetaCreator...' Importance='high'/>
-		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Buld requested, but was not performed in building chain.' />
+		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Build requested, but was not performed in building chain.' />
 
 		<MSBuildWrapper
 			Task = 'MetaCreator.ExecuteMetaCreator, MetaCreator.dll'
 			Bin = '$(DevCommonBinPath)'
 
 			ArrayNames = 'Sources; References'
-			Array1 = '@(Compile)'
+			Array1 = '@(Compile); @(None)'
 			Array2 = '@(ReferencePath)'
 
-			ParamNames = 'IntermediateOutputPath; ProjDir; TargetFrameworkVersion; TargetsVersion'
-			Param1 = '$(IntermediateOutputPath)'
-			Param2 = '$(ProjectDir)'
-			Param3 = '$(TargetFrameworkVersion)'
-			Param4 = '$(MetaCreatorVersion)'
+			ParamNames = 'IsDevMode; IntermediateOutputPath; ProjDir; TargetFrameworkVersion; TargetsVersion'
+			Param1 = 'True'
+			Param2 = '$(IntermediateOutputPath)'
+			Param3 = '$(ProjectDir)'
+			Param4 = '$(TargetFrameworkVersion)'
+			Param5 = '$(MetaCreatorVersion)'
 
 			OutputArrayNames = 'AddFiles; RemoveFiles'
 			>
@@ -186,7 +195,7 @@
 			<MC_Build>Performed</MC_Build>
 		</PropertyGroup>
 
-	</Target>	
+	</Target>
 	
 	<Target
 		Name='ExecuteMetaCreator'
@@ -207,7 +216,7 @@
 		<Message Text='* MetaCreator.targets: Execute MetaCreator (Targets v$(MetaCreatorVersion))...' Importance='high'/>
 		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Buld requested, but was not performed in building chain.' />
 		<ExecuteMetaCreator
-			Sources = '@(Compile)'
+			Sources = '@(Compile); @(None)'
 			References = '@(ReferencePath)'
 			ProjDir = '$(ProjectDir)'
 			IntermediateOutputPath = '$(IntermediateOutputPath)'

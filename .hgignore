@@ -6,3 +6,6 @@ glob:Debug/
 glob:Release/
 glob:TestResults/
 glob:_ReSharper.MetaCreator/
+syntax: glob
+*.vs10x
+*.bak

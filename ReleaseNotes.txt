@@ -3,7 +3,7 @@ Version 1.6.0
 2. Both 'Compile' and 'None' build actions for *.cs and *.tt files are revieved for metacode.
 3. *.tt files without CustomTool (Generator) attribute are processed by metacreator with regards to T4 syntax. DO NOT FORGET TO REMOVE CustomTool PROPERTY OF FILE!
 4. Generated file now can be included into project using "FileInProject" dirrective.
-4. Several additional dirrectives available:
+5. Several additional dirrectives available:
 	assembly - for T4 <#@ assembly name="System.Core.dll" #> syntax, redirrects to "@reference" dirrective
 	import - for T4 <#@ import namespace="System.Linq" #> syntax, redirrects to "@using" dirrective
 	FileExtension - allows to specify custom extension of generated file (".cs" by default)

@@ -46,13 +46,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_183C30AC6A164BC0A7366664B3AE78C4"
+        "OwnerKey" = "8:_AB118E27D3BD482A9663F0E4B440398A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_AB118E27D3BD482A9663F0E4B440398A"
+        "OwnerKey" = "8:_183C30AC6A164BC0A7366664B3AE78C4"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -254,7 +254,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MetaCreator"
         "ProductCode" = "8:{7589395D-D8E6-4CB4-8AF0-445094661D86}"
-        "PackageCode" = "8:{5C3531B8-5BB2-41B3-ABDB-AD5C01141102}"
+        "PackageCode" = "8:{6D6EBAB5-1259-449D-9101-0B9514CDE4D4}"
         "UpgradeCode" = "8:{4213E4C7-BD72-4DDA-A6C8-31D5F619BF53}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

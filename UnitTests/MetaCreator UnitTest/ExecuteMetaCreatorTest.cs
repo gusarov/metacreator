@@ -227,7 +227,7 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 			buildFailed = false;
 			try
 			{
-				var ctx = ExecuteMetaCreatorCore.GetCtx(sut, "1.tmp", "~", "~");
+				var ctx = ExecuteMetaCreatorCore.GetCtx(sut, "1.tmp");
 
 				result = sut.ProcessFile(code, ctx);
 //				result = sut.ProcessFile(code, new ProcessFileCtx

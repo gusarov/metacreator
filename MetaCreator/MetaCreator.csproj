@@ -118,6 +118,7 @@
     <None Include="..\MetaCreator.targets">
       <Link>MetaCreator.targets</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

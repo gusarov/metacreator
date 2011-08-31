@@ -1,0 +1,30 @@
+﻿//< # @ FileExtension cs # > // optional - change generated file extension
+<#@ FileInProject test\myName.cs #> // optional - specify that file is included inside project. By default, MetaCreator generates something like "obj\debug\file.g.cs" file and include it in build on the fly. But this aproach create problems for source code analysers and intellisense tools, like ReSharper. Using this extension you can have generated file inside solution, like for usual T4 files, but with gauranteed compile time evaluation. You can provide a file name, or current file name will be used
+
+<#@ assembly name="System.Core.dll" #>
+<#@ import namespace="System.Linq" #>
+
+using System;
+
+namespace My
+{
+<# for (int i = 2; i <= 12; i++)
+{
+#>
+	[Serializable]
+	struct MyTuple< <#= string.Join(", ", Enumerable.Range(1, i).Select(x=>"T"+x).ToArray()) #> >
+	{
+<#	for (int j = 1; j <= i; j++)
+	{ 
+#>
+		public T<#=j#> Item<#=j#> { get; set; }
+<#
+	}
+#> 
+	}
+
+<#
+}
+#>
+
+}                      

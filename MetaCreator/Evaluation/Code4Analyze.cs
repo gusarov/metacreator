@@ -34,15 +34,6 @@ namespace MetaCreator.Evaluation
 			// Log imformation about metacode and generated code
 			//_buildErrorLogger.LogErrorEvent
 
-			// Log meta code compile time warnings
-			if (result.Warnings != null)
-			{
-				foreach (var error in result.Warnings)
-				{
-					_buildErrorLogger.LogWarningEvent(CreateBuildWarning(result, error));
-				}
-			}
-
 			var macrosFailed = false;
 
 			// Log meta code compile time errors
@@ -52,6 +43,15 @@ namespace MetaCreator.Evaluation
 				{
 					macrosFailed = true;
 					_buildErrorLogger.LogErrorEvent(CreateBuildError(result, error));
+				}
+			}
+
+			// Log meta code compile time warnings
+			if (result.Warnings != null)
+			{
+				foreach (var error in result.Warnings)
+				{
+					_buildErrorLogger.LogWarningEvent(CreateBuildWarning(result, error));
 				}
 			}
 
@@ -130,7 +130,7 @@ namespace MetaCreator.Evaluation
 		{
 			// Log a message here. It is not very convinient considering a role of this procedure
 			{
-				var source = result.SourceCode;
+				var source = error.IsWarning ? "" : result.SourceCode;
 				// Annotate source code with line numbers
 				{
 					source = string.Join(Environment.NewLine, source.Split('\r').Select((x, i) => (i + 1).ToString("000") + "| " + x.Trim('\n')).ToArray());
@@ -145,7 +145,7 @@ namespace MetaCreator.Evaluation
 
 		string GetMetaCodeFile(EvaluationResult result)
 		{
-			var fileName = TempFiles.GetNewTempFile(Path.GetFileNameWithoutExtension(_ctx.OriginalFileName) + ".meta" + Path.GetExtension(_ctx.OriginalFileName));
+			var fileName = TempFiles.GetNewTempFile(Path.GetFileNameWithoutExtension(_ctx.OriginalRelativeFileName) + ".meta.cs" /*+ Path.GetExtension(_ctx.OriginalFileName)*/);
 			File.WriteAllText(fileName, result.SourceCode);
 			return fileName;
 		}
@@ -155,7 +155,7 @@ namespace MetaCreator.Evaluation
 			// detect that error is redirrected from random name of dynamic file
 			var errorFileName = Path.GetFileName(error.FileName).ToLowerInvariant();
 			var intermFileName = Path.GetFileName(_ctx.GetOriginalFileNameRelativeToIntermediatePath()).ToLowerInvariant();
-			var originalFileName = Path.GetFileName(_ctx.OriginalFileName).ToLowerInvariant();
+			var originalFileName = Path.GetFileName(_ctx.OriginalRelativeFileName).ToLowerInvariant();
 			if (errorFileName == originalFileName || errorFileName == intermFileName)
 			{
 				return error.FileName;

@@ -19,6 +19,11 @@ namespace MetaCreator
 		public ITaskItem[] Sources { get; set; }
 
 		/// <summary>
+		/// Notify that task is running from MetaCreator.sln for additional tracing
+		/// </summary>
+		public string IsDevMode { get; set; }
+
+		/// <summary>
 		/// </summary>
 		[Required]
 		public ITaskItem[] References { get; set; }
@@ -49,9 +54,8 @@ namespace MetaCreator
 
 		public override bool Execute()
 		{
-			// Debugger.Launch();
-
 			_core.Sources = Sources;
+			_core.IsDevMode = IsDevMode;
 			_core.References = References;
 			_core.IntermediateOutputPathRelative = IntermediateOutputPath;
 			_core.ProjDir = ProjDir;

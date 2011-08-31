@@ -1,3 +1,20 @@
+Version 1.6.0
+1. ?? Building chain bug fixes - some times metacreator was ingnored with warning "Build is requested but was not performed"
+2. Both 'Compile' and 'None' build actions for *.cs and *.tt files are revieved for metacode.
+3. *.tt files without CustomTool (Generator) attribute are processed by metacreator with regards to T4 syntax. DO NOT FORGET TO REMOVE CustomTool PROPERTY OF FILE!
+4. Generated file now can be included into project using "FileInProject" dirrective.
+4. Several additional dirrectives available:
+	assembly - for T4 <#@ assembly name="System.Core.dll" #> syntax, redirrects to "@reference" dirrective
+	import - for T4 <#@ import namespace="System.Linq" #> syntax, redirrects to "@using" dirrective
+	FileExtension - allows to specify custom extension of generated file (".cs" by default)
+	FileInProject - if exists, generated file is placed near source file, instead of intermediate path (e.g. "obj\debug\"). That file can be safely included in project. RO attribute is ignored, and restored after file modification in that case. Optionally you can specify file name as a parameter. In that case "FileExtension" dirrective is ignored, you should specify full name. Relative path is allowed (relative to source file path).
+	Comment - just dummy dirrective for comments in pseudocode
+	Convert - if specified: convert source file from MC to T4 and vice versia!
+
+	
+Version 1.5.5
+1. /*@ Timeout 00:00:15 */ dirrective - allow specify metacode execution timeout (10 sec by default)
+
 Version 1.5.4
 1. installation improvement (disable ngen, move installer class to separate assembly, embed ico)
 2. disable IL optimization for better error handling

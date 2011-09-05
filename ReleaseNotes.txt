@@ -1,5 +1,5 @@
 Version 1.6.0
-1. ?? Building chain bug fixes - some times metacreator was ingnored with warning "Build is requested but was not performed"
+1. Building chain bug fixes - some times metacreator was ingnored with warning "Build is requested but was not performed"
 2. Both 'Compile' and 'None' build actions for *.cs and *.tt files are revieved for metacode.
 3. *.tt files without CustomTool (Generator) attribute are processed by metacreator with regards to T4 syntax. DO NOT FORGET TO REMOVE CustomTool PROPERTY OF FILE!
 4. Generated file now can be included into project using "FileInProject" dirrective.

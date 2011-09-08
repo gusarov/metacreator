@@ -46,7 +46,7 @@ namespace MetaCreator.AppDomainIsolation
 			var codeCompiler = new Code2Compiler();
 			var result = codeCompiler.Compile(_input);
 
-			if (result.IsSuccess)
+			if (result.IsSuccess && !_input.DoNotRun)
 			{
 				var codeRunner = new Code3Runer();
 				codeRunner.Run(result, "Generator", "Run");

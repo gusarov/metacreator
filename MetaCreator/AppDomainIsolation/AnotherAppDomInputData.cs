@@ -10,5 +10,6 @@ namespace MetaCreator.AppDomainIsolation
 		public string[] References;
 		public string CSharpVersion;
 		public TimeSpan Timeout;
+		public bool DoNotRun;
 	}
 }

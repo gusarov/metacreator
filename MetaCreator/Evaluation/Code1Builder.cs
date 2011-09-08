@@ -493,9 +493,15 @@ public static class Generator
 			PlainTextWriter(code.Substring(from), _methodBody, isInsertion ? 0 : GetLineNumberByIndex(code, from));
 
 
-			var imports = _namespacesFromOriginalFile.OrEmpty().Concat(_defaultUsings).Concat(_namespaceImportsMetaAdditional.OrEmpty()).Distinct();
+			var imports = _namespacesFromOriginalFile.OrEmpty().Concat(_namespaceImportsMetaAdditional.OrEmpty());
+			return CreateCode(imports, _methodBody.ToString(), _classBody.ToString());
+		}
+
+		public static string CreateCode(IEnumerable<string> imports, string methodBody, string classBody)
+		{
+			imports = imports.Concat(_defaultUsings).Distinct();
 			var importsAsString = string.Join(Environment.NewLine, imports.Select(x => "using " + x + ";").ToArray());
-			return _skeleton.Arg(importsAsString, _methodBody, _classBody);
+			return _skeleton.Arg(importsAsString, methodBody, classBody);
 		}
 
 		public void SaveCaptureState(BlockParser.Block block)

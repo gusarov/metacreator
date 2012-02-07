@@ -13,3 +13,11 @@ namespace SomeSubProject
 		}
 	}
 }
+
+public static class MyMetaExtensions
+{
+	public static void MakeMyMagic()
+	{
+		
+	}
+}

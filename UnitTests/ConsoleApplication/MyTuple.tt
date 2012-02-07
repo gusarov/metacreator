@@ -6,6 +6,8 @@
 
 using System;
 
+// <## 	MyTest #>
+
 namespace My
 {
 <# for (int i = 2; i <= 13; i++)

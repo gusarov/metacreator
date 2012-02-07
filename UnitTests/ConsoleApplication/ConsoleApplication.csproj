@@ -60,6 +60,10 @@
       <Project>{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}</Project>
       <Name>MetaCreator %28Core\MetaCreator%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SomeSubProject\SomeSubProject.csproj">
+      <Project>{6A64C989-8D83-40DA-8A19-39647BC49E1D}</Project>
+      <Name>SomeSubProject</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

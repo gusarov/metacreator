@@ -14,8 +14,44 @@ namespace MetaCreator_Acceptance
 			{
 				File.Delete("bin/debug/sample.exe");
 			}
-			catch { }
+			catch
+			{
+			}
 			Assert.IsFalse(File.Exists("bin/debug/sample.exe"));
+		}
+
+		[TestMethod]
+		public void Should_allow_static_extensions()
+		{
+			File.WriteAllText("sample.cs",
+			                  @"
+class q
+{
+	static void Main()
+	{
+		/*# MakeMyMagic(""test"") */
+	}
+}");
+
+
+			RunMsbuild(true);
+
+			Assert.IsTrue(File.Exists("bin/debug/sample.exe"));
+
+			Run("bin/debug/sample.exe", "", true);
+
+			Assert.AreEqual(
+				@"test 0
+test 1
+test 2
+test 3
+test 4
+test 5
+test 6
+test 7
+test 8
+test 9
+", _output);
 		}
 
 		[TestMethod]

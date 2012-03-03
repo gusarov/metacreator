@@ -63,6 +63,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Meta_blocks_as_single.cs" />
+    <Compile Include="Multiple Inheritance\By interface implementation redirect\AtMinhIface.cs" />
+    <None Include="Multiple Inheritance\By interface implementation redirect\_SampleMinhCommon.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Multiple Inheritance\By interface implementation redirect\_SampleMinh.cs" />
     <Compile Include="Phase4_Runtime_exception_handling.cs" />
     <Compile Include="Phase3_Compilation_error_handling.cs" />
     <Compile Include="Error_handling_base_tests.cs" />
@@ -92,6 +100,15 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Multiple Inheritance\By mixin decompiled class\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

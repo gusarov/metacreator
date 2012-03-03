@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MetaCreator_Acceptance
 {
 	[TestClass]
-	public class Meta_blocks_as_single : Error_handling_base_tests
+	public class Meta_blocks_as_single : Acceptance_base_tests
 	{
 		[TestInitialize]
 		public void Init()

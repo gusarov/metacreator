@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MetaCreator_Acceptance
 {
 	[TestClass]
-	public class Phase1_Meta_compile_error_handling : Error_handling_base_tests
+	public class Phase1_Meta_compile_error_handling : Acceptance_base_tests
 	{
 
 		[TestMethod]

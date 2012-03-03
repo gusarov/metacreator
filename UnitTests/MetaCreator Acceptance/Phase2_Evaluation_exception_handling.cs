@@ -6,7 +6,7 @@ namespace MetaCreator_Acceptance
 {
 
 	[TestClass]
-	public class Phase2_Evaluation_exception_handling : Error_handling_base_tests
+	public class Phase2_Evaluation_exception_handling : Acceptance_base_tests
 	{
 
 		[TestMethod]

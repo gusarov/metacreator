@@ -34,25 +34,38 @@ namespace MetaCreator.AppDomainIsolation
 					catch {}
 					throw new Exception("Metacode Evaluation timeout");
 				}
+				if (_ex != null)
+				{
+					throw _ex;
+				}
 				return _result;
 			}
 		}
 
 		EvaluationResult _result;
 		AnotherAppDomInputData _input;
+		Exception _ex;
 
 		void Body()
 		{
-			var codeCompiler = new Code2Compiler();
-			var result = codeCompiler.Compile(_input);
-
-			if (result.IsSuccess && !_input.DoNotRun)
+			_ex = null;
+			try
 			{
-				var codeRunner = new Code3Runer();
-				codeRunner.Run(result, "Generator", "Run");
-			}
+				var codeCompiler = new Code2Compiler();
+				var result = codeCompiler.Compile(_input);
 
-			_result = result;
+				if (result.IsSuccess && !_input.DoNotRun)
+				{
+					var codeRunner = new Code3Runer();
+					codeRunner.Run(result, "Generator", "Run");
+				}
+
+				_result = result;
+			}
+			catch (Exception ex)
+			{
+				_ex = ex;
+			}
 		}
 	}
 

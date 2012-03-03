@@ -9,7 +9,7 @@ namespace MetaCreator_Acceptance
 {
 
 	[TestClass]
-	public class Phase3_Compilation_error_handling : Error_handling_base_tests
+	public class Phase3_Compilation_error_handling : Acceptance_base_tests
 	{
 
 		[TestMethod]

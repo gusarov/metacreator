@@ -22,7 +22,7 @@ namespace MetaCreator.Evaluation
 			var type = evaluationResult.Assembly.GetType(className, true);
 			type.EnsureExistsDebug("Generator class not found");
 
-			var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+			var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
 			method.EnsureExistsDebug("Generator method not found");
 
 			if (method.GetParameters().Count() != 0 || method.GetGenericArguments().Count() != 0)

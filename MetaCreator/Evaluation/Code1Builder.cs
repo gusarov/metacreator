@@ -48,6 +48,7 @@ namespace MetaCreator.Evaluation
 
 			#region Replace
 
+			body = body.Replace(from + "#", to + "#");
 			body = body.Replace(from + "@", to + "@");
 			body = body.Replace(from + "+", to + "+");
 			body = body.Replace(from + "=", to + "=");
@@ -138,9 +139,9 @@ namespace MetaCreator.Evaluation
 {0}
 #endregion
 
-public static class Generator
+public class Generator : MetaCreator.IGenerator, MetaCreator.IWriter
 {{
-	public static string Run()
+	public string Run()
 	{{
 #region methodbody
 
@@ -158,39 +159,39 @@ public static class Generator
 
 #region utils
 
-	public static StringBuilder Result = new StringBuilder();
+	public StringBuilder Result = new StringBuilder();
 
-	public static void Write(string msg, params object[] args)
+	public void Write(string msg, params object[] args)
 	{{
 		Result.AppendFormat(msg, args);
 	}}
 
-	public static void WriteLine(string msg, params object[] args)
+	public void WriteLine(string msg, params object[] args)
 	{{
 		Result.AppendFormat(msg + Environment.NewLine, args);
 	}}
 
-	public static void Write(string msg)
+	public void Write(string msg)
 	{{
 		Result.Append(msg);
 	}}
 
-	public static void WriteLine(string msg)
+	public void WriteLine(string msg)
 	{{
 		Result.AppendLine(msg);
 	}}
 
-	public static void Write(object obj)
+	public void Write(object obj)
 	{{
 		Result.Append(obj == null ? string.Empty : obj.ToString());
 	}}
 
-	public static void WriteLine(object obj)
+	public void WriteLine(object obj)
 	{{
 		Result.AppendLine(obj == null ? string.Empty : obj.ToString());
 	}}
 
-	public static void WriteLine()
+	public void WriteLine()
 	{{
 		Result.AppendLine();
 	}}
@@ -283,10 +284,11 @@ public static class Generator
 			internal enum BlockType
 			{
 				Unknown,
-				GenMethodBody,
-				GenExpressionBody,
-				GenClassBody,
-				Extensibility,
+				GenMethodBody, // !
+				GenExpressionBody, // =
+				GenClassBody, // +
+				Extensibility, // @
+				ExtensionMethod, // #
 			}
 
 			internal class Block
@@ -332,6 +334,8 @@ public static class Generator
 			{
 				switch (c)
 				{
+					case '#':
+						return BlockType.ExtensionMethod;
 					case '@':
 						return BlockType.Extensibility;
 					case '!':
@@ -359,7 +363,7 @@ public static class Generator
 			{
 				public CommentBlockParser()
 				{
-					Rx = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[@+=!])(?'body'.*?)\*/");
+					Rx = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)/\*(?'type'[#@+=!])(?'body'.*?)\*/");
 				}
 			}
 
@@ -367,13 +371,15 @@ public static class Generator
 			{
 				public T4BlockParser()
 				{
-					Rx = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)<#(?'type'[@+=])?(?'body'.*?)#>");
+					Rx = new Regex(@"(?sm)(?<=(?'pre'^.*?)?)<#(?'type'[#@+=])?(?'body'.*?)#>");
 				}
 
 				protected override BlockType GetBlockTypeFromChar(char c)
 				{
 					switch (c)
 					{
+						case '#':
+							return BlockType.ExtensionMethod;
 						case '@':
 							return BlockType.Extensibility;
 						case '!':
@@ -461,6 +467,9 @@ public static class Generator
 				from = block.Index + block.Length;
 				switch (type)
 				{
+					case BlockParser.BlockType.ExtensionMethod:
+						_methodBody.AppendLine("this." + value + "();");
+						break;
 					case BlockParser.BlockType.Extensibility:
 						// extender already preprocessed
 						break;

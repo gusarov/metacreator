@@ -1,18 +1,16 @@
-﻿/* @ errorremap off */
-
-using System;
+﻿using System;
 using System.Text;
+using MetaCreator;
 
 class q
 {
-
 	static void Main()
 	{
-		/*= "throw null;" */
-
+		/*@ errorremap off */
 		Console.OutputEncoding = Encoding.UTF8;
-		Console.WriteLine(/* = @"""Привет""" */);
+		Console.WriteLine(/*!   Write(DummyEvaluator.Test("asd")); */);
+		Console.WriteLine("/*!     Write(typeof(IGenerator).FullName); */");
+
+		Console.WriteLine(/*# MyTest */);
 	}
-
-
 }

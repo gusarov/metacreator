@@ -1,5 +1,5 @@
 ﻿
-#line 1 "C:\Users\x\Documents\Workspaces\metacreator\UnitTests\ConsoleApplication\MyTuple.tt"
+#line 1 "D:\W\MetaCreator\UnitTests\ConsoleApplication\MyTuple.tt"
 //< # @ FileExtension cs # > // optional - change generated file extension
 
 #line default
@@ -9,6 +9,9 @@
 
 
 using System;
+
+//  " haha! MyTest " 
+
 
 namespace My
 {
@@ -277,7 +280,7 @@ namespace My
 	}
 
 
-#line 28 "C:\Users\x\Documents\Workspaces\metacreator\UnitTests\ConsoleApplication\MyTuple.tt"
+#line 30 "D:\W\MetaCreator\UnitTests\ConsoleApplication\MyTuple.tt"
 
 
 }                      

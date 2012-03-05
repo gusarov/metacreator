@@ -32,6 +32,7 @@ namespace MetaCreator.Utils
 
 		public static string GenerateId()
 		{
+			// return Guid.NewGuid().ToString("N");
 			return _rnd.Next().ToString("X");
 		}
 	}

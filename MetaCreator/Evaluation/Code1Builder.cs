@@ -141,6 +141,13 @@ namespace MetaCreator.Evaluation
 
 public class Generator : MetaCreator.IGenerator, MetaCreator.IWriter
 {{
+	readonly IMetaEngine Engine;
+
+	public Generator(IMetaEngine engine)
+	{{
+		Engine = engine;
+	}}
+
 	public string Run()
 	{{
 #region methodbody
@@ -201,40 +208,42 @@ public class Generator : MetaCreator.IGenerator, MetaCreator.IWriter
 
 		static readonly string[] _defaultUsings = new[]
 		{
-			"global::Microsoft.Win32",
-			"global::System",
-			"global::System.Collections",
-			"global::System.Collections.Generic",
-			"global::System.Collections.Specialized",
-			"global::System.Collections.ObjectModel",
-			"global::System.Configuration.Assemblies",
-			"global::System.ComponentModel",
-			"global::System.Diagnostics",
-			"global::System.Diagnostics.CodeAnalysis",
-			"global::System.Globalization",
-			"global::System.IO",
-			"global::System.IO.Compression",
-			"global::System.IO.Ports",
-			"global::System.Media",
-			"global::System.Net",
-			"global::System.Net.Sockets",
-			"global::System.Reflection",
-			"global::System.Resources",
-			"global::System.Runtime.CompilerServices",
-			"global::System.Runtime.InteropServices",
-			"global::System.Runtime.InteropServices.ComTypes",
-			"global::System.Runtime.Serialization",
-			"global::System.Runtime.Serialization.Formatters.Binary",
-			"global::System.Security",
-			"global::System.Security.Cryptography",
-			"global::System.Security.Cryptography.X509Certificates",
-			"global::System.Security.Permissions",
-			"global::System.Security.Policy",
-			"global::System.Text",
-			"global::System.Text.RegularExpressions",
-			"global::System.Threading",
-			"global::System.CodeDom.Compiler",
-			"global::System.Linq",
+			"MetaCreator",
+			"MetaCreator.Extensions",
+			"Microsoft.Win32",
+			"System",
+			"System.Collections",
+			"System.Collections.Generic",
+			"System.Collections.Specialized",
+			"System.Collections.ObjectModel",
+			"System.Configuration.Assemblies",
+			"System.ComponentModel",
+			"System.Diagnostics",
+			"System.Diagnostics.CodeAnalysis",
+			"System.Globalization",
+			"System.IO",
+			"System.IO.Compression",
+			"System.IO.Ports",
+			"System.Media",
+			"System.Net",
+			"System.Net.Sockets",
+			"System.Reflection",
+			"System.Resources",
+			"System.Runtime.CompilerServices",
+			"System.Runtime.InteropServices",
+			"System.Runtime.InteropServices.ComTypes",
+			"System.Runtime.Serialization",
+			"System.Runtime.Serialization.Formatters.Binary",
+			"System.Security",
+			"System.Security.Cryptography",
+			"System.Security.Cryptography.X509Certificates",
+			"System.Security.Permissions",
+			"System.Security.Policy",
+			"System.Text",
+			"System.Text.RegularExpressions",
+			"System.Threading",
+			"System.CodeDom.Compiler",
+			"System.Linq",
 		};
 
 		readonly StringBuilder _methodBody = new StringBuilder();

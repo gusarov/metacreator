@@ -71,10 +71,11 @@ namespace MetaCreator_Acceptance
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include='*.cs' />
+{3}
 	</ItemGroup>
- <ItemGroup>
+	<ItemGroup>
 {2}
- </ItemGroup>
+	</ItemGroup>
 	<Import Project='$(MSBuildToolsPath)\Microsoft.CSharp.targets' />
 	<Import Project='bin\Debug\MetaCreator.targets' Condition=""Exists('bin\Debug\MetaCreator.targets')""/>
 	<Import Project='..\bin\Debug\MetaCreator.targets' Condition=""Exists('..\bin\Debug\MetaCreator.targets')""/>
@@ -97,6 +98,7 @@ namespace MetaCreator_Acceptance
 			public bool IsExpectedSuccess = true, IsExe;
 			public string AssemblyName = "sample";
 			public string[] References;
+			public string[] Compile;
 		}
 
 		public static IEnumerable<T> OrEmpty<T>(IEnumerable<T> source)
@@ -104,13 +106,22 @@ namespace MetaCreator_Acceptance
 			return source ?? Enumerable.Empty<T>();
 		}
 
+		protected void Build()
+		{
+			Build(new Params());
+		}
+
 		protected void Build(Params options)
 		{
-			var refs = string.Join("\r\n", (options.References ?? Enumerable.Empty<string>()).Select(x => string.Format(@"<Reference Include=""{0}"" />", x)));
+			var refs = string.Join("\r\n", (options.References ?? Enumerable.Empty<string>()).Select(x => string.Format(@"	<Reference Include=""{0}"">
+		<HintPath>{1}</HintPath>
+	</Reference>", Path.GetFileNameWithoutExtension(x), x)));
+
+			var compile = string.Join("\r\n", (options.Compile ?? Enumerable.Empty<string>()).Select(x => string.Format(@"	<Compile Include=""{0}"" />", x)));
+
 			CreateTargets();
-			File.WriteAllText("sample.targets", string.Format(File.ReadAllText("sample.targets"), options.AssemblyName ?? "sample", options.IsExe? "Exe" : "Library", refs));
-			Run(msBuildPath, "/nologo /clp:errorsonly sample.targets", options.IsExpectedSuccess);
-			KillCs();
+			File.WriteAllText("sample.targets", string.Format(File.ReadAllText("sample.targets"), options.AssemblyName ?? "sample", options.IsExe? "Exe" : "Library", refs, compile);
+			Run(msBuildPath, "/nologo /clp:errorsonly /fl /flp:Verbosity=minimal sample.targets", options.IsExpectedSuccess);
 		}
 
 		protected void Build(string asmName = null, params string[] references)

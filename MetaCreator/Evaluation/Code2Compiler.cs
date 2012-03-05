@@ -20,11 +20,9 @@ namespace MetaCreator.Evaluation
 		public EvaluationResult Compile(AnotherAppDomInputData input)
 		{
 			var result = new EvaluationResult();
-
-
-			string source = input.Metacode;
-			string[] references = input.References ?? new string[0];
-			string cSharpVersion = input.CSharpVersion;
+			var source = input.Metacode;
+			var references = new List<string>(input.References ?? Enumerable.Empty<string>());
+			var cSharpVersion = input.CSharpVersion;
 
 			if(cSharpVersion == null)
 			{
@@ -53,12 +51,13 @@ namespace MetaCreator.Evaluation
 					//MainClass = _generatorClassName,
 				};
 
+				references.Add(typeof(Code2Compiler).Assembly.Location);
+
 				foreach (var reference in references)
 				{
 					options.ReferencedAssemblies.Add(reference);
 				}
-
-				result.References = references;
+				result.References = references.ToArray();
 				result.SourceCode = source;
 				result.CompileTempPath = tempPath;
 

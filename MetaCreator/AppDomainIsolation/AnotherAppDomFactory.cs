@@ -21,7 +21,7 @@ namespace MetaCreator.AppDomainIsolation
 
 		IAnotherAppDomMarshalApi Initialize()
 		{
-			// supposed that id current domain is not default - we can skip creation of another app dom
+			// supposed that if current domain is not default - we can skip creation of another app dom
 
 			if (AppDomain.CurrentDomain.IsDefaultAppDomain())
 			{

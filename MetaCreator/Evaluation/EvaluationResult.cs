@@ -31,11 +31,31 @@ namespace MetaCreator.Evaluation
 		{
 			get
 			{
-				return Errors.OrEmpty().Count() == 0 && CompileError == null && EvaluationException == null;
+				return !Errors.OrEmpty().Any() && CompileError == null && EvaluationException == null;
 			}
 		}
 
 		public string DebugLog = string.Empty;
 		public string[] References;
+
+		public void AddToCompile(string fileContent)
+		{
+			var nf = new NewFile
+			{
+				FileBody = fileContent,
+			};
+			NewFiles = NewFiles == null ? new[] { nf } : new List<NewFile>(NewFiles) { nf }.ToArray();
+		}
+
+		public NewFile[] NewFiles;
+
+		[Serializable]
+		public class NewFile
+		{
+			public string FileName;
+			public string FileBody;
+		}
+
 	}
+
 }

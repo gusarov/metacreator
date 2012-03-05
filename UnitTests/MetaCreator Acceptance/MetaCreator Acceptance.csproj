@@ -62,15 +62,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Meta_blocks_as_single.cs" />
-    <Compile Include="Multiple Inheritance\By interface implementation redirect\AtMinhIface.cs" />
-    <None Include="Multiple Inheritance\By interface implementation redirect\_SampleMinhCommon.cs" />
+    <Compile Include="Create additional files\Additional_files.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="Multiple Inheritance\By interface implementation redirect\_SampleMinh.cs" />
+    <None Include="Create additional files\_sample_additional_files.cs" />
+    <Compile Include="Meta_blocks_as_single.cs" />
+    <Compile Include="Multiple Inheritance\By mixin interface aggregation\AtMinhIface.cs" />
+    <None Include="Multiple Inheritance\By mixin interface aggregation\_SampleMinhCommon.cs" />
+    <None Include="Multiple Inheritance\By mixin interface aggregation\_SampleMinh.cs" />
     <Compile Include="Phase4_Runtime_exception_handling.cs" />
     <Compile Include="Phase3_Compilation_error_handling.cs" />
     <Compile Include="Error_handling_base_tests.cs" />
@@ -102,6 +104,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Multiple Inheritance\By attributed aggregation\" />
     <Folder Include="Multiple Inheritance\By mixin decompiled class\" />
   </ItemGroup>
   <ItemGroup>

@@ -51,8 +51,6 @@ namespace MetaCreator.Evaluation
 					//MainClass = _generatorClassName,
 				};
 
-				references.Add(typeof(Code2Compiler).Assembly.Location);
-
 				foreach (var reference in references)
 				{
 					options.ReferencedAssemblies.Add(reference);

@@ -139,7 +139,7 @@ namespace MetaCreator.Evaluation
 {0}
 #endregion
 
-public class Generator : MetaCreator.IGenerator, MetaCreator.IWriter
+public class Generator : MetaCreator.IGenerator, MetaCreator.IMetaWriter
 {{
 	readonly IMetaEngine Engine;
 

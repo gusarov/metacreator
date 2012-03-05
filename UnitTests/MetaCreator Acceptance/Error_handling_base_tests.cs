@@ -4,7 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
+
+using MetaCreator;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MetaCreator_Acceptance
@@ -12,42 +16,87 @@ namespace MetaCreator_Acceptance
 	[TestClass]
 	public abstract class Acceptance_base_tests
 	{
-		protected Assembly LoadAssembly(string fileName = "sample")
+		protected TimeSpan ProcessExecutionTimeout = TimeSpan.FromSeconds(5);
+		AppDomain _dom;
+
+		protected Assembly LoadAssembly(string fileName = null)
 		{
-//			if (fileName == null)
-//			{
-//				var fileNameDll = "sample.dll";
-//				var fileNameExe = "sample.exe";
-//				if (File.Exists(fileNameDll))
-//				{
-//					fileName = fileNameDll;
-//				}
-//				else if (File.Exists(fileNameExe))
-//				{
-//					fileName = fileNameExe;
-//				}
-//				else
-//				{
-//					throw new Exception("File not found");
-//				}
-//			}
+			if (fileName == null)
+			{
+				var fileNameDll = SampleAssemblyName+".dll";
+				var fileNameExe = SampleAssemblyName+".exe";
+				if (File.Exists(fileNameDll))
+				{
+					fileName = fileNameDll;
+				}
+				else if (File.Exists(fileNameExe))
+				{
+					fileName = fileNameExe;
+				}
+				else
+				{
+					throw new Exception("File not found");
+				}
+			}
 //			if(!File.Exists(fileName))
 //			{
 //				throw new Exception("File not found");
 //			}
 
-			return Assembly.Load(Path.GetFileNameWithoutExtension(fileName)/*Path.GetFullPath(fileName)*/);
+//			if (_dom == null)
+//			{
+//				_dom = AppDomain.CreateDomain("Temporary load assemblies", new Evidence(AppDomain.CurrentDomain.Evidence),
+//					new AppDomainSetup
+//					{
+//						ApplicationBase = Directory.GetCurrentDirectory(),
+//						PrivateBinPath = Directory.GetCurrentDirectory(),
+//						// DynamicBase = Directory.GetCurrentDirectory(),
+//					});
+//				_dom.AssemblyResolve += _dom_AssemblyResolve;
+//			}
+
+			return Assembly.LoadFrom(fileName);
+			//return _dom.Loadf(Path.GetFileNameWithoutExtension(fileName)/*Path.GetFullPath(fileName)*/);
 		}
+
+		static string _originalCd;
 
 		[TestInitialize]
 		public void Error_handling_base_tests_Init()
 		{
-			KillCs();
+			sampleAssemblyNameIndex++;
+			if (_originalCd == null)
+			{
+				_originalCd = Directory.GetCurrentDirectory();
+			}
+
+			var d = Path.Combine(_originalCd, Guid.NewGuid().ToString("N"));
+			Directory.CreateDirectory(d);
+			Directory.SetCurrentDirectory(d);
+
+			// KillCs();
 
 			netFxPath = Path.Combine(Environment.GetEnvironmentVariable("WinDir"), @"Microsoft.NET\Framework\v3.5\");
 			msBuildPath = Path.Combine(netFxPath, "msbuild.exe");
 
 			CreateTargets();
+		}
+
+		static int sampleAssemblyNameIndex;
+
+		string SampleAssemblyName
+		{
+			get { return "Sample_" + sampleAssemblyNameIndex; }
+		}
+
+		[TestCleanup]
+		public void TestClean_Acceptance_base_tests()
+		{
+			if (_dom != null)
+			{
+				AppDomain.Unload(_dom);
+			}
+			// Clear();
 		}
 
 		protected static void KillCs()
@@ -59,10 +108,28 @@ namespace MetaCreator_Acceptance
 			}
 		}
 
+		protected static void Clear()
+		{
+			try
+			{
+				foreach (var csDir in new DirectoryInfo(Directory.GetCurrentDirectory()).GetDirectories())
+				{
+					csDir.Delete(true);
+				}
+				foreach (var csFile in new DirectoryInfo(Directory.GetCurrentDirectory()).GetFiles("*.*"))
+				{
+					csFile.IsReadOnly = false;
+					csFile.Delete();
+				}
+			}catch{
+			}
+		
+		}
+
 		static void CreateTargets()
 		{
 			File.WriteAllText("sample.targets", @"
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
+<Project ToolsVersion='3.5' xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
 	<PropertyGroup>
 		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
 		<AssemblyName>{0}</AssemblyName>
@@ -74,6 +141,8 @@ namespace MetaCreator_Acceptance
 {3}
 	</ItemGroup>
 	<ItemGroup>
+		<Reference Include='System' />
+		<Reference Include='System.Core' />
 {2}
 	</ItemGroup>
 	<Import Project='$(MSBuildToolsPath)\Microsoft.CSharp.targets' />
@@ -96,9 +165,9 @@ namespace MetaCreator_Acceptance
 		public class Params
 		{
 			public bool IsExpectedSuccess = true, IsExe;
-			public string AssemblyName = "sample";
-			public string[] References;
-			public string[] Compile;
+			public string AssemblyName;
+			public List<string> References = new List<string>();
+			public List<string> Compile = new List<string>();
 		}
 
 		public static IEnumerable<T> OrEmpty<T>(IEnumerable<T> source)
@@ -111,16 +180,22 @@ namespace MetaCreator_Acceptance
 			Build(new Params());
 		}
 
+		protected void BuildExe()
+		{
+			Build(new Params {IsExe = true});
+		}
+
 		protected void Build(Params options)
 		{
-			var refs = string.Join("\r\n", (options.References ?? Enumerable.Empty<string>()).Select(x => string.Format(@"	<Reference Include=""{0}"">
-		<HintPath>{1}</HintPath>
-	</Reference>", Path.GetFileNameWithoutExtension(x), x)));
+			options.References.Add(typeof(IMetaWriter).Assembly.Location);
+			var refs = string.Join("\r\n", (options.References).Select(x => string.Format(@"		<Reference Include='{0}'>
+			<HintPath>{1}</HintPath>
+		</Reference>", Path.GetFileNameWithoutExtension(x), Path.GetFullPath(x))));
 
-			var compile = string.Join("\r\n", (options.Compile ?? Enumerable.Empty<string>()).Select(x => string.Format(@"	<Compile Include=""{0}"" />", x)));
+			var compile = string.Join("\r\n", (options.Compile ?? Enumerable.Empty<string>()).Select(x => string.Format(@"		<Compile Include='{0}' />", x)));
 
 			CreateTargets();
-			File.WriteAllText("sample.targets", string.Format(File.ReadAllText("sample.targets"), options.AssemblyName ?? "sample", options.IsExe? "Exe" : "Library", refs, compile);
+			File.WriteAllText("sample.targets", string.Format(File.ReadAllText("sample.targets"), options.AssemblyName ?? SampleAssemblyName, options.IsExe ? "Exe" : "Library", refs, compile));
 			Run(msBuildPath, "/nologo /clp:errorsonly /fl /flp:Verbosity=minimal sample.targets", options.IsExpectedSuccess);
 		}
 
@@ -129,7 +204,7 @@ namespace MetaCreator_Acceptance
 			Build(new Params
 			{
 				AssemblyName = asmName,
-				References = references,
+				References = references.ToList(),
 			});
 		}
 
@@ -140,12 +215,17 @@ namespace MetaCreator_Acceptance
 				IsExe = outputExe,
 				IsExpectedSuccess = expectedSuccess,
 				AssemblyName = asmName,
-				References = references,
+				References = references.ToList(),
 			});
 		}
 
-		protected void Run(string prog, string arg, bool expectedSuccess)
+		protected void Run(string prog = null, string arg = "", bool expectedSuccess = true)
 		{
+			if (prog == null)
+			{
+				prog = SampleAssemblyName + ".exe";
+			}
+
 			var p = Process.Start(new ProcessStartInfo
 				{
 					FileName = prog,
@@ -154,10 +234,14 @@ namespace MetaCreator_Acceptance
 					RedirectStandardError = true,
 					UseShellExecute = false,
 					CreateNoWindow = true,
+					ErrorDialog = false,
 				});
 
+			_output = p.StandardOutput.ReadToEnd();
+			_error = p.StandardError.ReadToEnd();
+
 			bool timeOut = false;
-			if (!p.WaitForExit(15000))
+			if (!p.WaitForExit((int)ProcessExecutionTimeout.TotalMilliseconds))
 			{
 				try
 				{
@@ -169,8 +253,8 @@ namespace MetaCreator_Acceptance
 				timeOut = true;
 			}
 
-			_output = p.StandardOutput.ReadToEnd();
-			_error = p.StandardError.ReadToEnd();
+			_output += p.StandardOutput.ReadToEnd();
+			_error += p.StandardError.ReadToEnd();
 			Console.WriteLine("STDOUT:\r\n" + _output);
 			Console.WriteLine("===");
 			Console.WriteLine("STDERR:\r\n" + _error);
@@ -189,6 +273,16 @@ namespace MetaCreator_Acceptance
 			{
 				Assert.AreNotEqual(0, p.ExitCode, _output + _error);
 			}
+		}
+
+		/// <summary>
+		/// Assert that actual source string matches to expected wildcard pattern
+		/// </summary>
+		/// <param name="actualSource">actual source string</param>
+		/// <param name="expectedPattern">wildcard *</param>
+		protected void Matches(string actualSource, string expectedPattern)
+		{
+			StringAssert.Matches(actualSource, new Regex(Regex.Escape(expectedPattern).Replace("\\*", ".*")));
 		}
 
 		readonly Regex _rxMsbuildError = new Regex(@"(?imx)^(?'fn'[^(]+)

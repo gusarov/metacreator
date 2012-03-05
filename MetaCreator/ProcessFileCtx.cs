@@ -19,6 +19,17 @@ namespace MetaCreator
 		string ReplacementFileName { get; set; }
 	}
 
+	sealed class SimpleNewFileCtx : IAddNewFileCtx
+	{
+		public string OriginalRelativeFileName { get; set; }
+
+		public bool FileInProject { get; set; }
+		public string ReplacementAbsolutePath { get; set; }
+		public string ReplacementRelativePath { get; set; }
+		public string ReplacementExtension { get; set; }
+		public string ReplacementFileName { get; set; }
+	}
+
 	sealed class ProcessFileCtx : IAddNewFileCtx
 	{
 		internal Code1Builder.BlockParser BlockParser;
@@ -40,12 +51,7 @@ namespace MetaCreator
 		/// </summary>
 		public bool FileInProject { get; set; }
 
-		string _replacementExtension = ".cs";
-		public string ReplacementExtension
-		{
-			get { return _replacementExtension; }
-			set { _replacementExtension = value; }
-		}
+		public string ReplacementExtension { get; set; }
 
 		// references from project that is currently builging
 		public string[] ReferencesOriginal;

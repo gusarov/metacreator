@@ -35,6 +35,7 @@ class q
 		[TestMethod, Timeout(15000)]
 		public void Should_workout_a_loop_in_meta_code()
 		{
+			ProcessExecutionTimeout = TimeSpan.FromSeconds(15);
 			File.WriteAllText("sample.cs", @"
 class q
 {

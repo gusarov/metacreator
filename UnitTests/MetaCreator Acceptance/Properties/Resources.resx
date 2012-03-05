@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="_Meta_blocks_as_single_common" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\_meta_blocks_as_single_common.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="_SampleMinh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\multiple inheritance\by mixin interface aggregation\_sampleminh.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -126,5 +129,14 @@
   </data>
   <data name="_sample_additional_files" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\create additional files\_sample_additional_files.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="_sample_additional_files2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\create additional files\_sample_additional_files2.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="_sample_additional_files3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\create additional files\_sample_additional_files3.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="_sample_additional_files4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\create additional files\_sample_additional_files4.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

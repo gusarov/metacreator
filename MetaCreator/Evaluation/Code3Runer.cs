@@ -57,7 +57,17 @@ namespace MetaCreator.Evaluation
 
 		void IMetaEngine.AddToCompile(string fileContent)
 		{
-			_evaluationResult.AddToCompile(fileContent);
+			_evaluationResult.AddToCompile(false, null, fileContent);
+		}
+
+		void IMetaEngine.AddToCompile(string fileName, string fileContent)
+		{
+			_evaluationResult.AddToCompile(false, fileName, fileContent);
+		}
+
+		void IMetaEngine.AddToCompile(bool fileInProject, string fileName, string fileContent)
+		{
+			_evaluationResult.AddToCompile(fileInProject, fileName, fileContent);
 		}
 	}
 }

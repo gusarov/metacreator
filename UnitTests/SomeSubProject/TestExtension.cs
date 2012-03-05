@@ -6,7 +6,7 @@ using MetaCreator;
 
 public static class TestExtension
 {
-	public static void MyTest(this IWriter writer)
+	public static void MyTest(this IMetaWriter writer)
 	{
 		writer.WriteLine(@" "" haha! MyTest "" ");
 	}

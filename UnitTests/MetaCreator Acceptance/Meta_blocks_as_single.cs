@@ -1,58 +1,45 @@
 ﻿using System.IO;
 
+using MetaCreator_Acceptance.Properties;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace MetaCreator_Acceptance
 {
+
+
 	[TestClass]
-	public class Meta_blocks_as_single : Acceptance_base_tests
+	public class Static_extensions : Acceptance_base_tests
 	{
-		[TestInitialize]
-		public void Init()
-		{
-			try
-			{
-				File.Delete("bin/debug/sample.exe");
-			}
-			catch
-			{
-			}
-			Assert.IsFalse(File.Exists("bin/debug/sample.exe"));
-		}
 
 		[TestMethod]
 		public void Should_allow_static_extensions()
 		{
-			File.WriteAllText("sample.cs",
-			                  @"
+			File.WriteAllText("common.cs", Resources._Meta_blocks_as_single_common);
+			Build("common");
+			KillCs();
+
+			File.WriteAllText("sample.cs", @"
 class q
 {
 	static void Main()
 	{
-		/*# MakeMyMagic(""test"") */
+		MyMetaExtensions.Test();
+		/*# MakeMyMagic */
 	}
 }");
 
+			Build(new Params {IsExe = true, AssemblyName = "test", References = {"common.dll"}});
+			Run("test.exe");
 
-			RunMsbuild(true);
-
-			Assert.IsTrue(File.Exists("bin/debug/sample.exe"));
-
-			Run("bin/debug/sample.exe", "", true);
-
-			Assert.AreEqual(
-				@"test 0
-test 1
-test 2
-test 3
-test 4
-test 5
-test 6
-test 7
-test 8
-test 9
-", _output);
+			Matches(_output, "!!");
 		}
+	}
+
+	[TestClass]
+	public class Meta_blocks_as_single : Acceptance_base_tests
+	{
 
 		[TestMethod]
 		public void Should_use_blocks_from_different_parts()
@@ -69,11 +56,8 @@ class q
 }");
 
 
-			RunMsbuild(true);
-
-			Assert.IsTrue(File.Exists("bin/debug/sample.exe"));
-
-			Run("bin/debug/sample.exe", "", true);
+			BuildExe();
+			Run();
 
 			Assert.AreEqual(
 @"test 0
@@ -104,11 +88,7 @@ class q
 	}
 }");
 
-
-			RunMsbuild(true);
-
-			Assert.IsTrue(File.Exists("bin/debug/sample.exe"));
-
+			BuildExe();
 		}
 
 		[TestMethod]
@@ -135,12 +115,8 @@ class q
 }
 ");
 
-
-			RunMsbuild(true);
-
-			Assert.IsTrue(File.Exists("bin/debug/sample.exe"));
-
-			Run("bin/debug/sample.exe", "", true);
+			BuildExe();
+			Run();
 
 			Assert.AreEqual(
 @"testA 0

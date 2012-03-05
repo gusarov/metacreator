@@ -103,10 +103,8 @@ class q
 			RunMsbuild(false);
 
 			Assert.IsTrue(ParsedMsBuildError.FileName.EndsWith("sample.meta.cs"), _output);
-			Assert.AreEqual(7, ParsedMsBuildError.Column, _output);
-			Assert.AreEqual(40, ParsedMsBuildError.Line, _output);
 
-			Assert.IsTrue(_output.Trim().EndsWith("sample.meta.cs(40,7): error : Metacode Compilation: The type or namespace name 'someThingWrong' could not be found (are you missing a using directive or an assembly reference?)"));
+			Matches(_output, "sample.meta.cs(*,*): error : Metacode Compilation: The type or namespace name 'someThingWrong' could not be found (are you missing a using directive or an assembly reference?)");
 		}
 
 		[TestMethod]
@@ -128,10 +126,7 @@ class q
 			RunMsbuild(false);
 
 			Assert.IsTrue(ParsedMsBuildError.FileName.EndsWith("sample.meta.cs"), _output);
-			Assert.AreEqual(55, ParsedMsBuildError.Line, _output);
-			Assert.AreEqual(14, ParsedMsBuildError.Column, _output);
-
-			Assert.IsTrue(_output.Trim().EndsWith("sample.meta.cs(55,14): error : Metacode Compilation: Cannot implicitly convert type 'int' to 'string'"));
+			Matches(_output, "sample.meta.cs(*,*): error : Metacode Compilation: Cannot implicitly convert type 'int' to 'string'");
 		}
 
 		[TestMethod]

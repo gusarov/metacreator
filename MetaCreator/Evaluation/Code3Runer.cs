@@ -12,10 +12,14 @@ namespace MetaCreator.Evaluation
 	/// <summary>
 	/// Inmemory code executor. Consider to execute this in separate app domain.
 	/// </summary>
-	class Code3Runer
+	class Code3Runer : IMetaEngine
 	{
+		EvaluationResult _evaluationResult;
+
 		internal void Run(EvaluationResult evaluationResult, string className, string methodName)
 		{
+			_evaluationResult = evaluationResult;
+
 			evaluationResult.EnsureExistsDebug();
 			evaluationResult.Assembly.EnsureExistsDebug();
 
@@ -38,7 +42,7 @@ namespace MetaCreator.Evaluation
 					object instance = null;
 					if (!method.IsStatic)
 					{
-						instance = Activator.CreateInstance(type);
+						instance = Activator.CreateInstance(type, new object[] { this });
 					}
 					returnedValue = method.Invoke(instance, null);
 				}
@@ -49,6 +53,21 @@ namespace MetaCreator.Evaluation
 			}
 
 			evaluationResult.ReturnedValue = returnedValue;
+		}
+
+		void IMetaEngine.AddToCompile(string fileContent)
+		{
+			_evaluationResult.AddToCompile(false, null, fileContent);
+		}
+
+		void IMetaEngine.AddToCompile(string fileName, string fileContent)
+		{
+			_evaluationResult.AddToCompile(false, fileName, fileContent);
+		}
+
+		void IMetaEngine.AddToCompile(bool fileInProject, string fileName, string fileContent)
+		{
+			_evaluationResult.AddToCompile(fileInProject, fileName, fileContent);
 		}
 	}
 }

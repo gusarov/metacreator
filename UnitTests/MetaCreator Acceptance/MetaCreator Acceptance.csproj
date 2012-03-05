@@ -62,15 +62,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Meta_blocks_as_single.cs" />
-    <Compile Include="Multiple Inheritance\By interface implementation redirect\AtMinhIface.cs" />
-    <None Include="Multiple Inheritance\By interface implementation redirect\_SampleMinhCommon.cs" />
+    <None Include="_Meta_blocks_as_single_common.cs" />
+    <Compile Include="Create additional files\Additional_files.cs" />
+    <None Include="Create additional files\_sample_additional_files2.cs" />
+    <None Include="Create additional files\_sample_additional_files3.cs" />
+    <None Include="Create additional files\_sample_additional_files4.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="Multiple Inheritance\By interface implementation redirect\_SampleMinh.cs" />
+    <None Include="Create additional files\_sample_additional_files.cs" />
+    <Compile Include="Meta_blocks_as_single.cs" />
+    <Compile Include="Multiple Inheritance\By mixin interface aggregation\AtMinhIface.cs" />
+    <None Include="Multiple Inheritance\By mixin interface aggregation\_SampleMinhCommon.cs" />
+    <None Include="Multiple Inheritance\By mixin interface aggregation\_SampleMinh.cs" />
     <Compile Include="Phase4_Runtime_exception_handling.cs" />
     <Compile Include="Phase3_Compilation_error_handling.cs" />
     <Compile Include="Error_handling_base_tests.cs" />
@@ -102,6 +108,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Multiple Inheritance\By attributed aggregation\" />
     <Folder Include="Multiple Inheritance\By mixin decompiled class\" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +116,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MetaCreator\MetaCreator.csproj">
+      <Project>{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}</Project>
+      <Name>MetaCreator %28Core\MetaCreator%29</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

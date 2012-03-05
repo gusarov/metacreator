@@ -240,7 +240,7 @@ namespace MetaCreator
 
 		public bool Execute()
 		{
-			Debugger.Launch();
+			// Debugger.Launch();
 			Initialize();
 
 			using (_appDomFactory)

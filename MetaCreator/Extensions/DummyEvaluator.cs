@@ -14,7 +14,7 @@ namespace MetaCreator.Extensions
 
 	public static class MixinExtension
 	{
-		public static void Mixin<TFace, TImpl>(this IWriter writer)
+		public static void Mixin<TFace, TImpl>(this IMetaWriter writer)
 		{
 			writer.WriteLine("// IMPL!");
 		}

@@ -25,7 +25,7 @@ namespace MetaCreator.Evaluation
 		void ProcessEvaluationResult(EvaluationResult result)
 		{
 			// attach new files
-			foreach (var newFile in result.NewFiles)
+			foreach (var newFile in result.NewFiles ?? new EvaluationResult.NewFile[0])
 			{
 				AttachNewFile(result, newFile);
 			}

@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MetaCreator_Acceptance.Multiple_Inheritance.By_interface_implementation_redirect
 {
 	[TestClass]
-	public class AtMinhIface : Acceptance_base_tests
+	public class __AtMinhIface : Acceptance_base_tests
 	{
 		[TestMethod]
 		public void Should_do_something()

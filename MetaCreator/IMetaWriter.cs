@@ -1,6 +1,6 @@
 namespace MetaCreator
 {
-	public interface IWriter
+	public interface IMetaWriter
 	{
 		void Write(string msg, params object[] args);
 		void WriteLine(string msg, params object[] args);

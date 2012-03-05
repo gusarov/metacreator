@@ -38,22 +38,25 @@ namespace MetaCreator.Evaluation
 		public string DebugLog = string.Empty;
 		public string[] References;
 
-		public void AddToCompile(string fileContent)
+		public void AddToCompile(bool fileInProject, string fileName, string fileContent)
 		{
 			var nf = new NewFile
 			{
 				FileBody = fileContent,
+				FileName = fileName,
+				FileInProject = fileInProject,
 			};
 			NewFiles = NewFiles == null ? new[] { nf } : new List<NewFile>(NewFiles) { nf }.ToArray();
 		}
 
-		public NewFile[] NewFiles;
+		public NewFile[] NewFiles = new NewFile[0];
 
 		[Serializable]
 		public class NewFile
 		{
 			public string FileName;
 			public string FileBody;
+			public bool FileInProject;
 		}
 
 	}

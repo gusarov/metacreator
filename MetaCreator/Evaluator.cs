@@ -6,14 +6,6 @@ using MetaCreator.Utils;
 
 namespace MetaCreator
 {
-	public static class DummyEvaluator
-	{
-		public static string Test(string a)
-		{
-			return '"' + a.ToUpperInvariant() + '"';
-		}
-	}
-
 	public static class Evaluator
 	{
 		const string _defaultCsVersion = null; // based on executing CLR

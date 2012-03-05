@@ -1,0 +1,13 @@
+﻿Extensibility:
+
+1. Buildin @Extenders
+2. Extension - extension methods for IWriter
+3. [AttributedExtensions]
+
+
+Tasks:
+
+[ ] Allow MSBUILD variables retrival or any Engine access
+[.] Allow creation of additional files for including in Compile.
+[ ] Allow extending by [AttributedExtensions] ?
+[ ] Buildin [Mixin] or /*# Mixin */ extension

@@ -90,6 +90,7 @@
     <Compile Include="AppDomainIsolation\AnotherAppDomFactory.cs" />
     <Compile Include="AppDomainIsolation\AnotherAppDomInputData.cs" />
     <Compile Include="BuildErrorLogger.cs" />
+    <Compile Include="Extensions\DummyEvaluator.cs" />
     <Compile Include="Evaluation\Code1Builder.cs" />
     <Compile Include="Evaluation\Code2Compiler.cs" />
     <Compile Include="Evaluation\Code3Runer.cs" />
@@ -105,7 +106,8 @@
     <Compile Include="GetAssemblyPath.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IBuildErrorLogger.cs" />
-    <Compile Include="IWriter.cs" />
+    <Compile Include="IMetaEngine.cs" />
+    <Compile Include="IMetaWriter.cs" />
     <Compile Include="ProcessFileCtx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\TestFriends.cs" />
@@ -144,7 +146,9 @@
     <Content Include="..\metaball.ico">
       <Link>metaball.ico</Link>
     </Content>
+    <Content Include="_Documentation\Information.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

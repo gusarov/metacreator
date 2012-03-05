@@ -1,5 +1,5 @@
 ﻿
-#line 1 "D:\W\MetaCreator\UnitTests\ConsoleApplication\MyTuple.tt"
+#line 1 "D:\W\_googlecode\metacreator\UnitTests\ConsoleApplication\MyTuple.tt"
 //< # @ FileExtension cs # > // optional - change generated file extension
 
 #line default
@@ -280,7 +280,7 @@ namespace My
 	}
 
 
-#line 30 "D:\W\MetaCreator\UnitTests\ConsoleApplication\MyTuple.tt"
+#line 30 "D:\W\_googlecode\metacreator\UnitTests\ConsoleApplication\MyTuple.tt"
 
 
 }                      

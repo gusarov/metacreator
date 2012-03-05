@@ -11,7 +11,7 @@ namespace MetaCreator_Acceptance
 	{
 		[TestMethod]
 		public void Should_build_incrementally()
-		{ 
+		{
 			Assert.Inconclusive();
 		}
 	}

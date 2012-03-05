@@ -151,6 +151,7 @@ namespace MetaCreator
 
 		static string[] ConfigureReferences(ProcessFileCtx ctx)
 		{
+			// list for ignore already referenced assemblies
 			var alreadyReferencedNames = new List<string>(16) { "mscorlib" }; // always ignore mscorlib
 
 			var name = new Func<string, string>(x=>
@@ -239,7 +240,7 @@ namespace MetaCreator
 
 		public bool Execute()
 		{
-			// Debugger.Launch();
+			Debugger.Launch();
 			Initialize();
 
 			using (_appDomFactory)
@@ -278,47 +279,16 @@ namespace MetaCreator
 
 					if (ctx.NumberOfMetaBlocksProcessed > 0)
 					{
-						PrepareReplacementFileNames(ctx);
-
-						BuildErrorLogger.LogDebug("fileName = " + fileName);
-						// BuildErrorLogger.LogDebug("ReplacementFileName = " + (string.IsNullOrEmpty(ctx.ReplacementFileName) ? "<NotSpecified>" : ctx.ReplacementFileName));
-						// BuildErrorLogger.LogDebug("FileInProject = " + ctx.FileInProject);
-						// BuildErrorLogger.LogDebug("IntermediateOutputPathRelative = " + IntermediateOutputPathRelative);
-						// BuildErrorLogger.LogDebug("replacementFileRelativePath = " + ctx.ReplacementRelativePath);
-						// BuildErrorLogger.LogDebug("replacementFileAbsolutePath = " + ctx.ReplacementAbsolutePath);
-
 						totalMacrosProcessed += ctx.NumberOfMetaBlocksProcessed;
+						var theSameContent = AddFileToCompile(fileName, processedCode, ctx);
+						_removeFiles.Add(sourceFile);
 
-						Directory.CreateDirectory(Path.GetDirectoryName(ctx.ReplacementAbsolutePath));
-
-						var theSameContent = File.Exists(ctx.ReplacementAbsolutePath) &&
-						                     File.ReadAllText(ctx.ReplacementAbsolutePath) == processedCode;
-
-						if (!theSameContent)
+						foreach (var newFile in ctx.NewFiles)
 						{
-							var fn = ctx.ReplacementRelativePath;
-							bool restoreReadonly = false;
-							if (ctx.FileInProject && File.Exists(fn) && ((File.GetAttributes(fn) & FileAttributes.ReadOnly) != 0))
-							{
-								File.SetAttributes(fn, File.GetAttributes(fn) & ~FileAttributes.ReadOnly);
-								restoreReadonly = true;
-							}
-							File.WriteAllText(fn, processedCode, new UTF8Encoding(true, true));
-							if (restoreReadonly)
-							{
-								File.SetAttributes(fn, File.GetAttributes(fn) | FileAttributes.ReadOnly);
-							}
+							
 						}
 
 						BuildErrorLogger.LogOutputMessage(fileName + " - " + ctx.NumberOfMetaBlocksProcessed + " macros processed to => " + ctx.ReplacementRelativePath + ". File " + (theSameContent ? "is up to date." : "updated"));
-
-						_removeFiles.Add(sourceFile);
-						// только если файл помечен как "в проекте" и он действительно есть в списке исходников - ничего не делать
-						// иначе - добавить на лету при компиляции
-						if (!(ctx.FileInProject && Sources.Any(x => x.ItemSpec.Equals(ctx.ReplacementRelativePath))))
-						{
-							_addFiles.Add(new TaskItem(ctx.ReplacementRelativePath));
-						}
 					}
 				}
 
@@ -335,12 +305,59 @@ namespace MetaCreator
 			}
 		}
 
-		void PrepareReplacementFileNames(ProcessFileCtx ctx)
+		/// <returns>
+		/// Return 'TheSameContent'
+		/// </returns>
+		private bool AddFileToCompile(string fileName, string body, IAddNewFileCtx ctx)
+		{
+
+
+			PrepareReplacementFileNames(ctx);
+
+			BuildErrorLogger.LogDebug("fileName = " + fileName);
+			// BuildErrorLogger.LogDebug("ReplacementFileName = " + (string.IsNullOrEmpty(ctx.ReplacementFileName) ? "<NotSpecified>" : ctx.ReplacementFileName));
+			// BuildErrorLogger.LogDebug("FileInProject = " + ctx.FileInProject);
+			// BuildErrorLogger.LogDebug("IntermediateOutputPathRelative = " + IntermediateOutputPathRelative);
+			// BuildErrorLogger.LogDebug("replacementFileRelativePath = " + ctx.ReplacementRelativePath);
+			// BuildErrorLogger.LogDebug("replacementFileAbsolutePath = " + ctx.ReplacementAbsolutePath);
+
+			Directory.CreateDirectory(Path.GetDirectoryName(ctx.ReplacementAbsolutePath));
+
+			var theSameContent = File.Exists(ctx.ReplacementAbsolutePath) &&
+										File.ReadAllText(ctx.ReplacementAbsolutePath) == body;
+
+			if (!theSameContent)
+			{
+				var fn = ctx.ReplacementRelativePath;
+				bool restoreReadonly = false;
+				if (ctx.FileInProject && File.Exists(fn) && ((File.GetAttributes(fn) & FileAttributes.ReadOnly) != 0))
+				{
+					File.SetAttributes(fn, File.GetAttributes(fn) & ~FileAttributes.ReadOnly);
+					restoreReadonly = true;
+				}
+				File.WriteAllText(fn, body, new UTF8Encoding(true, true));
+				if (restoreReadonly)
+				{
+					File.SetAttributes(fn, File.GetAttributes(fn) | FileAttributes.ReadOnly);
+				}
+			}
+
+			// только если файл помечен как "в проекте" и он действительно есть в списке исходников - ничего не делать
+			// иначе - добавить на лету при компиляции
+			if (!(ctx.FileInProject && Sources.Any(x => x.ItemSpec.Equals(ctx.ReplacementRelativePath))))
+			{
+				_addFiles.Add(new TaskItem(ctx.ReplacementRelativePath));
+			}
+
+			return theSameContent;
+		}
+
+		void PrepareReplacementFileNames(IAddNewFileCtx ctx)
 		{
 			var originalRelativeName = ctx.OriginalRelativeFileName;
 			var isExternalLink = originalRelativeName.StartsWith("..");
 			// default extension provider can be placed here
-			var ext = ctx.ReplacementExtension; //Path.GetExtension(fileName);
+			var ext = ctx.ReplacementExtension;
 
 			string replacementFileRelativeName = ctx.ReplacementFileName;
 			// if not defined by dirrective - generate from original relative file name

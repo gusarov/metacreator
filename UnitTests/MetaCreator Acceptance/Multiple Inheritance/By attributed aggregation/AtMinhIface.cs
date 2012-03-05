@@ -19,6 +19,7 @@ namespace MetaCreator_Acceptance.Multiple_Inheritance.By_interface_implementatio
 			// build common assembly: IBeh & BehImpl
 			File.WriteAllText("common.cs", Resources._SampleMinhCommon);
 			Build("CommonAsm");
+			KillCs();
 
 			// build sample assembly: Derived : Base // +mixin BehImpl
 			File.WriteAllText("sample.cs", Resources._SampleMinh);

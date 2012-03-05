@@ -24,6 +24,12 @@ namespace MetaCreator.Evaluation
 
 		void ProcessEvaluationResult(EvaluationResult result)
 		{
+			// attach new files
+			foreach (var newFile in result.NewFiles)
+			{
+				AttachNewFile(result, newFile);
+			}
+
 #if DEBUG
 			if (!string.IsNullOrEmpty(result.DebugLog))
 			{
@@ -94,6 +100,11 @@ namespace MetaCreator.Evaluation
 			{
 				throw new FailBuildingException("$ terminating, jump to global catch and return false...");
 			}
+		}
+
+		void AttachNewFile(EvaluationResult result, EvaluationResult.NewFile newFile)
+		{
+			_ctx.NewFiles.Add(newFile);
 		}
 
 		BuildWarningEventArgs CreateBuildWarning(EvaluationResult result, CompilerError error)

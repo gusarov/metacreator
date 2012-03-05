@@ -9,11 +9,21 @@ using System.Collections.Generic;
 
 namespace MetaCreator
 {
-	sealed class ProcessFileCtx
+	interface IAddNewFileCtx
+	{
+		bool FileInProject { get; set; }
+		string ReplacementAbsolutePath { get; set; }
+		string ReplacementRelativePath { get; set; }
+		string OriginalRelativeFileName { get; set; }
+		string ReplacementExtension { get; set; }
+		string ReplacementFileName { get; set; }
+	}
+
+	sealed class ProcessFileCtx : IAddNewFileCtx
 	{
 		internal Code1Builder.BlockParser BlockParser;
 
-		public string OriginalRelativeFileName;
+		public string OriginalRelativeFileName { get; set; }
 		public string IntermediateOutputPathRelative;
 		public string IntermediateOutputPathFull;
 		public string ProjDir;
@@ -21,15 +31,21 @@ namespace MetaCreator
 		public bool MacrosFailed;
 
 		public int NumberOfMetaBlocksProcessed;
-		public string ReplacementAbsolutePath;
-		public string ReplacementRelativePath;
-		public string ReplacementFileName;
+		public string ReplacementAbsolutePath { get; set; }
+		public string ReplacementRelativePath { get; set; }
+		public string ReplacementFileName { get; set; }
 
 		/// <summary>
 		/// Specify that generated file should be placed into proj dir, instead of intermediate output
 		/// </summary>
-		public bool FileInProject;
-		public string ReplacementExtension = ".cs";
+		public bool FileInProject { get; set; }
+
+		string _replacementExtension = ".cs";
+		public string ReplacementExtension
+		{
+			get { return _replacementExtension; }
+			set { _replacementExtension = value; }
+		}
 
 		// references from project that is currently builging
 		public string[] ReferencesOriginal;
@@ -58,6 +74,7 @@ namespace MetaCreator
 		public string TargetFrameworkVersion;
 
 		TimeSpan _timeout = TimeSpan.FromSeconds(10);
+		public readonly List<EvaluationResult.NewFile> NewFiles = new List<EvaluationResult.NewFile>();
 
 		public TimeSpan Timeout
 		{

@@ -119,9 +119,12 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="_SampleMinh" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\multiple inheritance\by interface implementation redirect\_sampleminh.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\multiple inheritance\by mixin interface aggregation\_sampleminh.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="_SampleMinhCommon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\multiple inheritance\by interface implementation redirect\_sampleminhcommon.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\multiple inheritance\by mixin interface aggregation\_sampleminhcommon.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="_sample_additional_files" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\create additional files\_sample_additional_files.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

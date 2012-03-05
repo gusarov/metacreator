@@ -61,35 +61,51 @@ namespace MetaCreator_Acceptance.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to public partial class Test
+        ///{
+        ///	public void Method1(){}
+        ///
+        ///	/*!
+        ///
+        ///	Engine.WriteToAnotherFile(@&quot;
+        ///
+        ///public partial class Test
+        ///{
+        ///	public void Method2(){}
+        ///}
+        ///
+        ///&quot;);
+        ///
+        ///	*/
+        ///}.
+        /// </summary>
+        internal static string _sample_additional_files {
+            get {
+                return ResourceManager.GetString("_sample_additional_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to public class Base
         ///{
-        ///	public int BaseMethod()
+        ///	public string BaseMethod(string arg)
         ///	{
-        ///		return 1;
+        ///		return &quot;Base_&quot; + arg;
         ///	}
         ///}
         ///
-        ///[Mixin(typeof(BehImpl))]
-        ///public class Derived : Base
+        ///public class Derived : Base /* = &quot;, IBeh&quot; */
         ///{
-        ///	public int DerivedMethod()
+        ///	/*= &quot;// &quot; + Directory.GetCurrentDirectory() */
+        ///	/* # Mixin&lt;IBeh, BehImpl&gt; */
+        ///
+        ///	public string DerivedMethod(string arg)
         ///	{
-        ///		return 2;
+        ///		return &quot;Derived_&quot; + arg;
         ///	}
         ///}
         ///
-        ///public interface IBeh
-        ///{
-        ///	int BehMethod();
-        ///}
-        ///
-        ///public class BehImpl : IBeh
-        ///{
-        ///	public int BehMethod()
-        ///	{
-        ///		return 3;
-        ///	}
-        ///}.
+        ///.
         /// </summary>
         internal static string _SampleMinh {
             get {
@@ -98,33 +114,16 @@ namespace MetaCreator_Acceptance.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to public class Base
+        ///   Looks up a localized string similar to public interface IBeh
         ///{
-        ///	public int BaseMethod()
-        ///	{
-        ///		return 1;
-        ///	}
-        ///}
-        ///
-        ///[Mixin(typeof(BehImpl))]
-        ///public class Derived : Base
-        ///{
-        ///	public int DerivedMethod()
-        ///	{
-        ///		return 2;
-        ///	}
-        ///}
-        ///
-        ///public interface IBeh
-        ///{
-        ///	int BehMethod();
+        ///	string BehMethod(string arg);
         ///}
         ///
         ///public class BehImpl : IBeh
         ///{
-        ///	public int BehMethod()
+        ///	public string BehMethod(string arg)
         ///	{
-        ///		return 3;
+        ///		return &quot;BehImpl_&quot; + arg;
         ///	}
         ///}.
         /// </summary>

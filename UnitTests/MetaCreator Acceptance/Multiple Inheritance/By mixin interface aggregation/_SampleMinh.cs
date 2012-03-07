@@ -6,10 +6,9 @@
 	}
 }
 
-public class Derived : Base /* = ", IBeh" */
+public class Derived : Base /*= ", IBeh" */
 {
-	/*= "// " + Directory.GetCurrentDirectory() */
-	/* # Mixin<IBeh, BehImpl> */
+	/*# Mixin<IBeh, BehImpl> */
 
 	public string DerivedMethod(string arg)
 	{

@@ -23,12 +23,12 @@ namespace MetaCreator_Acceptance.Multiple_Inheritance.By_interface_implementatio
 
 			// build sample assembly: Derived : Base // +mixin BehImpl
 			File.WriteAllText("sample.cs", Resources._SampleMinh);
-			Build("SampleAsm", "CommonAsm.dll");
+			Build("SampleAsm", "CommonAsm");
 
 			// load assembly
-			var asmCommon = LoadAssembly("CommonAsm");
+			var asmCommon = LoadAssembly("CommonAsm.dll");
 			Assert.IsNotNull(asmCommon);
-			var asmSample = LoadAssembly("SampleAsm");
+			var asmSample = LoadAssembly("SampleAsm.dll");
 			Assert.IsNotNull(asmSample);
 			var baseClass = asmSample.GetType("Base");
 			Assert.IsNotNull(baseClass);

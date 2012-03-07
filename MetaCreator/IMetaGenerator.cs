@@ -5,8 +5,9 @@ using System.Text;
 
 namespace MetaCreator
 {
-	public interface IGenerator
+	public interface IMetaGenerator : IMetaWriter
 	{
+		IMetaEngine Engine { get; }
 		string Run();
 	}
 }

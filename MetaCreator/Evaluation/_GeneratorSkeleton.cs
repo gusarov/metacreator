@@ -6,13 +6,15 @@
 {0}
 #endregion
 
-public class Generator : MetaCreator.IGenerator, MetaCreator.IMetaWriter
+public class Generator : MetaCreator.IMetaGenerator, MetaCreator.IMetaWriter
 {{
-	readonly IMetaEngine Engine;
+	readonly IMetaEngine _engine;
+
+	public IMetaEngine Engine {{ get {{ return _engine; }} }}
 
 	public Generator(IMetaEngine engine)
 	{{
-		Engine = engine;
+		_engine = engine;
 	}}
 
 	public string Run()

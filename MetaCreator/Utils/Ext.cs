@@ -18,6 +18,11 @@ namespace MetaCreator.Utils
 			return string.Format(CultureInfo.InvariantCulture, str, args);
 		}
 
+		public static string Join(this IEnumerable<string> args, string separator = null)
+		{
+			return string.Join(separator ?? "", args.ToArray());
+		}
+
 		public static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> source)
 		{
 			return source ?? Enumerable.Empty<T>();

@@ -17,7 +17,6 @@ namespace MetaCreator_Acceptance
 	public abstract class Acceptance_base_tests
 	{
 		protected TimeSpan ProcessExecutionTimeout = TimeSpan.FromSeconds(5);
-		AppDomain _dom;
 
 		protected Assembly LoadAssembly(string fileName = null)
 		{
@@ -38,25 +37,12 @@ namespace MetaCreator_Acceptance
 					throw new Exception("File not found");
 				}
 			}
-//			if(!File.Exists(fileName))
-//			{
-//				throw new Exception("File not found");
-//			}
-
-//			if (_dom == null)
-//			{
-//				_dom = AppDomain.CreateDomain("Temporary load assemblies", new Evidence(AppDomain.CurrentDomain.Evidence),
-//					new AppDomainSetup
-//					{
-//						ApplicationBase = Directory.GetCurrentDirectory(),
-//						PrivateBinPath = Directory.GetCurrentDirectory(),
-//						// DynamicBase = Directory.GetCurrentDirectory(),
-//					});
-//				_dom.AssemblyResolve += _dom_AssemblyResolve;
-//			}
+			if(!File.Exists(fileName))
+			{
+				throw new Exception("File not found");
+			}
 
 			return Assembly.LoadFrom(fileName);
-			//return _dom.Loadf(Path.GetFileNameWithoutExtension(fileName)/*Path.GetFullPath(fileName)*/);
 		}
 
 		static string _originalCd;
@@ -87,16 +73,6 @@ namespace MetaCreator_Acceptance
 		string SampleAssemblyName
 		{
 			get { return "Sample_" + sampleAssemblyNameIndex; }
-		}
-
-		[TestCleanup]
-		public void TestClean_Acceptance_base_tests()
-		{
-			if (_dom != null)
-			{
-				AppDomain.Unload(_dom);
-			}
-			// Clear();
 		}
 
 		protected static void KillCs()
@@ -199,7 +175,7 @@ namespace MetaCreator_Acceptance
 			Run(msBuildPath, "/nologo /clp:errorsonly /fl /flp:Verbosity=minimal sample.targets", options.IsExpectedSuccess);
 		}
 
-		protected void Build(string asmName = null, params string[] references)
+		protected void Build(string asmName, params string[] references)
 		{
 			Build(new Params
 			{

@@ -5,23 +5,14 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{76D338B5-B6D6-4E5A-B68E-CA616C983537}</ProjectGuid>
+    <ProjectGuid>{CF07BBE3-686C-4383-A666-079B9C8117E5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MetaCreator_UnitTest</RootNamespace>
-    <AssemblyName>MetaCreator UnitTest</AssemblyName>
+    <RootNamespace>MetaCreator_Acceptance</RootNamespace>
+    <AssemblyName>MetaCreator Acceptance</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
-    <SignAssembly>true</SignAssembly>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -53,7 +44,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <AssemblyOriginatorKeyFile>..\..\MetaCreator.snk</AssemblyOriginatorKeyFile>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -63,13 +53,8 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Utilities.v3.5">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
-    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -77,36 +62,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code1BuilderTests.cs" />
-    <Compile Include="ExecuteMetaCreatorTest.cs" />
-    <Compile Include="ExtendersTest.cs" />
-    <Compile Include="FakeErrorLogger.cs" />
-    <Compile Include="MixinExtensionTest.cs" />
-    <Compile Include="ProcessFileCtxTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Create additional files\test.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>test.cs</LastGenOutput>
+    </None>
+    <None Include="_Meta_blocks_as_single_common.cs" />
+    <Compile Include="Create additional files\Additional_files.cs" />
+    <None Include="Create additional files\_sample_additional_files2.cs" />
+    <None Include="Create additional files\_sample_additional_files3.cs" />
+    <None Include="Create additional files\_sample_additional_files4.cs" />
+<<<<<<< local
+    <Compile Include="Multiple Inheritance\MixinMembers\MixinAllMembersTypes.cs" />
+    <None Include="Multiple Inheritance\MixinMembers\_sample_mixin_events_base.cs" />
+    <None Include="Multiple Inheritance\MixinMembers\_sample_mixin_events_exec.cs" />
+=======
+    <None Include="Multiple Inheritance\By all members aggregation\_SampleMinh2.cs" />
+    <Compile Include="Create additional files\test.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>test.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Multiple Inheritance\By all members aggregation\AtMinhMembers.cs" />
+    <None Include="Multiple Inheritance\By all members aggregation\_SampleMinhCommon2.cs" />
+>>>>>>> other
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="Resources\Should_generate_metacode_from_surogate_syntax.cs" />
-    <Compile Include="Test Installer.cs" />
-    <Shadow Include="Test References\MetaCreator.accessor" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\MetaCreatorInstallers\MetaCreatorInstallers.csproj">
-      <Project>{71D11B2C-762B-401D-8D63-07F90570E3BD}</Project>
-      <Name>MetaCreatorInstallers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\MetaCreator\MetaCreator.csproj">
-      <Project>{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}</Project>
-      <Name>MetaCreator %28Core\MetaCreator%29</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\MetaCreator.snk">
-      <Link>MetaCreator.snk</Link>
-    </None>
+    <None Include="Create additional files\_sample_additional_files.cs" />
+    <Compile Include="Meta_blocks_as_single.cs" />
+    <Compile Include="Multiple Inheritance\By mixin interface aggregation\AtMinhIface.cs" />
+    <None Include="Multiple Inheritance\By mixin interface aggregation\_SampleMinhCommon.cs" />
+    <None Include="Multiple Inheritance\By mixin interface aggregation\_SampleMinh.cs" />
+    <Compile Include="Phase4_Runtime_exception_handling.cs" />
+    <Compile Include="Phase3_Compilation_error_handling.cs" />
+    <Compile Include="Error_handling_base_tests.cs" />
+    <Compile Include="Phase2_Evaluation_exception_handling.cs" />
+    <Compile Include="Other.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Phase1_Meta_compile_error_handling.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -131,10 +126,22 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Multiple Inheritance\By attributed aggregation\" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MetaCreator\MetaCreator.csproj">
+      <Project>{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}</Project>
+      <Name>MetaCreator %28Core\MetaCreator%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

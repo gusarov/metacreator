@@ -124,8 +124,14 @@
   <data name="_SampleMinh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\multiple inheritance\by mixin interface aggregation\_sampleminh.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="_SampleMinh2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\multiple inheritance\by all members aggregation\_sampleminh2.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="_SampleMinhCommon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\multiple inheritance\by mixin interface aggregation\_sampleminhcommon.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="_SampleMinhCommon2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\multiple inheritance\by all members aggregation\_sampleminhcommon2.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="_sample_additional_files" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\create additional files\_sample_additional_files.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

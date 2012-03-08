@@ -1,0 +1,12 @@
+﻿// <#= Session.GetType().Name #> 
+
+<#
+foreach(var mi in Session.GetType().GetMembers())
+{
+#>
+
+// <#= mi.Name #> 
+
+<#
+}
+#>

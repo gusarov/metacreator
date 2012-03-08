@@ -62,11 +62,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Create additional files\test.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>test.cs</LastGenOutput>
+    </None>
     <None Include="_Meta_blocks_as_single_common.cs" />
     <Compile Include="Create additional files\Additional_files.cs" />
     <None Include="Create additional files\_sample_additional_files2.cs" />
     <None Include="Create additional files\_sample_additional_files3.cs" />
     <None Include="Create additional files\_sample_additional_files4.cs" />
+    <None Include="Multiple Inheritance\By all members aggregation\_SampleMinh2.cs" />
+    <Compile Include="Create additional files\test.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>test.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Multiple Inheritance\By all members aggregation\AtMinhMembers.cs" />
+    <None Include="Multiple Inheritance\By all members aggregation\_SampleMinhCommon2.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -109,7 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Multiple Inheritance\By attributed aggregation\" />
-    <Folder Include="Multiple Inheritance\By mixin decompiled class\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -122,6 +133,9 @@
       <Project>{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}</Project>
       <Name>MetaCreator %28Core\MetaCreator%29</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

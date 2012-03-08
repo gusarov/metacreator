@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Collections.Generic;
 using System;
 
@@ -36,6 +36,7 @@ set {{ {1}.{2} = value; }}
 		}
 		public static void Mixin<TFace, TImpl>(this IMetaWriter writer)
 		{
+<<<<<<< local
 			writer.WriteLine(_aggregatorPattern,
 				CSharpTypeIdentifier(typeof(TFace)),
 				typeof(TFace).Name,
@@ -63,6 +64,10 @@ set {{ {1}.{2} = value; }}
 //			}
 
 			foreach (var mi in typeof(TFace).GetMethods().Where(x=>!x.IsSpecialName))
+=======
+			writer.WriteLine(_aggregatorPattern, CSharpTypeIdentifier(typeof(TFace)), CSharpTypeIdentifier(typeof(TImpl)));
+			foreach (var mi in typeof(TFace).GetMethods())
+>>>>>>> other
 			{
 				writer.WriteLine(_methodPattern,
 					CSharpTypeIdentifier(mi.ReturnType), // 0
@@ -70,14 +75,23 @@ set {{ {1}.{2} = value; }}
 					mi.Name, // 2
 					mi.GetParameters().Select(x => "{0} {1}".Arg(CSharpTypeIdentifier(x.ParameterType), x.Name)).Join(", "), // 3 parameters
 					mi.GetParameters().Select(x => x.Name).Join(", "), // 4 arguments
-					mi.ReturnType!=typeof(void)?"return ":"" // 5 return?
+					mi.ReturnType != typeof(void) ? "return " : "" // 5 return?
 					);
 			}
 
 
 		}
 
+<<<<<<< local
 		public static string CSharpTypeIdentifier(Type type)
+=======
+		public static void Mixin<TImpl>(this IMetaWriter writer)
+		{
+			Mixin<TImpl, TImpl>(writer);
+		}
+
+		static string CSharpTypeIdentifier(Type type)
+>>>>>>> other
 		{
 			if (type == typeof(void))
 			{
@@ -90,7 +104,7 @@ set {{ {1}.{2} = value; }}
 			var i = type.Name.IndexOf('`');
 			var name = type.Name;
 			if (i > 0)
-		{
+			{
 				name = name.Substring(0, i);
 			}
 			// generics
@@ -98,7 +112,7 @@ set {{ {1}.{2} = value; }}
 			if (generics.Length > 0)
 			{
 				generics = "<" + generics + ">";
-		}
+			}
 			return ns + (string.IsNullOrEmpty(ns) ? "" : ".") + name + generics;
 		}
 

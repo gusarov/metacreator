@@ -32,10 +32,6 @@ namespace MetaCreator_Acceptance
 				{
 					fileName = fileNameExe;
 				}
-				else
-				{
-					throw new Exception("File not found");
-				}
 			}
 			if(!File.Exists(fileName))
 			{

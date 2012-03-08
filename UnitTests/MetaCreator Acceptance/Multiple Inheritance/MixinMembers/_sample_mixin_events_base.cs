@@ -19,5 +19,18 @@ public class Observable : INotifyPropertyChanged
 			handler(this, e);
 		}
 	}
+
+	int _testProperty2;
+
+	public int TestProperty2
+	{
+		get { return _testProperty2; }
+		set
+		{
+			_testProperty2 = value;
+			OnPropertyChanged("TestProperty2");
+		}
+	}
+
 }
 

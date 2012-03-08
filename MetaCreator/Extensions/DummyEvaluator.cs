@@ -25,7 +25,7 @@ namespace MetaCreator.Extensions
 
 		public static void Mixin<TFace, TImpl>(this IMetaWriter writer)
 		{
-			writer.WriteLine(_aggregatorPattern, CSharpTypeIdentifier(typeof (TFace)), CSharpTypeIdentifier(typeof (TImpl)));
+			writer.WriteLine(_aggregatorPattern, CSharpTypeIdentifier(typeof(TFace)), CSharpTypeIdentifier(typeof(TImpl)));
 			foreach (var mi in typeof(TFace).GetMethods())
 			{
 				writer.WriteLine(_methodPattern,
@@ -34,9 +34,14 @@ namespace MetaCreator.Extensions
 					mi.Name, // 2
 					mi.GetParameters().Select(x => "{0} {1}".Arg(CSharpTypeIdentifier(x.ParameterType), x.Name)).Join(", "), // 3 parameters
 					mi.GetParameters().Select(x => x.Name).Join(", "), // 4 arguments
-					mi.ReturnType!=typeof(void)?"return ":"" // 5 return?
+					mi.ReturnType != typeof(void) ? "return " : "" // 5 return?
 					);
 			}
+		}
+
+		public static void Mixin<TImpl>(this IMetaWriter writer)
+		{
+			Mixin<TImpl, TImpl>(writer);
 		}
 
 		static string CSharpTypeIdentifier(Type type)

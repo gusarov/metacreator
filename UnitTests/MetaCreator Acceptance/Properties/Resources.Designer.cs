@@ -70,10 +70,10 @@ namespace MetaCreator_Acceptance.Properties {
         ///
         ///	public static void MakeMyMagic(this IMetaWriter writer)
         ///	{
-        ///		string msg = &quot;!!&quot;&quot;;
+        ///		string msg = &quot;!!&quot;;
         ///		writer.WriteLine(@&quot;System.Console.WriteLine(&quot;&quot;&quot; + msg + @&quot;&quot;&quot;);&quot;);
         ///	}
-        ///}&quot;.
+        ///}.
         /// </summary>
         internal static string _Meta_blocks_as_single_common {
             get {
@@ -235,10 +235,9 @@ namespace MetaCreator_Acceptance.Properties {
         ///	}
         ///}
         ///
-        ///public class Derived : Base /* = &quot;, IBeh&quot; */
+        ///public class Derived : Base /*= &quot;, IBeh&quot; */
         ///{
-        ///	/*= &quot;// &quot; + Directory.GetCurrentDirectory() */
-        ///	/* # Mixin&lt;IBeh, BehImpl&gt; */
+        ///	/*# Mixin&lt;IBeh, BehImpl&gt; */
         ///
         ///	public string DerivedMethod(string arg)
         ///	{
@@ -251,6 +250,33 @@ namespace MetaCreator_Acceptance.Properties {
         internal static string _SampleMinh {
             get {
                 return ResourceManager.GetString("_SampleMinh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class Base
+        ///{
+        ///	public string BaseMethod(string arg)
+        ///	{
+        ///		return &quot;Base_&quot; + arg;
+        ///	}
+        ///}
+        ///
+        ///public class Derived : Base
+        ///{
+        ///	/*# Mixin&lt;BehImpl&gt; */
+        ///
+        ///	public string DerivedMethod(string arg)
+        ///	{
+        ///		return &quot;Derived_&quot; + arg;
+        ///	}
+        ///}
+        ///
+        ///.
+        /// </summary>
+        internal static string _SampleMinh2 {
+            get {
+                return ResourceManager.GetString("_SampleMinh2", resourceCulture);
             }
         }
         
@@ -271,6 +297,21 @@ namespace MetaCreator_Acceptance.Properties {
         internal static string _SampleMinhCommon {
             get {
                 return ResourceManager.GetString("_SampleMinhCommon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class BehImpl
+        ///{
+        ///	public string BehMethod(string arg)
+        ///	{
+        ///		return &quot;BehImpl_&quot; + arg;
+        ///	}
+        ///}.
+        /// </summary>
+        internal static string _SampleMinhCommon2 {
+            get {
+                return ResourceManager.GetString("_SampleMinhCommon2", resourceCulture);
             }
         }
     }

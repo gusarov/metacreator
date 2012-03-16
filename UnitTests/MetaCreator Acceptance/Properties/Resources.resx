@@ -121,6 +121,9 @@
   <data name="_Meta_blocks_as_single_common" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\_meta_blocks_as_single_common.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="_sampleIntroscopeTests" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\introspectiontest\_sampleintroscopetests.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="_SampleMinh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\multiple inheritance\by mixin interface aggregation\_sampleminh.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -150,5 +153,11 @@
   </data>
   <data name="_sample_mixin_events_exec" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\multiple inheritance\mixinmembers\_sample_mixin_events_exec.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="_sampleIntroscopeCommon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\introspectiontest\_sampleintroscopecommon.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="_sampleIntroscopeTests1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\introspectiontest\_sampleintroscopetests.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

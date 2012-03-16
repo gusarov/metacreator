@@ -21,15 +21,22 @@ namespace MetaCreator_UnitTest
 		{
 			Assert.AreEqual("MetaCreator_UnitTest.MixinExtensionTest", MixinExtension.CSharpTypeIdentifier(typeof(MixinExtensionTest)));
 
-			Assert.AreEqual("System.String", MixinExtension.CSharpTypeIdentifier(typeof(System.String)));
-			Assert.AreEqual("System.Int32", MixinExtension.CSharpTypeIdentifier(typeof(int)));
+			Assert.AreEqual("string", MixinExtension.CSharpTypeIdentifier(typeof(System.String)));
+			Assert.AreEqual("int", MixinExtension.CSharpTypeIdentifier(typeof(int)));
 
 		}
 
 		[TestMethod]
 		public void Should_return_for_generic_class()
 		{
-			Assert.AreEqual("MetaCreator_UnitTest.SampleGeneric<System.String, MetaCreator_UnitTest.SampleGeneric<System.Int64, System.Int16>>", MixinExtension.CSharpTypeIdentifier(typeof(SampleGeneric<System.String, SampleGeneric<long, short>>)));
+			Assert.AreEqual("MetaCreator_UnitTest.SampleGeneric<string, MetaCreator_UnitTest.SampleGeneric<long, short>>", MixinExtension.CSharpTypeIdentifier(typeof(SampleGeneric<System.String, SampleGeneric<long, short>>)));
+
+		}
+
+		[TestMethod]
+		public void Should_return_for_generic_class_without_known_namespaces()
+		{
+			Assert.AreEqual("MetaCreator_UnitTest.SampleGeneric<string, MetaCreator_UnitTest.SampleGeneric<long, short>>", MixinExtension.CSharpTypeIdentifier(typeof(SampleGeneric<System.String, SampleGeneric<long, short>>)));
 
 		}
 	}

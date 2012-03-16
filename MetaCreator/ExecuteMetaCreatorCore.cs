@@ -139,6 +139,7 @@ namespace MetaCreator
 				Metacode = metacode,
 				CSharpVersion = ctx.CSharpVersion,
 				References = ConfigureReferences(ctx),
+				ImportsFromOriginalFile = ctx.ImportsFromOriginalFile,
 				Timeout = ctx.Timeout,
 			};
 

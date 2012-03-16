@@ -82,6 +82,9 @@ namespace MetaCreator
 		TimeSpan _timeout = TimeSpan.FromSeconds(10);
 		public readonly List<EvaluationResult.NewFile> NewFiles = new List<EvaluationResult.NewFile>();
 
+		// tis property filled by Code1Builder
+		public string[] ImportsFromOriginalFile;
+
 		public TimeSpan Timeout
 		{
 			get { return _timeout; }

@@ -11,5 +11,6 @@ namespace MetaCreator.AppDomainIsolation
 		public string CSharpVersion;
 		public TimeSpan Timeout;
 		public bool DoNotRun;
+		public string[] ImportsFromOriginalFile;
 	}
 }

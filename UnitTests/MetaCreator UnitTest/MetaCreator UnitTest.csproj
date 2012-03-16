@@ -90,6 +90,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="Resources\Should_generate_metacode_from_surogate_syntax.cs" />
+    <Compile Include="Reintrospection\TypeNameTest.cs" />
     <Compile Include="Test Installer.cs" />
     <Shadow Include="Test References\MetaCreator.accessor" />
   </ItemGroup>

@@ -71,6 +71,9 @@
     <None Include="Create additional files\_sample_additional_files2.cs" />
     <None Include="Create additional files\_sample_additional_files3.cs" />
     <None Include="Create additional files\_sample_additional_files4.cs" />
+    <None Include="IntrospectionTest\_sampleIntroscopeCommon.cs" />
+    <Compile Include="IntrospectionTest\IntrospectionTest.cs" />
+    <None Include="IntrospectionTest\_sampleIntroscopeTests.cs" />
     <Compile Include="Multiple Inheritance\MixinMembers\MixinAllMembersTypes.cs" />
     <None Include="Multiple Inheritance\MixinMembers\_sample_mixin_events_base.cs" />
     <None Include="Multiple Inheritance\MixinMembers\_sample_mixin_events_exec.cs" />

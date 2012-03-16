@@ -15,10 +15,12 @@ namespace MetaCreator.Evaluation
 	class Code3Runer : IMetaEngine
 	{
 		EvaluationResult _evaluationResult;
+		AnotherAppDomInputData _input;
 
-		internal void Run(EvaluationResult evaluationResult, string className, string methodName)
+		internal void Run(EvaluationResult evaluationResult, string className, string methodName, AnotherAppDomInputData input)
 		{
 			_evaluationResult = evaluationResult;
+			_input = input;
 
 			evaluationResult.EnsureExistsDebug();
 			evaluationResult.Assembly.EnsureExistsDebug();
@@ -68,6 +70,11 @@ namespace MetaCreator.Evaluation
 		void IMetaEngine.AddToCompile(bool fileInProject, string fileName, string fileContent)
 		{
 			_evaluationResult.AddToCompile(fileInProject, fileName, fileContent);
+		}
+
+		public string[] Imports
+		{
+			get { return _input != null ? (_input.ImportsFromOriginalFile ?? new string[0]) : new string[0]; }
 		}
 	}
 }

@@ -374,6 +374,7 @@ namespace MetaCreator.Evaluation
 
 			// auto import same namespaces
 			_namespacesFromOriginalFile = Regex.Matches(code, @"(?m)^using\s+([^;]+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
+			ctx.ImportsFromOriginalFile = _namespacesFromOriginalFile;
 
 			var blocks = ctx.BlockParser.Parse(code);
 

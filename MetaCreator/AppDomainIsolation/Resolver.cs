@@ -48,23 +48,13 @@ namespace MetaCreator.AppDomainIsolation
 			// search in additional references
 			var i = args.Name.IndexOf(',');
 			var name = i > 0 ? args.Name.Substring(0, i).TrimEnd(',').Trim() : args.Name;
-			File.WriteAllText("C:\\1.txt", "=== Probe for " + name + "\\\r\n");
-			try
+			foreach (var currentDomainAdditionalReference in _currentDomainAdditionalReferences)
 			{
-				foreach (var currentDomainAdditionalReference in _currentDomainAdditionalReferences)
+				if (Path.GetFileNameWithoutExtension(currentDomainAdditionalReference) == name)
 				{
-					File.AppendAllText("C:\\1.txt", currentDomainAdditionalReference + "\r\n");
-					if (Path.GetFileNameWithoutExtension(currentDomainAdditionalReference) == name)
-					{
-						var path = Path.GetFullPath(currentDomainAdditionalReference);
-						File.AppendAllText("C:\\1.txt", "!!! " + path + "\r\n");
-						return Assembly.LoadFile(path);
-					}
+					var path = Path.GetFullPath(currentDomainAdditionalReference);
+					return Assembly.LoadFile(path);
 				}
-			}
-			finally
-			{
-				File.AppendAllText("C:\\1.txt", "===/\r\n");
 			}
 			return null;
 		}

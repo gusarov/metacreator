@@ -5,7 +5,7 @@ using System.Linq;
 using MetaCreator;
 using MetaCreator.Utils;
 
-static class SharpGenerator
+public static class SharpGenerator
 {
 	public static string CSharpTypeIdentifier(this Type type, params string[] imports)
 	{
@@ -16,7 +16,7 @@ static class SharpGenerator
 	{
 		imports = imports ?? Enumerable.Empty<string>().ToArray();
 
-		if (imports.Length == 0)
+		if (imports.Length == 0 && useEngineImports)
 		{
 			imports = imports.Concat(EngineState.Imports ?? Enumerable.Empty<string>()).Distinct().ToArray();
 		}
@@ -37,7 +37,7 @@ static class SharpGenerator
 			name = name.Substring(0, i);
 		}
 		// generics
-		var generics = type.GetGenericArguments().Select(x => CSharpTypeIdentifier(x, imports)).Join(", ");
+		var generics = type.GetGenericArguments().Select(x => CSharpTypeIdentifier(x, useEngineImports, imports)).Join(", ");
 		if (generics.Length > 0)
 		{
 			generics = "<" + generics + ">";

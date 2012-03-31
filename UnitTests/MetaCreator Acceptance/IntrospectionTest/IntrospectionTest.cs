@@ -24,11 +24,17 @@ namespace MetaCreator_Acceptance.IntrospectionTest
 
 			var testA = test.GetMethod("get_TestA");
 			var testB = test.GetMethod("get_TestB");
+			var testC = test.GetMethod("get_TestC");
+			var testD = test.GetMethod("get_TestD");
 			Assert.IsNotNull(testA);
 			Assert.IsNotNull(testB);
+			Assert.IsNotNull(testC);
+			Assert.IsNotNull(testD);
 
-			Assert.AreEqual("n.T<n.T<int, string>, System.Text.RegularExpressions.Regex>", testA.Invoke(null, null));
-			Assert.AreEqual("T<T<int, string>, Text.RegularExpressions.Regex>", testB.Invoke(null, null));
+			Assert.AreEqual("T<T<int, Version>, Text.RegularExpressions.Regex>", testA.Invoke(null, null));
+			Assert.AreEqual("T<T<int, Version>, Text.RegularExpressions.Regex>", testB.Invoke(null, null));
+			Assert.AreEqual("n.T<n.T<int, System.Version>, RegularExpressions.Regex>", testC.Invoke(null, null));
+			Assert.AreEqual("n.T<n.T<int, System.Version>, System.Text.RegularExpressions.Regex>", testD.Invoke(null, null));
 		}
 	}
 }

@@ -98,6 +98,7 @@
     <Compile Include="Evaluation\Code4Analyze.cs" />
     <Compile Include="Evaluation\EvaluationResult.cs" />
     <Compile Include="AppDomainIsolation\Resolver.cs" />
+    <Compile Include="Extensions\MixinExtension.cs" />
     <Compile Include="IMetaGenerator.cs" />
     <Compile Include="Evaluation\TempFiles.cs" />
     <Compile Include="Evaluator.cs" />
@@ -117,6 +118,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\TestFriends.cs" />
+    <Compile Include="SharpGenerator\SharpGenerator.cs" />
     <Compile Include="Utils\DebugAssert.cs" />
     <Compile Include="Utils\Ext.cs" />
     <Compile Include="Utils\Lazy.cs" />

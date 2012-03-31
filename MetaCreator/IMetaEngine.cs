@@ -11,4 +11,10 @@ namespace MetaCreator
 		void AddToCompile(bool fileInProject, string fileName, string fileContent);
 		string[] Imports { get; }
 	}
+
+	static class EngineState
+	{
+		[ThreadStatic]
+		public static string[] Imports;
+	}
 }

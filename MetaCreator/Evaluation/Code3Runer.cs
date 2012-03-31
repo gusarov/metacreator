@@ -46,7 +46,9 @@ namespace MetaCreator.Evaluation
 					{
 						instance = Activator.CreateInstance(type, new object[] { this });
 					}
+					EngineState.Imports = Imports;
 					returnedValue = method.Invoke(instance, null);
+					EngineState.Imports = null;
 				}
 				catch (TargetInvocationException ex)
 				{

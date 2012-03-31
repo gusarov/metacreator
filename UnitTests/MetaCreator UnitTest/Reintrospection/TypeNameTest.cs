@@ -15,17 +15,17 @@ namespace MetaCreator_UnitTest.Reintrospection
 		[TestMethod]
 		public void Should_return_namespace_with_imports()
 		{
-			Assert.AreEqual("System.", MixinExtension.GetNamespace("System"));
-			Assert.AreEqual("", MixinExtension.GetNamespace("System", "System"));
-			Assert.AreEqual("", MixinExtension.GetNamespace("System", "System", "System.IO"));
-			Assert.AreEqual("System.", MixinExtension.GetNamespace("System", "MySpace", "System.IO"));
-			Assert.AreEqual("System.", MixinExtension.GetNamespace("System", "MySpace", "MySpace2"));
+			Assert.AreEqual("System.", SharpGenerator.GetNamespace("System"));
+			Assert.AreEqual("", SharpGenerator.GetNamespace("System", "System"));
+			Assert.AreEqual("", SharpGenerator.GetNamespace("System", "System", "System.IO"));
+			Assert.AreEqual("System.", SharpGenerator.GetNamespace("System", "MySpace", "System.IO"));
+			Assert.AreEqual("System.", SharpGenerator.GetNamespace("System", "MySpace", "MySpace2"));
 
-			Assert.AreEqual("System.Xaml.", MixinExtension.GetNamespace("System.Xaml", "MySpace.Xaml", "MySpace2"));
-			Assert.AreEqual("System.Xaml.", MixinExtension.GetNamespace("System.Xaml", "System2", "MySpace2"));
-			Assert.AreEqual("System.Xaml.", MixinExtension.GetNamespace("System.Xaml", "System.Xml", "MySpace2"));
-			Assert.AreEqual("", MixinExtension.GetNamespace("System.Xaml", "System.Xaml", "MySpace2"));
-			Assert.AreEqual("Xaml.", MixinExtension.GetNamespace("System.Xaml", "System", "MySpace2"));
+			Assert.AreEqual("System.Xaml.", SharpGenerator.GetNamespace("System.Xaml", "MySpace.Xaml", "MySpace2"));
+			Assert.AreEqual("System.Xaml.", SharpGenerator.GetNamespace("System.Xaml", "System2", "MySpace2"));
+			Assert.AreEqual("System.Xaml.", SharpGenerator.GetNamespace("System.Xaml", "System.Xml", "MySpace2"));
+			Assert.AreEqual("", SharpGenerator.GetNamespace("System.Xaml", "System.Xaml", "MySpace2"));
+			Assert.AreEqual("Xaml.", SharpGenerator.GetNamespace("System.Xaml", "System", "MySpace2"));
 		}
 	}
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 
+/* ! Debugger.Launch(); */
+
 public class Base
 {
 }
 
-public class Test : Base /*= ": INotifyPropertyChanged " */
+public class Test : Base /*= ", INotifyPropertyChanged " */
 {
 	/*# Mixin<Observable> */
 

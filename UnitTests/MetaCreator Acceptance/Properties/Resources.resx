@@ -160,4 +160,10 @@
   <data name="_sampleIntroscopeTests1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\introspectiontest\_sampleintroscopetests.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="_sample_extensions_common" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\extensions\_sample_extensions_common.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="_sample_extensions_test" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\extensions\_sample_extensions_test.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

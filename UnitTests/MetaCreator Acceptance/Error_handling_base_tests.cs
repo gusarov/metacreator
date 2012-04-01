@@ -33,6 +33,7 @@ namespace MetaCreator_Acceptance
 					fileName = fileNameExe;
 				}
 			}
+			fileName = SuggestFile(fileName);
 			if(!File.Exists(fileName))
 			{
 				throw new Exception("File not found");
@@ -162,19 +163,44 @@ namespace MetaCreator_Acceptance
 			options.References.Add(typeof(IMetaWriter).Assembly.Location);
 			var refs = string.Join("\r\n", (options.References).Select(x => string.Format(@"		<Reference Include='{0}'>
 			<HintPath>{1}</HintPath>
-		</Reference>", Path.GetFileNameWithoutExtension(x), Path.GetFullPath(x))));
+		</Reference>", Path.GetFileNameWithoutExtension(x), SuggestFile(Path.GetFullPath(x)))));
 
 			var compile = string.Join("\r\n", (options.Compile ?? Enumerable.Empty<string>()).Select(x => string.Format(@"		<Compile Include='{0}' />", x)));
 
 			CreateTargets();
-			File.WriteAllText("sample.targets", string.Format(File.ReadAllText("sample.targets"), options.AssemblyName ?? SampleAssemblyName, options.IsExe ? "Exe" : "Library", refs, compile));
+			File.WriteAllText("sample.targets", string.Format(File.ReadAllText("sample.targets"), Path.GetFileNameWithoutExtension(options.AssemblyName) ?? SampleAssemblyName, options.IsExe ? "Exe" : "Library", refs, compile));
 			Run(msBuildPath, "/nologo /clp:errorsonly /fl /flp:Verbosity=minimal sample.targets", options.IsExpectedSuccess);
+		}
+
+		static string SuggestFile(string x)
+		{
+			var t = Path.GetFullPath(Path.GetFileName(x)); // for local MetaCreator.dll
+			if (File.Exists(t))
+			{
+				return t;
+			}
+			if (File.Exists(x))
+			{
+				return x;
+			}
+			t = x + ".dll";
+			if (File.Exists(t))
+			{
+				return t;
+			}
+			t = x + ".exe";
+			if (File.Exists(t))
+			{
+				return t;
+			}
+			throw new Exception("File not found");
 		}
 
 		protected void Build(string asmName, params string[] references)
 		{
 			Build(new Params
 			{
+				IsExe = (asmName??"").EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase),
 				AssemblyName = asmName,
 				References = references.ToList(),
 			});

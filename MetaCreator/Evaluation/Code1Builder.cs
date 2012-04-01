@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using MetaCreator.Utils;
 using Microsoft.Build.Framework;
 using MetaCreator.Properties;
+using System.Diagnostics;
 
 namespace MetaCreator.Evaluation
 {
@@ -406,7 +407,47 @@ namespace MetaCreator.Evaluation
 				switch (type)
 				{
 					case BlockParser.BlockType.ExtensionMethod:
-						_methodBody.AppendLine("this." + value + "();");
+						value = value.Trim();
+						if (!value.StartsWith("this."))
+						{
+							value = "this." + value;
+						}
+
+						bool semi = !value.TrimEnd().EndsWith(";");
+						bool brackets = !value.TrimEnd().TrimEnd(';').TrimEnd().EndsWith(")");
+
+						var tryLastWordValue = value;
+						var tryLastWord = CutLastWord(ref tryLastWordValue);
+						// Debugger.Launch();
+
+						if (!string.IsNullOrEmpty(tryLastWord)) // something cutted
+						{
+							if (!string.IsNullOrEmpty(tryLastWordValue)) // something leaved
+							{
+								if (!tryLastWord.Contains('>')) // not a generic part
+								{
+									if (!tryLastWord.Contains(')')) // not a method invokation part
+									{
+										if (brackets)
+										{
+											brackets = false;
+											value = tryLastWordValue + "(\"" + tryLastWord + "\")";
+										}
+									}
+								}
+							}
+						}
+
+						if (brackets) value += "()";
+						if (semi) value += ";";
+
+
+						//var method = CutFirstWord(ref value);
+						//if (!string.IsNullOrEmpty(value))
+						//{
+						//    value = '"' + value + '"';
+						//}
+						_methodBody.AppendLine(value);
 						break;
 					case BlockParser.BlockType.Extensibility:
 						// extender already preprocessed
@@ -550,6 +591,23 @@ namespace MetaCreator.Evaluation
 			{
 				word = str.Substring(0, i).Trim();
 				str = str.Substring(i).Trim();
+			}
+			return word;
+		}
+
+		static string CutLastWord(ref string str)
+		{
+			string word;
+			var i = str.LastIndexOf(' ');
+			if (i < 0)
+			{
+				word = str;
+				str = string.Empty;
+			}
+			else
+			{
+				word = str.Substring(i).Trim();
+				str = str.Substring(0, i).Trim();
 			}
 			return word;
 		}

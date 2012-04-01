@@ -163,6 +163,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if "$(ConfigurationName)" =="Release" (
+  xcopy /d /y "$(TargetPath)" "$(SolutionDir)\_release"
+  xcopy /d /y "$(TargetDir)MetaCreator.targets" "$(SolutionDir)\_release\MetaCreator.targets"
+)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

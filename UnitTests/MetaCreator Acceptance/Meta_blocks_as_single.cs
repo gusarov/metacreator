@@ -30,7 +30,7 @@ class q
 	}
 }");
 
-			Build(new Params {IsExe = true, AssemblyName = "test", References = {"common.dll"}});
+			Build("test.exe", "common");
 			Run("test.exe");
 
 			Matches(_output, "!!");

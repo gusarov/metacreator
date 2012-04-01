@@ -47,6 +47,10 @@ public static class SharpGenerator
 
 	internal static string GetNamespace(string reflectedNamespace, params string[] imports)
 	{
+		if (reflectedNamespace == null)
+		{
+			reflectedNamespace = string.Empty;
+		}
 		if (imports.Any(x => x == reflectedNamespace))
 		{
 			reflectedNamespace = "";

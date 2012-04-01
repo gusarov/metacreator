@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading;
 using MetaCreator.Evaluation;
+using System.Diagnostics;
 
 namespace MetaCreator.AppDomainIsolation
 {
@@ -27,12 +28,19 @@ namespace MetaCreator.AppDomainIsolation
 
 				if (!thread.Join(input.Timeout))
 				{
-					try
+					if (!Debugger.IsAttached)
 					{
-						thread.Abort();
+						try
+						{
+							thread.Abort();
+						}
+						catch { }
+						throw new Exception("Metacode Evaluation timeout");
 					}
-					catch {}
-					throw new Exception("Metacode Evaluation timeout");
+					else
+					{
+						thread.Join();
+					}
 				}
 				if (_ex != null)
 				{

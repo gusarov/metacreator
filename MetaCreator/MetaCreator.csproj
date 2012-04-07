@@ -165,8 +165,12 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if "$(ConfigurationName)" =="Release" (
-  xcopy /d /y "$(TargetPath)" "$(SolutionDir)\_release"
-  xcopy /d /y "$(TargetDir)MetaCreator.targets" "$(SolutionDir)\_release\MetaCreator.targets"
+  xcopy /d /y "$(TargetPath)" "$(SolutionDir)_release"
+  xcopy /d /y "$(TargetDir)MetaCreator.targets" "$(SolutionDir)_release\MetaCreator.targets"
+  if exist "$(SolutionDir)..\_distrib" (
+    xcopy /d /y "$(TargetPath)" "$(SolutionDir)..\_distrib\MetaCreator"
+     xcopy /d /y "$(TargetDir)MetaCreator.targets" "$(SolutionDir)..\_distrib\MetaCreator\MetaCreator.targets"
+  )
 )</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

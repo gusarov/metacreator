@@ -6,6 +6,7 @@
 
 	<PropertyGroup>
 		<MetaCreatorVersion>1.6</MetaCreatorVersion>
+		<UseHostCompilerIfAvailable>False</UseHostCompilerIfAvailable>
 	</PropertyGroup>
 
 	<!-- Determine and try to fix double import -->
@@ -44,7 +45,6 @@
 					GetMetaCreatorRealFullPath; <!-- Full path to MC are passed as input to wrapper task. It allows to detect changes in MetaCreator.dll during dev mode -->
 					ExecuteMetaCreatorWrapper;
 				</MC_Steps>
-				<UseHostCompilerIfAvailable>False</UseHostCompilerIfAvailable>
 				<DevCommonBinPath>$(SolutionDir)Bin\$(ConfigurationName)\</DevCommonBinPath>
 				<Wrapper>$(DevCommonBinPath)MSBuildWrapper.dll</Wrapper>
 				<WrapperCopy>$(DevCommonBinPath)MSBuildWrapper.copy.dll</WrapperCopy>

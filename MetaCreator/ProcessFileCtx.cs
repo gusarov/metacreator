@@ -90,5 +90,7 @@ namespace MetaCreator
 			get { return _timeout; }
 			set { _timeout = value; }
 		}
+
+		public string OuterNamespaceFromOriginalFile;
 	}
 }

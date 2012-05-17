@@ -16,5 +16,7 @@ namespace MetaCreator
 	{
 		[ThreadStatic]
 		public static string[] Imports;
+		[ThreadStatic]
+		public static string OuterNamespace;
 	}
 }

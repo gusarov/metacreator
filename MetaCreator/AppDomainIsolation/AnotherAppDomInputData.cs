@@ -12,5 +12,6 @@ namespace MetaCreator.AppDomainIsolation
 		public TimeSpan Timeout;
 		public bool DoNotRun;
 		public string[] ImportsFromOriginalFile;
+		public string OuterNamespaceFromOriginalFile;
 	}
 }

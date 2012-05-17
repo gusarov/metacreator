@@ -336,6 +336,7 @@ namespace MetaCreator.Evaluation
 		}
 
 		string[] _namespacesFromOriginalFile;
+		string _outerNamespaceFromOriginalFile;
 		string _code;
 
 		public string Build(string code, ProcessFileCtx ctx)
@@ -375,7 +376,10 @@ namespace MetaCreator.Evaluation
 
 			// auto import same namespaces
 			_namespacesFromOriginalFile = Regex.Matches(code, @"(?m)^using\s+([^;]+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
+			_outerNamespaceFromOriginalFile = Regex.Match(code, @"(?m)^namespace\s+([^\r\n]+)").Groups[1].Value;
+
 			ctx.ImportsFromOriginalFile = _namespacesFromOriginalFile;
+			ctx.OuterNamespaceFromOriginalFile = _outerNamespaceFromOriginalFile;
 
 			var blocks = ctx.BlockParser.Parse(code);
 

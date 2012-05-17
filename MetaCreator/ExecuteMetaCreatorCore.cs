@@ -140,6 +140,7 @@ namespace MetaCreator
 				CSharpVersion = ctx.CSharpVersion,
 				References = ConfigureReferences(ctx),
 				ImportsFromOriginalFile = ctx.ImportsFromOriginalFile,
+				OuterNamespaceFromOriginalFile = ctx.OuterNamespaceFromOriginalFile,
 				Timeout = ctx.Timeout,
 			};
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using MetaCreator;
@@ -7,18 +8,33 @@ using MetaCreator.Utils;
 
 public static class SharpGenerator
 {
-	public static string CSharpTypeIdentifier(this Type type, params string[] imports)
+	public static string CSharpTypeIdentifier(this Type type)
 	{
-		return CSharpTypeIdentifier(type, true, imports);
+		return CSharpTypeIdentifier(type, true, null, null);
 	}
 
-	public static string CSharpTypeIdentifier(this Type type, bool useEngineImports = true, params string[] imports)
+	public static string CSharpTypeIdentifier(this Type type, params string[] imports)
+	{
+		return CSharpTypeIdentifier(type, true, null, imports);
+	}
+
+	public static string CSharpTypeIdentifier(this Type type, string outerSpace, params string[] imports)
+	{
+		return CSharpTypeIdentifier(type, true, outerSpace, imports);
+	}
+
+	public static string CSharpTypeIdentifier(this Type type, bool useEngineImports = true, string outerSpace = null, params string[] imports)
 	{
 		imports = imports ?? Enumerable.Empty<string>().ToArray();
 
-		if (imports.Length == 0 && useEngineImports)
+		if (useEngineImports)
 		{
 			imports = imports.Concat(EngineState.Imports ?? Enumerable.Empty<string>()).Distinct().ToArray();
+		}
+
+		if (string.IsNullOrEmpty(outerSpace) && useEngineImports)
+		{
+			outerSpace = EngineState.OuterNamespace;
 		}
 
 		var keyword = TrySubstitudeWithKeyword(type);
@@ -28,7 +44,7 @@ public static class SharpGenerator
 		}
 
 		// namespace
-		var ns = GetNamespace(type.Namespace, imports);
+		var ns = GetNamespace(type.Namespace, outerSpace, imports);
 		// type name
 		var i = type.Name.IndexOf('`');
 		var name = type.Name;
@@ -37,7 +53,7 @@ public static class SharpGenerator
 			name = name.Substring(0, i);
 		}
 		// generics
-		var generics = type.GetGenericArguments().Select(x => CSharpTypeIdentifier(x, useEngineImports, imports)).Join(", ");
+		var generics = type.GetGenericArguments().Select(x => CSharpTypeIdentifier(x, useEngineImports, outerSpace, imports)).Join(", ");
 		if (generics.Length > 0)
 		{
 			generics = "<" + generics + ">";
@@ -45,7 +61,17 @@ public static class SharpGenerator
 		return ns + name + generics;
 	}
 
-	internal static string GetNamespace(string reflectedNamespace, params string[] imports)
+	// todo if you have
+	// Root1.Foo.Type1
+	// Root2.Foo.Type2
+	// using Root1
+	// using Root2
+	// than you can not just specify Foo.Type1 (!)
+	// more information is required to generate that - list of referenced assemblies and cached tree of namespaces
+	// NEW:
+	// namespace xxx - is allways performs as shortcut
+	// using xxx - should be specified completely
+	internal static string GetNamespace(string reflectedNamespace, string outerSpace = null, params string[] imports)
 	{
 		if (reflectedNamespace == null)
 		{
@@ -53,14 +79,19 @@ public static class SharpGenerator
 		}
 		if (imports.Any(x => x == reflectedNamespace))
 		{
-			reflectedNamespace = "";
+			reflectedNamespace = string.Empty;
+		}
+		else if (outerSpace == reflectedNamespace)
+		{
+			reflectedNamespace = string.Empty;
 		}
 		else
 		{
-			var closesSpace = imports.Where(x => reflectedNamespace.StartsWith(x + ".")).OrderByDescending(x => x.Length).FirstOrDefault();
-			if (closesSpace != null)
+			// only for outerspace!
+			// var closesSpace = imports.Where(x => reflectedNamespace.StartsWith(x + ".")).OrderByDescending(x => x.Length).FirstOrDefault();
+			if (!string.IsNullOrEmpty(outerSpace) && reflectedNamespace.StartsWith(outerSpace + "."))
 			{
-				reflectedNamespace = reflectedNamespace.Substring(closesSpace.Length + 1);
+				reflectedNamespace = reflectedNamespace.Substring(outerSpace.Length + 1);
 			}
 		}
 		return reflectedNamespace + (string.IsNullOrEmpty(reflectedNamespace) ? "" : ".");

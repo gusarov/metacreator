@@ -47,8 +47,10 @@ namespace MetaCreator.Evaluation
 						instance = Activator.CreateInstance(type, new object[] { this });
 					}
 					EngineState.Imports = Imports;
+					EngineState.OuterNamespace = OuterNamespace;
 					returnedValue = method.Invoke(instance, null);
 					EngineState.Imports = null;
+					EngineState.OuterNamespace = null;
 				}
 				catch (TargetInvocationException ex)
 				{
@@ -77,6 +79,11 @@ namespace MetaCreator.Evaluation
 		public string[] Imports
 		{
 			get { return _input != null ? (_input.ImportsFromOriginalFile ?? new string[0]) : new string[0]; }
+		}
+
+		public string OuterNamespace
+		{
+			get { return _input != null ? (_input.OuterNamespaceFromOriginalFile ?? string.Empty) : string.Empty; }
 		}
 	}
 }

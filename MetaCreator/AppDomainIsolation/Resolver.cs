@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -48,10 +48,10 @@ namespace MetaCreator.AppDomainIsolation
 			// search in additional references
 			var i = args.Name.IndexOf(',');
 			var name = i > 0 ? args.Name.Substring(0, i).TrimEnd(',').Trim() : args.Name;
-			foreach (var currentDomainAdditionalReference in _currentDomainAdditionalReferences)
-			{
-				if (Path.GetFileNameWithoutExtension(currentDomainAdditionalReference) == name)
+				foreach (var currentDomainAdditionalReference in _currentDomainAdditionalReferences)
 				{
+					if (Path.GetFileNameWithoutExtension(currentDomainAdditionalReference) == name)
+					{
 					return Assembly.LoadFile(Path.GetFullPath(currentDomainAdditionalReference));
 				}
 			}

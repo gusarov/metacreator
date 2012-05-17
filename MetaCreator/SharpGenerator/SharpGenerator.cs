@@ -8,11 +8,6 @@ using MetaCreator.Utils;
 
 public static class SharpGenerator
 {
-	public static string CSharpTypeIdentifier(this Type type)
-	{
-		return CSharpTypeIdentifier(type, true, null, null);
-	}
-
 	public static string CSharpTypeIdentifier(this Type type, params string[] imports)
 	{
 		return CSharpTypeIdentifier(type, true, null, imports);
@@ -89,9 +84,30 @@ public static class SharpGenerator
 		{
 			// only for outerspace!
 			// var closesSpace = imports.Where(x => reflectedNamespace.StartsWith(x + ".")).OrderByDescending(x => x.Length).FirstOrDefault();
-			if (!string.IsNullOrEmpty(outerSpace) && reflectedNamespace.StartsWith(outerSpace + "."))
+			if (!string.IsNullOrEmpty(outerSpace))
 			{
-				reflectedNamespace = reflectedNamespace.Substring(outerSpace.Length + 1);
+				var outers = new LinkedList<string>();
+				outers.AddLast(outerSpace);
+				int i = 0;
+				while (true)
+				{
+					i = outerSpace.IndexOf('.', i+1);
+					if (i > 0)
+					{
+						outers.AddFirst(outerSpace.Substring(0, i));
+					}
+					else
+					{
+						break;
+					}
+				}
+				foreach (var outer in outers)
+				{
+					if (reflectedNamespace.StartsWith(outer + "."))
+					{
+						reflectedNamespace = reflectedNamespace.Substring(outer.Length + 1);
+					}
+				}
 			}
 		}
 		return reflectedNamespace + (string.IsNullOrEmpty(reflectedNamespace) ? "" : ".");

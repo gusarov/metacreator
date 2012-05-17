@@ -55,6 +55,7 @@ namespace MetaCreator_UnitTest.Reintrospection
 				"",
 			};
 			Assert.AreEqual("Sample.Proxy.", SharpGenerator.GetNamespace("PlasmaTests.Sample.Proxy", "PlasmaTests", q));
+			Assert.AreEqual("Sample.Proxy.", SharpGenerator.GetNamespace("PlasmaTests.Sample.Proxy", "PlasmaTests.Precompiler", q));
 		}
 	}
 }

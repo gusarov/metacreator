@@ -34,41 +34,47 @@ set {{ {1}.{2} = value; }}
 		{
 			Mixin<TImpl, TImpl>(writer);
 		}
+
 		public static void Mixin<TFace, TImpl>(this IMetaWriter writer)
 		{
+			var aggregatorName = "_" + typeof(TFace).CSharpTypeIdentifier();
+
 			writer.WriteLine(_aggregatorPattern,
-								  CSharpTypeIdentifier(typeof(TFace)),
-								  typeof(TFace).Name,
-								  CSharpTypeIdentifier(typeof(TImpl)));
+				aggregatorName,
+				typeof(TFace).Name,
+				typeof(TImpl).CSharpTypeIdentifier());
 
 			foreach (var mi in typeof(TFace).GetEvents())
 			{
 				writer.WriteLine(_eventPattern,
-									  CSharpTypeIdentifier(mi.EventHandlerType), // 0
-									  CSharpTypeIdentifier(typeof(TFace)), // 1
-									  mi.Name // 2
+					mi.EventHandlerType.CSharpTypeIdentifier(), // 0
+					aggregatorName, // 1
+					mi.Name // 2
 					);
 			}
-			//
-			//			foreach (var mi in typeof(TFace).GetProperties())
-			//			{
-			//				writer.WriteLine(_methodPattern,
-			//					CSharpTypeIdentifier(mi.ReturnType), // 0
-			//					CSharpTypeIdentifier(typeof(TFace)), // 1
-			//					mi.Name, // 2
-			//					mi.GetParameters().Select(x => "{0} {1}".Arg(CSharpTypeIdentifier(x.ParameterType), x.Name)).Join(", "), // 3 parameters
-			//					mi.GetParameters().Select(x => x.Name).Join(", "), // 4 arguments
-			//					mi.ReturnType != typeof(void) ? "return " : "" // 5 return?
-			//					);
-			//			}
+
+			foreach (var pi in typeof(TFace).GetProperties())
+			{
+				writer.WriteLine(_propertyPattern,
+					pi.PropertyType.CSharpTypeIdentifier(), // 0
+					aggregatorName, // 1
+					pi.Name // 2
+//					pi.GetParameters().Select(x => "{0} {1}".Arg(CSharpTypeIdentifierCore(x.ParameterType), x.Name)).Join(", "), // 3 parameters
+//					pi.GetParameters().Select(x => x.Name).Join(", "), // 4 arguments
+//					pi.ReturnType != typeof(void) ? "return " : "" // 5 return?
+					);
+			}
+
+			//todo indexers
+			//todo readonly/writeonly pros
 
 			foreach (var mi in typeof(TFace).GetMethods().Where(x => !x.IsSpecialName))
 			{
 				writer.WriteLine(_methodPattern,
-									  CSharpTypeIdentifier(mi.ReturnType), // 0
-									  CSharpTypeIdentifier(typeof(TFace)), // 1
+									  mi.ReturnType.CSharpTypeIdentifier(), // 0
+									  typeof(TFace).CSharpTypeIdentifier(), // 1
 									  mi.Name, // 2
-									  mi.GetParameters().Select(x => "{0} {1}".Arg(CSharpTypeIdentifier(x.ParameterType), x.Name)).Join(", "), // 3 parameters
+									  mi.GetParameters().Select(x => "{0} {1}".Arg(x.ParameterType.CSharpTypeIdentifier(), x.Name)).Join(", "), // 3 parameters
 									  mi.GetParameters().Select(x => x.Name).Join(", "), // 4 arguments
 									  mi.ReturnType != typeof(void) ? "return " : "" // 5 return?
 					);
@@ -76,10 +82,10 @@ set {{ {1}.{2} = value; }}
 
 		}
 
+		[Obsolete("Use extension method from SharpGenerator")]
 		public static string CSharpTypeIdentifier(Type type, params string[] imports)
 		{
-			return type.CSharpTypeIdentifier(imports);
+			return type.CSharpTypeIdentifier(string.Empty, imports);
 		}
-
 	}
 }

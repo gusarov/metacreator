@@ -8,6 +8,40 @@ using MetaCreator.Utils;
 
 public static class SharpGenerator
 {
+	public class TypeIdentifierConfig
+	{
+		public TypeIdentifierConfig(bool useEngineImports = true, string outerSpace = null, params string[] imports)
+		{
+			UseEngineImports = useEngineImports;
+			OuterSpace = outerSpace;
+			Imports = imports;
+		}
+
+		public TypeIdentifierConfig()
+		{
+		}
+
+		/// <summary>
+		/// Use namespace imports (usings) provided by meta creator builder from the file with metacode
+		/// </summary>
+		public bool UseEngineImports;
+
+		/// <summary>
+		/// Specify namespace at which type identifier will be placed. This allows to shorten a namespace. UseEngineImports provides that automatically from metafile.
+		/// </summary>
+		public string OuterSpace;
+
+		/// <summary>
+		/// Specify existing namespace imports in a scope at which type identifier will be placed. This allows to shorten a namespace. UseEngineImports provides that automatically from metafile.
+		/// </summary>
+		public string[] Imports;
+
+		/// <summary>
+		/// Specify whether to use named type parameters or leave just generic type definition
+		/// </summary>
+		public bool UseNamedTypeParameters = true;
+	}
+
 	public static string CSharpTypeIdentifier(this Type type, params string[] imports)
 	{
 		return CSharpTypeIdentifier(type, true, null, imports);
@@ -20,6 +54,15 @@ public static class SharpGenerator
 
 	public static string CSharpTypeIdentifier(this Type type, bool useEngineImports = true, string outerSpace = null, params string[] imports)
 	{
+		return CSharpTypeIdentifier(type, new TypeIdentifierConfig(useEngineImports, outerSpace, imports));
+	}
+
+	public static string CSharpTypeIdentifier(this Type type, TypeIdentifierConfig config)
+	{
+		var useEngineImports = config.UseEngineImports;
+		var outerSpace = config.OuterSpace;
+		var imports = config.Imports;
+
 		imports = imports ?? Enumerable.Empty<string>().ToArray();
 
 		if (useEngineImports)
@@ -30,6 +73,11 @@ public static class SharpGenerator
 		if (string.IsNullOrEmpty(outerSpace) && useEngineImports)
 		{
 			outerSpace = EngineState.OuterNamespace;
+		}
+
+		if (type.IsGenericParameter && !config.UseNamedTypeParameters)
+		{
+			return string.Empty;
 		}
 
 		var keyword = TrySubstitudeWithKeyword(type);
@@ -48,8 +96,9 @@ public static class SharpGenerator
 			name = name.Substring(0, i);
 		}
 		// generics
-		var generics = type.GetGenericArguments().Select(x => CSharpTypeIdentifier(x, useEngineImports, outerSpace, imports)).Join(", ");
-		if (generics.Length > 0)
+		var genericArgs = type.GetGenericArguments();
+		var generics = genericArgs.Select(x => CSharpTypeIdentifier(x, config)).Join(", ");
+		if (genericArgs.Length > 0)
 		{
 			generics = "<" + generics + ">";
 		}

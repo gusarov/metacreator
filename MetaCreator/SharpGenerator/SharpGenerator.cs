@@ -68,17 +68,18 @@ public static class SharpGenerator
 	// using xxx - should be specified completely
 	internal static string GetNamespace(string reflectedNamespace, string outerSpace = null, params string[] imports)
 	{
+		var answers = new List<string>();
 		if (reflectedNamespace == null)
 		{
 			reflectedNamespace = string.Empty;
 		}
 		if (imports.Any(x => x == reflectedNamespace))
 		{
-			reflectedNamespace = string.Empty;
+			answers.Add(string.Empty);
 		}
 		else if (outerSpace == reflectedNamespace)
 		{
-			reflectedNamespace = string.Empty;
+			answers.Add(string.Empty);
 		}
 		else
 		{
@@ -91,7 +92,7 @@ public static class SharpGenerator
 				int i = 0;
 				while (true)
 				{
-					i = outerSpace.IndexOf('.', i+1);
+					i = outerSpace.IndexOf('.', i + 1);
 					if (i > 0)
 					{
 						outers.AddFirst(outerSpace.Substring(0, i));
@@ -105,12 +106,13 @@ public static class SharpGenerator
 				{
 					if (reflectedNamespace.StartsWith(outer + "."))
 					{
-						reflectedNamespace = reflectedNamespace.Substring(outer.Length + 1);
+						answers.Add(reflectedNamespace.Substring(outer.Length + 1));
 					}
 				}
 			}
 		}
-		return reflectedNamespace + (string.IsNullOrEmpty(reflectedNamespace) ? "" : ".");
+		var answer = answers.Any() ? answers.First(x => x.Length == answers.Min(y => y.Length)) : reflectedNamespace;
+		return answer + (string.IsNullOrEmpty(answer) ? "" : ".");
 	}
 
 	static readonly Dictionary<Type, string> _keywords = new Dictionary<Type, string>

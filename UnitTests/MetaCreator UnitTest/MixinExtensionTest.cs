@@ -60,5 +60,6 @@ namespace MetaCreator_UnitTest
 			Assert.AreEqual("IDictionary<, >", typeof(IDictionary<,>).CSharpTypeIdentifier(cfg));
 			Assert.AreEqual("IList<>", typeof(IList<>).CSharpTypeIdentifier(cfg));
 		}
+
 	}
 }

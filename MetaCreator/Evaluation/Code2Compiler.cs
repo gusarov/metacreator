@@ -24,7 +24,7 @@ namespace MetaCreator.Evaluation
 			var references = new List<string>(input.References ?? Enumerable.Empty<string>());
 			var cSharpVersion = input.CSharpVersion;
 
-			if(cSharpVersion == null)
+			if (cSharpVersion == null)
 			{
 				// It is very common (from current runtime version). It should be done based on currently compiling project version
 				if (Environment.Version.Major >= 4)
@@ -37,6 +37,8 @@ namespace MetaCreator.Evaluation
 				}
 				result.DebugLog += "Automatic CSharpVersion using CLR Version = " + cSharpVersion + Environment.NewLine;
 			}
+
+			result.DebugLog += "cSharpVersion = " + cSharpVersion + Environment.NewLine;
 
 			var tempPath = TempFiles.GetNewTempFolder();
 

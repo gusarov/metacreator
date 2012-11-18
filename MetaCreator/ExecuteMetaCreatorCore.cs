@@ -130,7 +130,7 @@ namespace MetaCreator
 
 			if (string.IsNullOrEmpty(ctx.CSharpVersion))
 			{
-				ctx.CSharpVersion = ctx.TargetFrameworkVersion;
+				ctx.CSharpVersion = CsVersionFromFramework(ctx.TargetFrameworkVersion);
 				ctx.BuildErrorLogger.LogDebug("Automatic CSharpVersion using current target framework version = " + ctx.CSharpVersion);
 			}
 
@@ -149,6 +149,17 @@ namespace MetaCreator
 			var codeAnalyzer = new Code4Analyze();
 			codeAnalyzer.Analyze(evaluationResult, ctx);
 			return (string)evaluationResult.ReturnedValue;
+		}
+
+		string CsVersionFromFramework(string targetFrameworkVersion)
+		{
+			switch (targetFrameworkVersion)
+			{
+				case "v4.5":
+					return "v4.0";
+				default:
+					return targetFrameworkVersion;
+			}
 		}
 
 		static string[] ConfigureReferences(ProcessFileCtx ctx)

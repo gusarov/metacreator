@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MetaCreator</RootNamespace>
+    <AssemblyName>MetaCreator_4.5</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <AssemblyOriginatorKeyFile>..\MetaCreator.snk</AssemblyOriginatorKeyFile>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>..\metaball.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppDomainIsolation\AnotherAppDomMarshalApi.cs" />
+    <Compile Include="AppDomainIsolation\AnotherAppDomFactory.cs" />
+    <Compile Include="AppDomainIsolation\AnotherAppDomInputData.cs" />
+    <Compile Include="BuildErrorLogger.cs" />
+    <None Include="..\MetaCreator_4.5.targets">
+      <Link>MetaCreator_4.5.targets</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Evaluation\_GeneratorSkeleton.cs" />
+    <Compile Include="Extensions\DummyEvaluator.cs" />
+    <Compile Include="Evaluation\Code1Builder.cs" />
+    <Compile Include="Evaluation\Code2Compiler.cs" />
+    <Compile Include="Evaluation\Code3Runer.cs" />
+    <Compile Include="Evaluation\Code4Analyze.cs" />
+    <Compile Include="Evaluation\EvaluationResult.cs" />
+    <Compile Include="AppDomainIsolation\Resolver.cs" />
+    <Compile Include="Extensions\MixinExtension.cs" />
+    <Compile Include="IMetaGenerator.cs" />
+    <Compile Include="Evaluation\TempFiles.cs" />
+    <Compile Include="Evaluator.cs" />
+    <Compile Include="Evaluation\FailBuildingException.cs" />
+    <Compile Include="ExecuteMetaCreator.cs" />
+    <Compile Include="ExecuteMetaCreatorCore.cs" />
+    <Compile Include="GetAssemblyPath.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="IBuildErrorLogger.cs" />
+    <Compile Include="IMetaEngine.cs" />
+    <Compile Include="IMetaWriter.cs" />
+    <Compile Include="ProcessFileCtx.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\TestFriends.cs" />
+    <Compile Include="SharpGenerator\SharpGenerator.cs" />
+    <Compile Include="Utils\DebugAssert.cs" />
+    <Compile Include="Utils\Ext.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\MetaCreator.snk">
+      <Link>MetaCreator.snk</Link>
+    </None>
+    <None Include="..\MetaCreator.targets">
+      <Link>MetaCreator.targets</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\metaball.ico">
+      <Link>metaball.ico</Link>
+    </Content>
+    <Content Include="_Documentation\Information.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if "$(ConfigurationName)" =="Release" (
+	xcopy /i /d /y "$(TargetPath)" "$(SolutionDir)_release\"
+	xcopy /i /d /y "$(TargetDir)MetaCreator_4.5.targets" "$(SolutionDir)_release\"
+	if exist "$(SolutionDir)..\_distrib" (
+		xcopy /i /d /y "$(TargetPath)" "$(SolutionDir)..\_distrib\MetaCreator\"
+		xcopy /i /d /y "$(TargetDir)MetaCreator_4.5.targets" "$(SolutionDir)..\_distrib\MetaCreator\"
+	)
+)</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

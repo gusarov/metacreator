@@ -59,6 +59,16 @@ public static class SharpGenerator
 
 	public static string CSharpTypeIdentifier(this Type type, TypeIdentifierConfig config)
 	{
+		return CSharpTypeIdentifier(type, config, default(StackContext));
+	}
+
+	struct StackContext
+	{
+		public string Postfix{get;set;}
+	}
+
+	static string CSharpTypeIdentifier(this Type type, TypeIdentifierConfig config, StackContext ctx)
+	{
 		var useEngineImports = config.UseEngineImports;
 		var outerSpace = config.OuterSpace;
 		var imports = config.Imports;
@@ -80,10 +90,17 @@ public static class SharpGenerator
 			return string.Empty;
 		}
 
+		if (type.IsArray)
+		{
+			var arr = '[' + new string(',', type.GetArrayRank() - 1) + ']';
+			ctx.Postfix += arr;
+			return type.GetElementType().CSharpTypeIdentifier(config, ctx);
+		}
+
 		var keyword = TrySubstitudeWithKeyword(type);
 		if (keyword != null)
 		{
-			return keyword;
+			return keyword + ctx.Postfix;
 		}
 
 		// namespace
@@ -97,12 +114,12 @@ public static class SharpGenerator
 		}
 		// generics
 		var genericArgs = type.GetGenericArguments();
-		var generics = genericArgs.Select(x => CSharpTypeIdentifier(x, config)).Join(", ");
+		var generics = genericArgs.Select(x => CSharpTypeIdentifier(x, config/*, ctx*/)).Join(", ");
 		if (genericArgs.Length > 0)
 		{
 			generics = "<" + generics + ">";
 		}
-		return ns + name + generics;
+		return ns + name + generics + ctx.Postfix;
 	}
 
 	// todo if you have

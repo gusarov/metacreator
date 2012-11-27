@@ -57,5 +57,17 @@ namespace MetaCreator_UnitTest.Reintrospection
 			Assert.AreEqual("Sample.Proxy.", SharpGenerator.GetNamespace("PlasmaTests.Sample.Proxy", "PlasmaTests", q));
 			Assert.AreEqual("Sample.Proxy.", SharpGenerator.GetNamespace("PlasmaTests.Sample.Proxy", "PlasmaTests.Precompiler", q));
 		}
+
+		[TestMethod]
+		public void Should_work_with_arrays()
+		{
+			var ns = "System.Collections.Generic";
+
+			Assert.AreEqual("int", typeof(int).CSharpTypeIdentifier(ns));
+			Assert.AreEqual("int[]", typeof(int[]).CSharpTypeIdentifier(ns));
+			Assert.AreEqual("int[,,]", typeof(int[, ,]).CSharpTypeIdentifier(ns));
+			Assert.AreEqual("int[][,][,,]", typeof(int[][,][, ,]).CSharpTypeIdentifier(ns));
+			Assert.AreEqual("KeyValuePair<int, int>[]", typeof(KeyValuePair<int, int>[]).CSharpTypeIdentifier(ns));
+		}
 	}
 }

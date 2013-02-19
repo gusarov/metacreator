@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Security.Policy;
+using System.Threading;
 using MetaCreator.Utils;
 
 namespace MetaCreator.AppDomainIsolation

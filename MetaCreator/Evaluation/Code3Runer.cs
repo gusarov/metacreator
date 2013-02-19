@@ -28,7 +28,11 @@ namespace MetaCreator.Evaluation
 			var type = evaluationResult.Assembly.GetType(className, true);
 			type.EnsureExistsDebug("Generator class not found");
 
-			var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+			var method = type.GetMethod(methodName,
+				BindingFlags.Public
+				| BindingFlags.NonPublic
+				| BindingFlags.Static
+				| BindingFlags.Instance);
 			method.EnsureExistsDebug("Generator method not found");
 
 			if (method.GetParameters().Count() != 0 || method.GetGenericArguments().Count() != 0)
@@ -44,7 +48,21 @@ namespace MetaCreator.Evaluation
 					object instance = null;
 					if (!method.IsStatic)
 					{
-						instance = Activator.CreateInstance(type, new object[] { this });
+						var ciExtra = type.GetConstructor(new[]
+						{
+							typeof (IMetaEngine)
+						});
+						if (ciExtra != null)
+						{
+							instance = Activator.CreateInstance(type, new object[]
+							{
+								this
+							});
+						}
+						else
+						{
+							instance = Activator.CreateInstance(type, true);
+						}
 					}
 					EngineState.Imports = Imports;
 					EngineState.OuterNamespace = OuterNamespace;

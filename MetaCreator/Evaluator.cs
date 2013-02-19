@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using MetaCreator.AppDomainIsolation;
@@ -12,22 +14,39 @@ namespace MetaCreator
 
 		public static T EvaluateExpression<T>(string expressionCode, string[] references = null, string[] usings = null, string cSharpVersion = _defaultCsVersion)
 		{
-			return (T)EvaluateExpression(expressionCode, references, usings, cSharpVersion);
+			return (T)EvaluateExpressionCore(typeof(T), expressionCode, references, usings, cSharpVersion);
 		}
 
 		public static object EvaluateExpression(string expressionCode, string[] references = null, string[] usings = null, string cSharpVersion = _defaultCsVersion)
 		{
-			throw new NotImplementedException();
+			return EvaluateExpressionCore(typeof(object), expressionCode, references, usings, cSharpVersion);
+		}
+
+		static object EvaluateExpressionCore(Type returnType, string expressionCode, string[] references = null, string[] usings = null, string cSharpVersion = _defaultCsVersion)
+		{
+			return EvaluateMethodBodyCore(returnType, "return " + expressionCode + ";", references, usings, cSharpVersion);
 		}
 
 		public static T EvaluateMethodBody<T>(string methodBody, string[] references = null, string[] usings = null, string cSharpVersion = _defaultCsVersion)
 		{
-			return (T)EvaluateMethodBody(methodBody, references, usings, cSharpVersion);
+			return (T)EvaluateMethodBodyCore(typeof(T), methodBody, references, usings, cSharpVersion);
 		}
 
 		public static object EvaluateMethodBody(string methodBody, string[] references = null, string[] usings = null, string cSharpVersion = _defaultCsVersion)
 		{
-			throw new NotImplementedException();
+			return EvaluateMethodBodyCore(typeof(object), methodBody, references, usings, cSharpVersion);
+		}
+
+		static object EvaluateMethodBodyCore(Type returnType, string methodBody, string[] references = null, IEnumerable<string> usings = null, string cSharpVersion = _defaultCsVersion)
+		{
+			return EvaluateFile(string.Format(@"class Generator
+{{
+{1}
+	public object Run()
+	{{
+		{0}
+	}}
+}}", methodBody, usings.OrEmpty().Select(x => "	using " + x + ";").Join("\r\n")), references);
 		}
 
 		public static T EvaluateFile<T>(string fileContent, string[] references = null, string cSharpVersion = _defaultCsVersion)
@@ -40,7 +59,22 @@ namespace MetaCreator
 		/// </summary>
 		public static object EvaluateFile(string fileContent, string[] references = null, string cSharpVersion = _defaultCsVersion)
 		{
-			throw new NotImplementedException();
+			using (var appDom = AnotherAppDomFactory.AppDomainLiveScope())
+			{
+				var args = new AnotherAppDomInputData
+				{
+					Metacode = fileContent,
+					References = references,
+					CSharpVersion = cSharpVersion,
+				};
+				var result = appDom.AnotherAppDomMarshal.Evaluate(args);
+				appDom.MarkDirectoryPathToRemoveAfterUnloadDomain(result.CompileTempPath);
+				if (!result.IsSuccess)
+				{
+					throw new Exception(result.CompileError + result.EvaluationException);
+				}
+				return result.ReturnedValue;
+			}
 		}
 
 		/// <summary>

@@ -26,7 +26,7 @@ namespace MetaCreator.AppDomainIsolation
 
 				thread.Start();
 
-				if (!thread.Join(input.Timeout))
+				if (!thread.Join(input.Timeout ?? TimeSpan.FromSeconds(5)))
 				{
 					if (!Debugger.IsAttached)
 					{

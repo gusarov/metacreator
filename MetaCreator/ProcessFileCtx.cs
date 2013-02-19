@@ -79,13 +79,13 @@ namespace MetaCreator
 		public string CSharpVersion;
 		public string TargetFrameworkVersion;
 
-		TimeSpan _timeout = TimeSpan.FromSeconds(10);
+		TimeSpan? _timeout;
 		public readonly List<EvaluationResult.NewFile> NewFiles = new List<EvaluationResult.NewFile>();
 
 		// tis property filled by Code1Builder
 		public string[] ImportsFromOriginalFile;
 
-		public TimeSpan Timeout
+		public TimeSpan? Timeout
 		{
 			get { return _timeout; }
 			set { _timeout = value; }

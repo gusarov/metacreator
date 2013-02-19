@@ -9,7 +9,7 @@ namespace MetaCreator.AppDomainIsolation
 		public string Metacode;
 		public string[] References;
 		public string CSharpVersion;
-		public TimeSpan Timeout;
+		public TimeSpan? Timeout;
 		public bool DoNotRun;
 		public string[] ImportsFromOriginalFile;
 		public string OuterNamespaceFromOriginalFile;

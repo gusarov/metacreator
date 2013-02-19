@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code1BuilderTests.cs" />
+    <Compile Include="EvaluationTests.cs" />
     <Compile Include="ExecuteMetaCreatorTest.cs" />
     <Compile Include="ExtendersTest.cs" />
     <Compile Include="FakeErrorLogger.cs" />

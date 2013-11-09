@@ -137,14 +137,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)" =="Release" (
-	xcopy /i /d /y "$(TargetPath)" "$(SolutionDir)_release\"
-	xcopy /i /d /y "$(TargetDir)MetaCreator_4.5.targets" "$(SolutionDir)_release\"
-	if exist "$(SolutionDir)..\_distrib" (
-		xcopy /i /d /y "$(TargetPath)" "$(SolutionDir)..\_distrib\MetaCreator\"
-		xcopy /i /d /y "$(TargetDir)MetaCreator_4.5.targets" "$(SolutionDir)..\_distrib\MetaCreator\"
-	)
-)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

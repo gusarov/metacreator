@@ -10,3 +10,4 @@ syntax: glob
 *.vs10x
 *.bak
 *.nupkg
+*.log

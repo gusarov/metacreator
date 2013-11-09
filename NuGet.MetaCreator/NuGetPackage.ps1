@@ -268,9 +268,9 @@ if (Test-Path *.nupkg) {
 	}
 }
 
-Write-Log " "
-Write-Log "Updating NuGet..." -ForegroundColor Green
-Write-Log (Invoke-Command {.\NuGet.exe update -Self} -ErrorAction Stop)
+# Write-Log " "
+# Write-Log "Updating NuGet..." -ForegroundColor Green
+# Write-Log (Invoke-Command {.\NuGet.exe update -Self} -ErrorAction Stop)
 
 Write-Log " "
 Write-Log "Creating package..." -ForegroundColor Green

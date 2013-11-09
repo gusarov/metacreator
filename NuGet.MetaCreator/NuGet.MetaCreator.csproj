@@ -48,8 +48,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\bin\Release\MetaCreator_4.5.targets">
-      <Link>lib\net40\MetaCreator_4.5.targets</Link>
+    <None Include="..\MetaCreator_4.5.targets">
+      <Link>build\MetaCreator_4.5.targets</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="NuGetPackage.ps1" />
@@ -63,16 +63,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="content\" />
+    <Folder Include="lib\" />
     <Folder Include="Properties\" />
     <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\bin\Release\MetaCreator_4.5.dll">
-      <Link>lib\net40\MetaCreator_4.5.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\bin\Release\MetaCreator_4.5.pdb">
-      <Link>lib\net40\MetaCreator_4.5.pdb</Link>
+      <Link>build\MetaCreator_4.5.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="NuSpecInc.exe" />
@@ -82,6 +79,14 @@
       <Project>{eb4308d1-a3a9-409f-8aa7-dac42ddcff23}</Project>
       <Name>MetaCreator_4.5</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\MetaCreator.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -48,10 +48,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\MetaCreator_4.5.targets">
-      <Link>build\MetaCreator_4.5.targets</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+		<None Include="..\MetaCreator_4.5.targets">
+			<Link>build\MetaCreator_4.5.targets</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
     <None Include="NuGetPackage.ps1" />
     <None Include="NuGetSetup.ps1" />
     <None Include="NuGet.exe" />
@@ -68,11 +68,15 @@
     <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\bin\Release\MetaCreator_4.5.dll">
-      <Link>build\MetaCreator_4.5.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="NuSpecInc.exe" />
+		<Content Include="..\bin\Release\MetaCreator_4.5.dll">
+			<Link>build\MetaCreator_4.5.dll</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="..\MetaCreator\obj\Release\MetaCreator_4.5.dll">
+			<Link>lib\net40\MetaCreator_4.5.dll</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="NuSpecInc.exe" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MetaCreator\MetaCreator_4.5.csproj">

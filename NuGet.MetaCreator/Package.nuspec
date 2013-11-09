@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>MetaCreator</id>
+    <version>1.0.1</version>
+    <title>MetaCreator</title>
+    <authors>Dmitry Gusarov</authors>
+    <owners></owners>
+    <description>
+      Compile-time metaprogramming on C#
+    </description>
+    <releaseNotes></releaseNotes>
+    <summary></summary>
+    <language>en-US</language>
+    <projectUrl>https://code.google.com/p/metacreator/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <references></references>
+    <tags>metaprogramming MetaCreator</tags>
+  </metadata>
+  <files>
+    <file src="bin\lib\" target="lib" />
+    <file src="tools\" target="tools" />
+    <file src="content\" target="content" />
+  </files>
+</package>

@@ -72,6 +72,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code4AnalyzeTests.cs" />
     <Compile Include="Code1BuilderTests.cs" />
     <Compile Include="EvaluationTests.cs" />
     <Compile Include="ExecuteMetaCreatorTest.cs" />

@@ -3,8 +3,9 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
-
 using Microsoft.Build.Framework;
 
 namespace MetaCreator.Evaluation
@@ -66,8 +67,9 @@ namespace MetaCreator.Evaluation
 			{
 				macrosFailed = true;
 				// var linenumber = result.EvaluationException.
-				var message = result.EvaluationException.GetType().FullName + ": " + result.EvaluationException.Message;
-				_buildErrorLogger.LogOutputMessage(result.EvaluationException.ToString());
+				var details = ExceptionDetails(result.EvaluationException);
+				var message = result.EvaluationException.GetType().FullName + ": " + details;
+				_buildErrorLogger.LogOutputMessage(result.EvaluationException.ToString() + "\r\n" + details);
 
 				var i = result.EvaluationException.StackTrace.IndexOf('\r');
 				if (i <= 0)
@@ -100,6 +102,43 @@ namespace MetaCreator.Evaluation
 			{
 				throw new FailBuildingException("$ terminating, jump to global catch and return false...");
 			}
+		}
+
+		private string NullConcat(string a, string b)
+		{
+			if (a == null || b == null)
+			{
+				return null;
+			}
+			return a + b;
+		}
+
+		public string ExceptionDetails(Exception exception)
+		{
+			var sb = new StringBuilder();
+			sb.AppendLine(exception.Message);
+			if (exception.InnerException != null)
+			{
+				var innerDetails = ExceptionDetails(exception.InnerException);
+				if (!string.IsNullOrWhiteSpace(innerDetails))
+				{
+					sb.AppendLine("Inner: " + innerDetails);
+				}
+			}
+			var rtlEx = exception as ReflectionTypeLoadException;
+			if (rtlEx != null)
+			{
+				foreach (var item in rtlEx.LoaderExceptions)
+				{
+					sb.AppendLine("LoaderException: " + ExceptionDetails(item));
+				}
+			}
+			var str = sb.Length == 0 ? null : sb.ToString();
+			if (str != null)
+			{
+				str = str.TrimEnd('\r', '\n');
+			}
+			return str;
 		}
 
 		void AttachNewFile(EvaluationResult result, EvaluationResult.NewFile newFile)

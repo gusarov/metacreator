@@ -46,8 +46,8 @@
 					ExecuteMetaCreatorWrapper;
 				</MC_Steps>
 				<DevCommonBinPath>$(SolutionDir)Bin\$(ConfigurationName)\</DevCommonBinPath>
-				<Wrapper>$(DevCommonBinPath)MSBuildWrapper_4.5.dll</Wrapper>
-				<WrapperCopy>$(DevCommonBinPath)MSBuildWrapper_4.5.copy.dll</WrapperCopy>
+				<Wrapper>$(DevCommonBinPath)MSBuildWrapper_4.0.dll</Wrapper>
+				<WrapperCopy>$(DevCommonBinPath)MSBuildWrapper_4.0.copy.dll</WrapperCopy>
 			</PropertyGroup>
 		</When>
 		<Otherwise>
@@ -99,8 +99,8 @@
 
 	<PropertyGroup Condition="'$(MetaCreatorDLL)'==''">
 		<MetaCreatorDLL Condition="'$(MetaCreatorRealFullPath)'!=''" >$(MetaCreatorRealFullPath)</MetaCreatorDLL>
-		<!-- <MetaCreatorDLL Condition="'$(MSBuildThisFileDirectory)'!=''">$(MSBuildThisFileDirectory)\MetaCreator_4.5.dll</MetaCreatorDLL>  Net4.0 -->
-		<MetaCreatorDLL Condition="'$(MetaCreatorDLL)'==''">MetaCreator_4.5.dll</MetaCreatorDLL>
+		<!-- <MetaCreatorDLL Condition="'$(MSBuildThisFileDirectory)'!=''">$(MSBuildThisFileDirectory)\MetaCreator_4.0.dll</MetaCreatorDLL>  Net4.0 -->
+		<MetaCreatorDLL Condition="'$(MetaCreatorDLL)'==''">MetaCreator_4.0.dll</MetaCreatorDLL>
 	</PropertyGroup>
 	
 	<Target Name='MC_BeforeCompile_Aspect'>
@@ -134,7 +134,7 @@
 	<Target Name='GetMetaCreatorRealFullPath' Condition="'$(MetaCreatorRealFullPath)'=='' Or '$(MetaCreatorDLL)'=='' ">
 		<Message Text='* MetaCreator.targets: Execute wrapper with GetMetaCreatorRealFullPath...' Importance='high'/>
 		<MSBuildWrapper
-			Task = 'MetaCreator.GetAssemblyPath, MetaCreator_4.5.dll'
+			Task = 'MetaCreator.GetAssemblyPath, MetaCreator_4.0.dll'
 			Bin = '$(DevCommonBinPath)'
 			OutputParamNames = 'AssemblyFullPath; AssemblyDir'
 		>
@@ -167,7 +167,7 @@
 		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Build requested, but was not performed in building chain.' />
 
 		<MSBuildWrapper
-			Task = 'MetaCreator.ExecuteMetaCreator, MetaCreator_4.5.dll'
+			Task = 'MetaCreator.ExecuteMetaCreator, MetaCreator_4.0.dll'
 			Bin = '$(DevCommonBinPath)'
 
 			ArrayNames = 'Sources; References'

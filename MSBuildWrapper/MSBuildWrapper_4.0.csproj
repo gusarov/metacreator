@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MSBuildWrapper</RootNamespace>
-    <AssemblyName>MSBuildWrapper_4.5</AssemblyName>
+    <AssemblyName>MSBuildWrapper_4.0</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>

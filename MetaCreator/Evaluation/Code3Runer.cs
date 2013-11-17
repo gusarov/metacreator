@@ -118,7 +118,10 @@ namespace MetaCreator.Evaluation
 
 		public IMetaWriter Writer
 		{
-			get { return _writer; }
+			get
+			{
+				return _writer;
+			}
 		}
 
 		private object ConvertArgument(object arg)
@@ -126,7 +129,7 @@ namespace MetaCreator.Evaluation
 			var type = arg as Type;
 			if (type != null)
 			{
-				type.CSharpTypeIdentifier();
+				return type.CSharpTypeIdentifier();
 			}
 			return arg;
 		}

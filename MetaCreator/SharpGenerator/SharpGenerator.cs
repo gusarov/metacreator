@@ -24,7 +24,7 @@ public static class SharpGenerator
 		/// <summary>
 		/// Use namespace imports (usings) provided by meta creator builder from the file with metacode
 		/// </summary>
-		public bool UseEngineImports;
+		public bool UseEngineImports = true;
 
 		/// <summary>
 		/// Specify namespace at which type identifier will be placed. This allows to shorten a namespace. UseEngineImports provides that automatically from metafile.

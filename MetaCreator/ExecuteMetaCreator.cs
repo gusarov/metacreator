@@ -54,6 +54,7 @@ namespace MetaCreator
 
 		public override bool Execute()
 		{
+			var logConfig = new BuildErrorLoggerConfig();
 			_core.Sources = Sources;
 			_core.IsDevMode = IsDevMode;
 			_core.References = References;
@@ -62,7 +63,8 @@ namespace MetaCreator
 			_core.TargetsVersion = TargetsVersion;
 			_core.TargetFrameworkVersion = TargetFrameworkVersion;
 			_core.ProjDir = ProjDir;
-			_core.BuildErrorLogger = new BuildErrorLogger(BuildEngine, Log);
+			_core.BuildErrorLoggerConfig = logConfig;
+			_core.BuildErrorLogger = new BuildErrorLogger(BuildEngine, Log, logConfig);
 			return _core.Execute();
 		}
 

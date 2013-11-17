@@ -62,6 +62,8 @@ namespace MetaCreator
 			get { return _removeFiles.AsReadOnly(); }
 		}
 
+		public BuildErrorLoggerConfig BuildErrorLoggerConfig { get; set; }
+
 		#endregion
 
 		public void Initialize()
@@ -126,6 +128,7 @@ namespace MetaCreator
 			{
 				return code;
 			}
+			BuildErrorLoggerConfig.Debug = ctx.EnableDebugLogging;
 			BuildErrorLogger.LogOutputMessage(ctx.OriginalRelativeFileName + " - {0} macros processed. Evaluating...".Arg(ctx.NumberOfMetaBlocksProcessed));
 
 			if (string.IsNullOrEmpty(ctx.CSharpVersion))
@@ -143,6 +146,9 @@ namespace MetaCreator
 				OuterNamespaceFromOriginalFile = ctx.OuterNamespaceFromOriginalFile,
 				Timeout = ctx.Timeout,
 			};
+
+			ctx.BuildErrorLogger.LogDebug("OuterSpace: " + ctx.OuterNamespaceFromOriginalFile);
+			ctx.BuildErrorLogger.LogDebug("Imports: " + string.Join(", ", ctx.ImportsFromOriginalFile));
 
 			var evaluationResult = _appDomFactory.AnotherAppDomMarshal.Evaluate(evaluationParameters);
 			_appDomFactory.MarkDirectoryPathToRemoveAfterUnloadDomain(evaluationResult.CompileTempPath);

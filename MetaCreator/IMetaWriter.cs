@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MetaCreator
 {
@@ -12,67 +13,52 @@ namespace MetaCreator
 		void Write(object obj);
 		void WriteLine(object obj);
 		void WriteLine();
+
+		string GetResult();
 	}
 
-	public static class TransactionalWriterExt
+	internal class DefaultMetaWriter : IMetaWriter
 	{
-		public static void Transactional(this IMetaWriter writer, Action<IMetaWriter> writingAction)
-		{
-			var collector = new TransactionalWriter();
-			writingAction(collector);
-			collector.Apply(writer);
-		}
-	}
-
-	public class TransactionalWriter : IMetaWriter
-	{
-		private readonly List<Action<IMetaWriter>> _actions = new List<Action<IMetaWriter>>();
-
-		internal TransactionalWriter()
-		{
-		}
-
-		public void Apply(IMetaWriter writer)
-		{
-			foreach (var action in _actions)
-			{
-				action(writer);
-			}
-		}
+		readonly StringBuilder _result = new StringBuilder();
 
 		public void Write(string msg, params object[] args)
 		{
-			_actions.Add(w => w.Write(msg, args));
+			_result.AppendFormat(msg, args);
 		}
 
 		public void WriteLine(string msg, params object[] args)
 		{
-			_actions.Add(w => w.WriteLine(msg, args));
+			_result.AppendFormat(msg + Environment.NewLine, args);
 		}
 
 		public void Write(string msg)
 		{
-			_actions.Add(w => w.Write(msg));
+			_result.Append(msg);
 		}
 
 		public void WriteLine(string msg)
 		{
-			_actions.Add(w => w.WriteLine(msg));
+			_result.AppendLine(msg);
 		}
 
 		public void Write(object obj)
 		{
-			_actions.Add(w => w.Write(obj));
+			_result.Append(obj == null ? string.Empty : obj.ToString());
 		}
 
 		public void WriteLine(object obj)
 		{
-			_actions.Add(w => w.WriteLine(obj));
+			_result.AppendLine(obj == null ? string.Empty : obj.ToString());
 		}
 
 		public void WriteLine()
 		{
-			_actions.Add(w => w.WriteLine());
+			_result.AppendLine();
+		}
+
+		public string GetResult()
+		{
+			return _result.ToString();
 		}
 	}
 }

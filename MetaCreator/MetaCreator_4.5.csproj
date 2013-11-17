@@ -75,6 +75,7 @@
     <Compile Include="AppDomainIsolation\AnotherAppDomMarshalApi.cs" />
     <Compile Include="AppDomainIsolation\AnotherAppDomFactory.cs" />
     <Compile Include="AppDomainIsolation\AnotherAppDomInputData.cs" />
+    <Compile Include="ArgumentConverterWriterProxy.cs" />
     <Compile Include="BuildErrorLogger.cs" />
     <None Include="..\MetaCreator_4.5.targets">
       <Link>MetaCreator_4.5.targets</Link>
@@ -111,6 +112,8 @@
     </Compile>
     <Compile Include="Properties\TestFriends.cs" />
     <Compile Include="SharpGenerator\SharpGenerator.cs" />
+    <Compile Include="TransactionalWriter.cs" />
+    <Compile Include="TransactionalWriterExt.cs" />
     <Compile Include="Utils\DebugAssert.cs" />
     <Compile Include="Utils\Ext.cs" />
   </ItemGroup>

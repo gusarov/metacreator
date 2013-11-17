@@ -10,7 +10,13 @@ public class Generator : MetaCreator.IMetaGenerator, MetaCreator.IMetaWriter
 {{
 	readonly IMetaEngine _engine;
 
-	public IMetaEngine Engine {{ get {{ return _engine; }} }}
+	public IMetaEngine Engine
+	{{
+		get
+		{{
+			return _engine;
+		}}
+	}}
 
 	public Generator(IMetaEngine engine)
 	{{
@@ -24,7 +30,7 @@ public class Generator : MetaCreator.IMetaGenerator, MetaCreator.IMetaWriter
 		{1}
 
 #endregion
-		return Result.ToString();
+		return GetResult();
 	}}
 
 #region classbody
@@ -35,41 +41,44 @@ public class Generator : MetaCreator.IMetaGenerator, MetaCreator.IMetaWriter
 
 #region utils
 
-	public StringBuilder Result = new StringBuilder();
-
 	public void Write(string msg, params object[] args)
 	{{
-		Result.AppendFormat(msg, args);
+		_engine.Writer.Write(msg, args);
 	}}
 
 	public void WriteLine(string msg, params object[] args)
 	{{
-		Result.AppendFormat(msg + Environment.NewLine, args);
+		_engine.Writer.WriteLine(msg, args);
 	}}
 
 	public void Write(string msg)
 	{{
-		Result.Append(msg);
+		_engine.Writer.Write(msg);
 	}}
 
 	public void WriteLine(string msg)
 	{{
-		Result.AppendLine(msg);
+		_engine.Writer.WriteLine(msg);
 	}}
 
 	public void Write(object obj)
 	{{
-		Result.Append(obj == null ? string.Empty : obj.ToString());
+		_engine.Writer.Write(obj);
 	}}
 
 	public void WriteLine(object obj)
 	{{
-		Result.AppendLine(obj == null ? string.Empty : obj.ToString());
+		_engine.Writer.WriteLine(obj);
 	}}
 
 	public void WriteLine()
 	{{
-		Result.AppendLine();
+		_engine.Writer.WriteLine();
+	}}
+
+	public string GetResult()
+	{{
+		return _engine.Writer.GetResult();
 	}}
 
 #endregion

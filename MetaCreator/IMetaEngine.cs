@@ -10,6 +10,7 @@ namespace MetaCreator
 		void AddToCompile(string fileName, string fileContent);
 		void AddToCompile(bool fileInProject, string fileName, string fileContent);
 		string[] Imports { get; }
+		IMetaWriter Writer { get; }
 	}
 
 	static class EngineState

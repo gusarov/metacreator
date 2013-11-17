@@ -82,6 +82,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Evaluation\_GeneratorSkeleton.cs" />
+    <Compile Include="ExceptionAnalyzer.cs" />
     <Compile Include="Extensions\DummyEvaluator.cs" />
     <Compile Include="Evaluation\Code1Builder.cs" />
     <Compile Include="Evaluation\Code2Compiler.cs" />

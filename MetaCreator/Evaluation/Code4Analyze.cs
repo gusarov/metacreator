@@ -67,7 +67,7 @@ namespace MetaCreator.Evaluation
 			{
 				macrosFailed = true;
 				// var linenumber = result.EvaluationException.
-				var details = ExceptionDetails(result.EvaluationException);
+				var details = ExceptionAnalyzer.ExceptionDetails(result.EvaluationException);
 				var message = result.EvaluationException.GetType().FullName + ": " + details;
 				_buildErrorLogger.LogOutputMessage(result.EvaluationException.ToString() + "\r\n" + details);
 
@@ -111,34 +111,6 @@ namespace MetaCreator.Evaluation
 				return null;
 			}
 			return a + b;
-		}
-
-		public string ExceptionDetails(Exception exception)
-		{
-			var sb = new StringBuilder();
-			sb.AppendLine(exception.Message);
-			if (exception.InnerException != null)
-			{
-				var innerDetails = ExceptionDetails(exception.InnerException);
-				if (!string.IsNullOrWhiteSpace(innerDetails))
-				{
-					sb.AppendLine("Inner: " + innerDetails);
-				}
-			}
-			var rtlEx = exception as ReflectionTypeLoadException;
-			if (rtlEx != null)
-			{
-				foreach (var item in rtlEx.LoaderExceptions)
-				{
-					sb.AppendLine("LoaderException: " + ExceptionDetails(item));
-				}
-			}
-			var str = sb.Length == 0 ? null : sb.ToString();
-			if (str != null)
-			{
-				str = str.TrimEnd('\r', '\n');
-			}
-			return str;
 		}
 
 		void AttachNewFile(EvaluationResult result, EvaluationResult.NewFile newFile)
@@ -229,7 +201,6 @@ namespace MetaCreator.Evaluation
 		IBuildErrorLogger _buildErrorLogger;
 
 		//const string _metacreatorErrorPrefix = "MetaCode: ";
-
 
 	}
 }

@@ -69,5 +69,21 @@ namespace MetaCreator_UnitTest.Reintrospection
 			Assert.AreEqual("int[][,][,,]", typeof(int[][,][, ,]).CSharpTypeIdentifier(ns));
 			Assert.AreEqual("KeyValuePair<int, int>[]", typeof(KeyValuePair<int, int>[]).CSharpTypeIdentifier(ns));
 		}
+
+		[TestMethod]
+		public void Should_name_inner_classes()
+		{
+			var ns = "MetaCreator_UnitTest.Reintrospection";
+			Assert.AreEqual("TypeNameTest.Inner", typeof(Inner).CSharpTypeIdentifier(ns));
+			Assert.AreEqual("TypeNameTest.Inner.SubInner", typeof(Inner.SubInner).CSharpTypeIdentifier(ns));
+		}
+
+		public class Inner
+		{
+			public class SubInner
+			{
+
+			}
+		}
 	}
 }

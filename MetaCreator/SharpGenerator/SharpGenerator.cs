@@ -112,6 +112,10 @@ public static class SharpGenerator
 		{
 			name = name.Substring(0, i);
 		}
+		if (type.IsNested)
+		{
+			name = type.DeclaringType.CSharpTypeIdentifier(config) + "." + name;
+		}
 		// generics
 		var genericArgs = type.GetGenericArguments();
 		var generics = genericArgs.Select(x => CSharpTypeIdentifier(x, config/*, ctx*/)).Join(", ");

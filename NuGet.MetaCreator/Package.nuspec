@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>MetaCreator</id>
-    <version>1.6.15</version>
+    <version>1.6.16</version>
     <title>MetaCreator</title>
     <authors>Dmitry Gusarov</authors>
     <owners></owners>
@@ -12,7 +12,8 @@
     <releaseNotes></releaseNotes>
     <summary></summary>
     <language>en-US</language>
-    <projectUrl>https://code.google.com/p/metacreator/</projectUrl>
+    <projectUrl>http://code.google.com/p/metacreator/</projectUrl>
+    <iconUrl>http://code.google.com/p/metacreator/logo</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <references></references>
     <tags>metaprogramming MetaCreator</tags>

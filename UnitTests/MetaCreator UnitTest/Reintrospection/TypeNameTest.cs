@@ -71,11 +71,21 @@ namespace MetaCreator_UnitTest.Reintrospection
 		}
 
 		[TestMethod]
+		public void Should_simple_name()
+		{
+			var ns = "MetaCreator_UnitTest.Reintrospection";
+			Assert.AreEqual("TypeNameTest", typeof(TypeNameTest).CSharpTypeIdentifier(ns));
+		}
+
+		[TestMethod]
 		public void Should_name_inner_classes()
 		{
 			var ns = "MetaCreator_UnitTest.Reintrospection";
 			Assert.AreEqual("TypeNameTest.Inner", typeof(Inner).CSharpTypeIdentifier(ns));
 			Assert.AreEqual("TypeNameTest.Inner.SubInner", typeof(Inner.SubInner).CSharpTypeIdentifier(ns));
+			ns = "MetaCreator_UnitTest";
+			Assert.AreEqual("Reintrospection.TypeNameTest.Inner", typeof(Inner).CSharpTypeIdentifier(ns));
+			Assert.AreEqual("Reintrospection.TypeNameTest.Inner.SubInner", typeof(Inner.SubInner).CSharpTypeIdentifier(ns));
 		}
 
 		public class Inner

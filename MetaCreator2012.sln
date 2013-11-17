@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaCreator_4.0", "MetaCreator\MetaCreator_4.0.csproj", "{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaCreator_4.5", "MetaCreator\MetaCreator_4.5.csproj", "{EB4308D1-A3A9-409F-8AA7-DAC42DDCFF23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildWrapper_4.0", "MSBuildWrapper\MSBuildWrapper_4.0.csproj", "{3DC2D69C-14F9-4A97-B4B8-0CF6F1028CEF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildWrapper_4.5", "MSBuildWrapper\MSBuildWrapper_4.5.csproj", "{3DC2D69C-14F9-4A97-B4B8-0CF6F1028CEF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaCreator UnitTest", "UnitTests\MetaCreator UnitTest\MetaCreator UnitTest.csproj", "{76D338B5-B6D6-4E5A-B68E-CA616C983537}"
 EndProject

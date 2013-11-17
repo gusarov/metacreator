@@ -123,9 +123,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MetaCreator\MetaCreator_4.0.csproj">
+    <ProjectReference Include="..\..\MetaCreator\MetaCreator_4.5.csproj">
       <Project>{eb4308d1-a3a9-409f-8aa7-dac42ddcff23}</Project>
-      <Name>MetaCreator_4.0</Name>
+      <Name>MetaCreator_4.5</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -4,11 +4,8 @@ using System.Linq;
 
 namespace ConsoleApplication
 {
-	class Program
-	{
-		static void Main()
-		{
-			Console.WriteLine(/*= 5+6 */);
-		}
-	}
+	/*@ fileInProject */
+	/*!
+		WriteLine("// {0}", typeof(Evaluator));
+	*/
 }

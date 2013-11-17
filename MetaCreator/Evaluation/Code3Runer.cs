@@ -66,7 +66,9 @@ namespace MetaCreator.Evaluation
 					}
 					EngineState.Imports = Imports;
 					EngineState.OuterNamespace = OuterNamespace;
+					CreateWriter();
 					returnedValue = method.Invoke(instance, null);
+					DeleteWriter();
 					EngineState.Imports = null;
 					EngineState.OuterNamespace = null;
 				}
@@ -97,6 +99,36 @@ namespace MetaCreator.Evaluation
 		public string[] Imports
 		{
 			get { return _input != null ? (_input.ImportsFromOriginalFile ?? new string[0]) : new string[0]; }
+		}
+
+		void CreateWriter()
+		{
+			_writerDefault = new DefaultMetaWriter();
+			_writer = new ArgumentConverterWriterProxy(_writerDefault, ConvertArgument);
+		}
+
+		private void DeleteWriter()
+		{
+			_writerDefault = null;
+			_writer = null;
+		}
+
+		DefaultMetaWriter _writerDefault;
+		IMetaWriter _writer;
+
+		public IMetaWriter Writer
+		{
+			get { return _writer; }
+		}
+
+		private object ConvertArgument(object arg)
+		{
+			var type = arg as Type;
+			if (type != null)
+			{
+				type.CSharpTypeIdentifier();
+			}
+			return arg;
 		}
 
 		public string OuterNamespace

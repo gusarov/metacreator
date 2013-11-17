@@ -4,24 +4,39 @@ using System.Diagnostics;
 
 namespace MetaCreator
 {
+	class BuildErrorLoggerConfig
+	{
+		public bool Debug { get; set; }
+	}
+
 	class BuildErrorLogger : IBuildErrorLogger
 	{
 		readonly IBuildEngine _buildEngine;
 		readonly TaskLoggingHelper _taskLoggingHelper;
+		private readonly BuildErrorLoggerConfig _config;
 
-		public BuildErrorLogger(IBuildEngine buildEngine, TaskLoggingHelper taskLoggingHelper)
+		public BuildErrorLogger(IBuildEngine buildEngine, TaskLoggingHelper taskLoggingHelper, BuildErrorLoggerConfig config)
 		{
 			_buildEngine = buildEngine;
 			_taskLoggingHelper = taskLoggingHelper;
+			_config = config;
 		}
 
 		public bool ErrorsExists { get; private set; }
 
+		private const bool _isDebug =
+#if DEBUG
+			true;
+#else
+			false;
+#endif
+
 		public void LogDebug(string msg)
 		{
-#if DEBUG // it is required, because this method usually calls by interface. It can not be with conditional attribute.
-			LogOutputMessage("DEBUG: " + msg);
-#endif
+			if (_config.Debug || _isDebug)
+			{
+				LogOutputMessage("DEBUG: " + msg);
+			}
 		}
 
 		public void LogOutputMessage(string msg)

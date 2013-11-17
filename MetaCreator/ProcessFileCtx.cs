@@ -51,6 +51,8 @@ namespace MetaCreator
 		/// </summary>
 		public bool FileInProject { get; set; }
 
+		public bool EnableDebugLogging { get; set; }
+
 		public string ReplacementExtension { get; set; }
 
 		// references from project that is currently builging

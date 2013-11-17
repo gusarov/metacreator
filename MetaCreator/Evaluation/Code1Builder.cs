@@ -36,6 +36,7 @@ namespace MetaCreator.Evaluation
 				{"Comment", Comment},
 				{"FileInProject", FileInProject},
 				{"Convert", Convert},
+				{"DebugLogging", DebugLogging},
 			};
 		}
 
@@ -98,6 +99,11 @@ namespace MetaCreator.Evaluation
 			{
 				_ctx.ReplacementFileName = name;
 			}
+		}
+
+		void DebugLogging(string val)
+		{
+			_ctx.EnableDebugLogging = ToBool(val);
 		}
 
 		void Comment(string value)

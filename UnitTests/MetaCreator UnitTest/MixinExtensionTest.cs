@@ -13,15 +13,14 @@ namespace MetaCreator_UnitTest
 
 
 	[TestClass]
-	public class MixinExtensionTest
+	public class CSharpTypeIdentifierTest
 	{
-		MetaCreator_UnitTest.MixinExtensionTest q;
-		SampleGeneric<string, SampleGeneric<long, short>> qq;
+		//SampleGeneric<string, SampleGeneric<long, short>> qq;
 
 		[TestMethod]
 		public void Should_return_type_name_with_regards_to_csharp_syntax()
 		{
-			Assert.AreEqual("MetaCreator_UnitTest.MixinExtensionTest", typeof(MixinExtensionTest).CSharpTypeIdentifier());
+			Assert.AreEqual("MetaCreator_UnitTest.CSharpTypeIdentifierTest", typeof(CSharpTypeIdentifierTest).CSharpTypeIdentifier());
 
 			Assert.AreEqual("string", typeof(System.String).CSharpTypeIdentifier());
 			Assert.AreEqual("int", typeof(int).CSharpTypeIdentifier());
@@ -31,14 +30,14 @@ namespace MetaCreator_UnitTest
 		[TestMethod]
 		public void Should_return_for_generic_class()
 		{
-			Assert.AreEqual("MetaCreator_UnitTest.SampleGeneric<string, MetaCreator_UnitTest.SampleGeneric<long, short>>", MixinExtension.CSharpTypeIdentifier(typeof(SampleGeneric<System.String, SampleGeneric<long, short>>)));
+			Assert.AreEqual("MetaCreator_UnitTest.SampleGeneric<string, MetaCreator_UnitTest.SampleGeneric<long, short>>", typeof(SampleGeneric<System.String, SampleGeneric<long, short>>).CSharpTypeIdentifier());
 
 		}
 
 		[TestMethod]
 		public void Should_return_for_generic_class_without_known_namespaces()
 		{
-			Assert.AreEqual("MetaCreator_UnitTest.SampleGeneric<string, MetaCreator_UnitTest.SampleGeneric<long, short>>", MixinExtension.CSharpTypeIdentifier(typeof(SampleGeneric<System.String, SampleGeneric<long, short>>)));
+			Assert.AreEqual("MetaCreator_UnitTest.SampleGeneric<string, MetaCreator_UnitTest.SampleGeneric<long, short>>", typeof(SampleGeneric<System.String, SampleGeneric<long, short>>).CSharpTypeIdentifier());
 
 		}
 

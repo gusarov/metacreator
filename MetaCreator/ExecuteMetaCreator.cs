@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
+using System.Reflection;
+using System.Xml;
+using Microsoft.Build.Evaluation;
+using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using System.Linq;
 using Microsoft.Build.Utilities;
@@ -65,8 +70,84 @@ namespace MetaCreator
 			_core.ProjDir = ProjDir;
 			_core.BuildErrorLoggerConfig = logConfig;
 			_core.BuildErrorLogger = new BuildErrorLogger(BuildEngine, Log, logConfig);
+
+			/*
+
+			var buildEngineType = BuildEngine.GetType();
+			_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, "Fields:"+buildEngineType+Guid.NewGuid(), null, "MetaCreator.dll"));
+			foreach (var field in buildEngineType.GetFields(BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public))
+			{
+				_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, field.Name, null, "MetaCreator.dll"));
+			}
+
+
+			var projectInstance = BuildEngine.GetProjectInstance();
+						var items = projectInstance.Items.Where(x => string.Equals(x.ItemType, key, StringComparison.InvariantCultureIgnoreCase)).ToList();
+						if (items.Count > 0)
+						{
+							// return items.Select(x => x.EvaluatedInclude);
+						}
+
+			var properties = projectInstance.Properties;
+			foreach (var property in properties)
+			{
+				_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, property.Name + " " + property.EvaluatedValue, null, "MetaCreator.dll"));
+			}
+			*/
+
 			return _core.Execute();
 		}
 
+	}
+
+	public static class BuildEngineExtensions
+	{
+		const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public;
+
+		public static IEnumerable GetEnvironmentVariable(this IBuildEngine buildEngine, string key, bool throwIfNotFound)
+		{
+			var projectInstance = GetProjectInstance(buildEngine);
+
+			var items = projectInstance.Items
+				.Where(x => string.Equals(x.ItemType, key, StringComparison.InvariantCultureIgnoreCase)).ToList();
+			if (items.Count > 0)
+			{
+				return items.Select(x => x.EvaluatedInclude);
+			}
+
+
+			var properties = projectInstance.Properties
+				.Where(x => string.Equals(x.Name, key, StringComparison.InvariantCultureIgnoreCase)).ToList();
+			if (properties.Count > 0)
+			{
+				return properties.Select(x => x.EvaluatedValue);
+			}
+
+			if (throwIfNotFound)
+			{
+				throw new Exception(string.Format("Could not extract from '{0}' environmental variables.", key));
+			}
+
+			return Enumerable.Empty<object>();
+		}
+
+		public static ProjectInstance GetProjectInstance(this IBuildEngine buildEngine)
+		{
+			var buildEngineType = buildEngine.GetType();
+
+			var targetBuilderCallbackField = buildEngineType.GetField("targetBuilderCallback", bindingFlags);
+			if (targetBuilderCallbackField == null)
+			{
+				throw new Exception("Could not extract targetBuilderCallback from " + buildEngineType.FullName);
+			}
+			var targetBuilderCallback = targetBuilderCallbackField.GetValue(buildEngine);
+			var targetCallbackType = targetBuilderCallback.GetType();
+			var projectInstanceField = targetCallbackType.GetField("projectInstance", bindingFlags);
+			if (projectInstanceField == null)
+			{
+				throw new Exception("Could not extract projectInstance from " + targetCallbackType.FullName);
+			}
+			return (ProjectInstance)projectInstanceField.GetValue(targetBuilderCallback);
+		}
 	}
 }

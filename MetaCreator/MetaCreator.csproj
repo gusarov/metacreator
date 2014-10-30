@@ -84,13 +84,16 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppDomainIsolation\AnotherAppDomMarshalApi.cs" />
     <Compile Include="AppDomainIsolation\AnotherAppDomFactory.cs" />
     <Compile Include="AppDomainIsolation\AnotherAppDomInputData.cs" />
+    <Compile Include="ArgumentConverterWriterProxy.cs" />
     <Compile Include="BuildErrorLogger.cs" />
     <None Include="Evaluation\_GeneratorSkeleton.cs" />
+    <Compile Include="ExceptionAnalyzer.cs" />
     <Compile Include="Extensions\DummyEvaluator.cs" />
     <Compile Include="Evaluation\Code1Builder.cs" />
     <Compile Include="Evaluation\Code2Compiler.cs" />
@@ -119,6 +122,8 @@
     </Compile>
     <Compile Include="Properties\TestFriends.cs" />
     <Compile Include="SharpGenerator\SharpGenerator.cs" />
+    <Compile Include="TransactionalWriter.cs" />
+    <Compile Include="TransactionalWriterExt.cs" />
     <Compile Include="Utils\DebugAssert.cs" />
     <Compile Include="Utils\Ext.cs" />
     <Compile Include="Utils\Lazy.cs" />

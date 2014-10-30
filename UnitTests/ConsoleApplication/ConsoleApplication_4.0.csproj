@@ -52,8 +52,14 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ConsoleApplicationLib\ConsoleApplicationLib_4.0.csproj">
+      <Project>{f2141ddf-a9fa-409e-8466-61cf12761ced}</Project>
+      <Name>ConsoleApplicationLib_4.0</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(ProjectDir)..\MetaCreator_4.5.targets" />
+  <Import Project="$(ProjectDir)..\..\MetaCreator_4.5.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

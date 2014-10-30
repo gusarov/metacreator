@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
-namespace ConsoleApplication
+namespace ConsoleApplicationLib
 {
-	class Program
+	public class Class1
 	{
-		static void Main()
-		{
-		}
 	}
 }

@@ -88,7 +88,7 @@ namespace MetaCreator.Evaluation
 				int.TryParse(lineString, out line);
 
 				var fileName = match.Groups["file"].Value;
-				if(TempFiles.IsTemp(fileName))
+				if (TempFiles.IsTemp(fileName))
 				{
 					fileName = GetMetaCodeFile(result);
 				}
@@ -100,7 +100,10 @@ namespace MetaCreator.Evaluation
 			// terminate
 			if (macrosFailed)
 			{
-				throw new FailBuildingException("$ terminating, jump to global catch and return false...");
+				throw new FailBuildingException("$ terminating, jump to global catch and return false...")
+				{
+					Result = result,
+				};
 			}
 		}
 
@@ -162,7 +165,7 @@ namespace MetaCreator.Evaluation
 				var fullLogEntry = error.ErrorText + " at line " + error.Line + " col " + error.Column + Environment.NewLine + "References:" + Environment.NewLine + references + Environment.NewLine + source;
 				_ctx.BuildErrorLogger.LogOutputMessage(fullLogEntry);
 			}
-			return "Metacode Compilation: " + error.ErrorText;
+			return "Metacode Compilation: " + error.ErrorText + " (" + error.ErrorNumber + ")";
 		}
 
 		string GetMetaCodeFile(EvaluationResult result)

@@ -70,6 +70,7 @@
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code4AnalyzeTests.cs" />
@@ -86,6 +87,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ExamineSerialization.cs" />
     <None Include="Resources\Should_generate_metacode_from_surogate_syntax.cs" />
     <Compile Include="Reintrospection\TypeNameTest.cs" />
   </ItemGroup>

@@ -206,7 +206,7 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 		internal FakeErrorLogger logger;
 		public bool buildFailed;
 		ExecuteMetaCreatorCore sut;
-		ProcessFileCtx ctx;
+		//ProcessFileCtx ctx;
 		public string result;
 
 		public void SimulateBuild(string code)
@@ -227,18 +227,17 @@ return new StringBuilder().Append(""a="").Append(a).Append("", b="").Append(b).A
 			buildFailed = false;
 			try
 			{
-				var ctx = ExecuteMetaCreatorCore.GetCtx(sut, "1.tmp");
+				var ctx = sut.GetCtx(sut, "1.tmp");
 
 				result = sut.ProcessFile(code, ctx);
 //				result = sut.ProcessFile(code, new ProcessFileCtx
 //				{
-//
-					//FileOriginalContent = code,
+//					FileOriginalContent = code,
 //					BuildErrorLogger = logger,
 //					OriginalFileName = "1.tmp",
 //					ProjDir = sut.ProjDir,
 //					TargetFrameworkVersion = "v3.5",
-					//AppDomFactory = AnotherAppDomFactory.AppDomainLiveScope(),
+//					AppDomFactory = AnotherAppDomFactory.AppDomainLiveScope(),
 //				});
 			}
 			catch (FailBuildingException ex)

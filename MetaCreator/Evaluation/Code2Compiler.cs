@@ -46,11 +46,11 @@ namespace MetaCreator.Evaluation
 			{
 				var options = new CompilerParameters
 				{
-					//GenerateInMemory = true,
-					//IncludeDebugInformation = true,
+					// GenerateInMemory = true,
+					// IncludeDebugInformation = true,
 					CompilerOptions = "/debug:full /optimize-",
 					TempFiles = tempFiles,
-					//MainClass = _generatorClassName,
+					// MainClass = _generatorClassName,
 				};
 
 				foreach (var reference in references)
@@ -63,7 +63,6 @@ namespace MetaCreator.Evaluation
 
 				using (var compiler = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", cSharpVersion } }))
 				{
-
 					var compilerResults = compiler.CompileAssemblyFromSource(options, source);
 
 					if (compilerResults.Errors.HasWarnings)

@@ -32,6 +32,11 @@ namespace MetaCreator
 
 	sealed class ProcessFileCtx : IAddNewFileCtx
 	{
+		public ProcessFileCtx()
+		{
+			
+		}
+
 		internal Code1Builder.BlockParser BlockParser;
 
 		public string OriginalRelativeFileName { get; set; }
@@ -58,7 +63,7 @@ namespace MetaCreator
 		// references from project that is currently builging
 		public string[] ReferencesOriginal;
 		// references from /*@ reference meta dirrectives */
-		public List<string> ReferencesMetaAdditional = new List<string>();
+		public readonly List<string> ReferencesMetaAdditional = new List<string>();
 
 
 		/// <summary>
@@ -80,6 +85,7 @@ namespace MetaCreator
 		public IBuildErrorLogger BuildErrorLogger;
 		public string CSharpVersion;
 		public string TargetFrameworkVersion;
+		public byte MLevel;
 
 		TimeSpan? _timeout;
 		public readonly List<EvaluationResult.NewFile> NewFiles = new List<EvaluationResult.NewFile>();
@@ -94,5 +100,8 @@ namespace MetaCreator
 		}
 
 		public string OuterNamespaceFromOriginalFile;
+
+		public Func<byte, string> GetIntermMetaLevel;
 	}
+
 }

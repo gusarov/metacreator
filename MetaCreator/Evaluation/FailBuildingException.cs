@@ -6,22 +6,20 @@ namespace MetaCreator.Evaluation
 	[Serializable]
 	public class FailBuildingException : Exception
 	{
-		//
-		// For guidelines regarding the creation of new exception types, see
-		//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
-		// and
-		//    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
-		//
+		public EvaluationResult Result { get; set; }
+		public bool IgnoreThisFile { get; set; }
 
 		public FailBuildingException()
 		{
 		}
 
-		public FailBuildingException(string message) : base(message)
+		public FailBuildingException(string message)
+			: base(message)
 		{
 		}
 
-		public FailBuildingException(string message, Exception inner) : base(message, inner)
+		public FailBuildingException(string message, Exception inner)
+			: base(message, inner)
 		{
 		}
 
@@ -29,6 +27,15 @@ namespace MetaCreator.Evaluation
 			SerializationInfo info,
 			StreamingContext context) : base(info, context)
 		{
+			Result = (EvaluationResult)info.GetValue("Result", typeof(EvaluationResult));
+			IgnoreThisFile = (bool)info.GetValue("Ignore", typeof(bool));
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("Result", Result, typeof(EvaluationResult));
+			info.AddValue("Ignore", IgnoreThisFile);
 		}
 	}
 }

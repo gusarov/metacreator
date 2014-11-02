@@ -7,6 +7,7 @@ using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using System.Linq;
+using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
 
 namespace MetaCreator
@@ -43,6 +44,10 @@ namespace MetaCreator
 		[Required]
 		public string ProjDir { get; set; }
 
+		public string MLevel { get; set; }
+
+		public ITaskItem[] ProjectPaths { get; set; }
+
 		[Required]
 		public string TargetsVersion { get; set; }
 
@@ -55,11 +60,16 @@ namespace MetaCreator
 		[Output]
 		public ITaskItem[] RemoveFiles { get { return _core.RemoveFiles.ToArray(); } }
 
-		static readonly ExecuteMetaCreatorCore _core = new ExecuteMetaCreatorCore();
+		readonly ExecuteMetaCreatorCore _core = new ExecuteMetaCreatorCore();
 
 		public override bool Execute()
 		{
+			if (string.IsNullOrWhiteSpace(MLevel))
+			{
+				MLevel = "0";
+			}
 			var logConfig = new BuildErrorLoggerConfig();
+
 			_core.Sources = Sources;
 			_core.IsDevMode = IsDevMode;
 			_core.References = References;
@@ -68,31 +78,46 @@ namespace MetaCreator
 			_core.TargetsVersion = TargetsVersion;
 			_core.TargetFrameworkVersion = TargetFrameworkVersion;
 			_core.ProjDir = ProjDir;
+			_core.MLevel = byte.Parse(MLevel);
 			_core.BuildErrorLoggerConfig = logConfig;
 			_core.BuildErrorLogger = new BuildErrorLogger(BuildEngine, Log, logConfig);
 
-			/*
-
-			var buildEngineType = BuildEngine.GetType();
-			_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, "Fields:"+buildEngineType+Guid.NewGuid(), null, "MetaCreator.dll"));
-			foreach (var field in buildEngineType.GetFields(BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public))
+			_core.MSBuild = new MSBuild
 			{
-				_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, field.Name, null, "MetaCreator.dll"));
-			}
+				BuildEngine = BuildEngine,
+				HostObject = HostObject,
+				Projects = ProjectPaths,
+				//!Properties = this.pro
+				//!TargetOutputs
+				Targets = new []{"Build"},
+				UseResultsCache = true,
+			};
 
 
-			var projectInstance = BuildEngine.GetProjectInstance();
-						var items = projectInstance.Items.Where(x => string.Equals(x.ItemType, key, StringComparison.InvariantCultureIgnoreCase)).ToList();
-						if (items.Count > 0)
+
+/*
+
+						var buildEngineType = BuildEngine.GetType();
+						_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, "Fields:"+buildEngineType+Guid.NewGuid(), null, "MetaCreator.dll"));
+						foreach (var field in buildEngineType.GetFields(BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public))
 						{
-							// return items.Select(x => x.EvaluatedInclude);
+							_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, field.Name, null, "MetaCreator.dll"));
 						}
 
-			var properties = projectInstance.Properties;
-			foreach (var property in properties)
-			{
-				_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, property.Name + " " + property.EvaluatedValue, null, "MetaCreator.dll"));
-			}
+
+						var projectInstance = BuildEngine.GetProjectInstance();
+									var items = projectInstance.Items.Where(x => string.Equals(x.ItemType, key, StringComparison.InvariantCultureIgnoreCase)).ToList();
+									if (items.Count > 0)
+									{
+										// return items.Select(x => x.EvaluatedInclude);
+									}
+
+						var properties = projectInstance.Properties;
+						foreach (var property in properties)
+						{
+							_core.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, "", 0, 0, 0, 0, property.Name + " " + property.EvaluatedValue, null, "MetaCreator.dll"));
+						}
+
 			*/
 
 			return _core.Execute();

@@ -148,7 +148,7 @@
 	</Target>
 	
 	<Target Name='ExecuteMetaCreatorWrapper'
-		Inputs='$(MetaCreatorDLL);
+		Inputs='$(MetaCreatorRealFullPath);
 			@(Meta);
 			@(None);
 			$(MSBuildAllProjects);
@@ -161,7 +161,9 @@
 			@(EmbeddedDocumentation); 
 			$(Win32Resource);
 			$(Win32Manifest);
-			@(CustomAdditionalCompileInputs)'
+			$(ProjectPath);
+			@(CustomAdditionalCompileInputs);
+			'
 		Outputs='@(IntermediateAssembly)' >
 		<Message Text='* MetaCreator.targets: Execute wrapper with MetaCreator...' Importance='high'/>
 		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Build requested, but was not performed in building chain.' />
@@ -170,16 +172,18 @@
 			Task = 'MetaCreator.ExecuteMetaCreator, MetaCreator_4.5.dll'
 			Bin = '$(DevCommonBinPath)'
 
-			ArrayNames = 'Sources; References'
+			ArrayNames = 'Sources; References; ProjectPaths'
 			Array1 = '@(Compile); @(None)'
 			Array2 = '@(ReferencePath)'
+			Array3 = '$(ProjectPath)'
 
-			ParamNames = 'IsDevMode; IntermediateOutputPath; ProjDir; TargetFrameworkVersion; TargetsVersion'
+			ParamNames = 'IsDevMode; IntermediateOutputPath; ProjDir; TargetFrameworkVersion; TargetsVersion; MLevel'
 			Param1 = 'True'
 			Param2 = '$(IntermediateOutputPath)'
 			Param3 = '$(ProjectDir)'
 			Param4 = '$(TargetFrameworkVersion)'
 			Param5 = '$(MetaCreatorVersion)'
+			Param6 = '$(MLevel)'
 
 			OutputArrayNames = 'AddFiles; RemoveFiles'
 			>
@@ -199,7 +203,9 @@
 	
 	<Target
 		Name='ExecuteMetaCreator'
-		Inputs='@(Meta);
+		Inputs='
+			$(MetaCreatorDLL);
+			@(Meta);
 			@(None);
 			$(MSBuildAllProjects);
 			@(Compile);
@@ -211,7 +217,10 @@
 			@(EmbeddedDocumentation); 
 			$(Win32Resource);
 			$(Win32Manifest);
-			@(CustomAdditionalCompileInputs)'
+			$(ProjectPath);
+			$(MLevel);
+			@(CustomAdditionalCompileInputs);
+			'
 		Outputs='@(IntermediateAssembly)' >
 		<Message Text='* MetaCreator.targets: Execute MetaCreator (Targets v$(MetaCreatorVersion))...' Importance='high'/>
 		<Error Condition="'$(MC_Build)'!='Requested'" Text='* MetaCreator.targets: Assert: Buld requested, but was not performed in building chain.' />
@@ -219,6 +228,8 @@
 			Sources = '@(Compile); @(None)'
 			References = '@(ReferencePath)'
 			ProjDir = '$(ProjectDir)'
+			ProjectPaths = '$(ProjectPath)'
+			MLevel = '$(MLevel)'
 			IntermediateOutputPath = '$(IntermediateOutputPath)'
 			TargetFrameworkVersion = '$(TargetFrameworkVersion)'
 			TargetsVersion = '$(MetaCreatorVersion)'

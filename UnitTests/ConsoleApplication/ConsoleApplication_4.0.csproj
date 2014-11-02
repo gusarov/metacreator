@@ -42,21 +42,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="test.cs" />
+    <Compile Include="SameAssemblyGeneration1.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="test.g.cs" />
+    <Compile Include="SameAssemblyGeneration2.cs" />
+    <Compile Include="SameAssemblyGenerationUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ConsoleApplicationLib\ConsoleApplicationLib_4.0.csproj">
-      <Project>{f2141ddf-a9fa-409e-8466-61cf12761ced}</Project>
-      <Name>ConsoleApplicationLib_4.0</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectDir)..\..\MetaCreator_4.5.targets" />

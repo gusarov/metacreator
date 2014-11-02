@@ -37,7 +37,54 @@ namespace MetaCreator.Evaluation
 				{"FileInProject", FileInProject},
 				{"Convert", Convert},
 				{"DebugLogging", DebugLogging},
+				{"metaLevel", SetMetaLevel},
+				{"requiresLevel", RequiresMetaLevel},
 			};
+		}
+
+		void SetMetaLevel(string level)
+		{
+			var byteLevel = GetMetaLevel(level);
+			switch (byteLevel)
+			{
+				case 0:
+					WriteWarning("Consider to remove meta level 0 because this is default value.");
+					break;
+				case 255:
+					WriteError("You can not set meta level to max (255), because this is highest possible value. All metacode omited on this level.");
+					return;
+			}
+			if (_ctx.MLevel > byteLevel)
+			{
+				throw new FailBuildingException
+				{
+					IgnoreThisFile = true,
+				};
+			}
+		}
+
+		byte GetMetaLevel(string level)
+		{
+			return byte.Parse(level.ToLowerInvariant().Replace("max", "255"));
+		}
+
+		void RequiresMetaLevel(string level)
+		{
+			var byteLevel = GetMetaLevel(level);
+			switch (byteLevel)
+			{
+				case 0:
+					WriteError("You cannot require meta level 0 because this is lowest possible value. At level 0 the resultant metacode is compiled.");
+					return;
+			}
+			if (_ctx.MLevel >= byteLevel)
+			{
+				throw new FailBuildingException
+				{
+					IgnoreThisFile = true,
+				};
+			}
+			_ctx.ReferencesMetaAdditional.Add(_ctx.GetIntermMetaLevel(byteLevel));
 		}
 
 		void Convert(string value)
@@ -141,7 +188,7 @@ namespace MetaCreator.Evaluation
 
 		readonly static string _skeleton = Resources._GeneratorSkeleton;
 
-		static readonly string[] _defaultUsings = new[]
+		static readonly string[] _defaultUsings =
 		{
 			"MetaCreator",
 			"MetaCreator.Extensions",
@@ -223,7 +270,6 @@ namespace MetaCreator.Evaluation
 			{
 				return Rx.Matches(data).Cast<Match>().Select(x => new Block(this, x));
 			}
-
 
 			internal enum BlockType
 			{

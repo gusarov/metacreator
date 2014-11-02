@@ -8,11 +8,12 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-
+using System.Windows.Forms;
 using MetaCreator.AppDomainIsolation;
 using MetaCreator.Evaluation;
 using MetaCreator.Utils;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
 
 namespace MetaCreator
@@ -21,10 +22,10 @@ namespace MetaCreator
 	{
 		internal ExecuteMetaCreatorCore()
 		{
-
 		}
 
 		public ExecuteMetaCreatorCore(ITaskItem[] sources, ITaskItem[] references, string intermediateOutputPath, string projDir, IBuildErrorLogger buildErrorLogger)
+			:this()
 		{
 			Sources = sources;
 			References = references;
@@ -32,6 +33,88 @@ namespace MetaCreator
 			ProjDir = projDir;
 			BuildErrorLogger = buildErrorLogger;
 		}
+
+		#region Meta Levels
+
+		public MSBuild MSBuild { private get; set; }
+
+		private string _mLatestResult;
+		private byte? _mLatestLevel;
+		private readonly string[] _mResults = new string[256];
+
+		private string MBuild(ProcessFileCtx ctx, byte level)
+		{
+			if (level == 0)
+			{
+				throw new Exception("Level 0 is not possible to request");
+			}
+			if (level == MLevel)
+			{
+				throw new Exception("It is not possible to request the same level");
+			}
+			if (!string.IsNullOrEmpty(_mResults[level]))
+			{
+				return _mResults[level];
+			}
+			ctx.BuildErrorLogger.LogOutputMessage(string.Format("Inner Build Start. Current MLevel={0}. Requested level={1}", MLevel, level));
+			//var dir = Path.Combine(IntermediateOutputPathFull, "MLevel" + MLevel) + Path.DirectorySeparatorChar;
+			var pref = IntermediateOutputPathFull.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			// this is required because otherwise IntermediateOutputPathFull will be obj\Debug_MLevel_1_MLevel2...
+			var i = pref.IndexOf('@');
+			if (i > 0)
+			{
+				pref = pref.Substring(0, i);
+			}
+			var dir = Path.Combine(pref + "@" + level);
+			var outp = dir + "_bin" + Path.DirectorySeparatorChar;
+			var intp = dir + "_obj" + Path.DirectorySeparatorChar;
+			Directory.CreateDirectory(outp);
+			Directory.CreateDirectory(intp);
+			var currentProject = Path.GetFileNameWithoutExtension(MSBuild.Projects.First().ItemSpec);
+			MSBuild.Properties = new[]
+			{
+				"OutputPath=" + outp,
+				"IntermediateOutputPath=" + intp,
+				"Configuration=Debug",
+				"Optimize=False",
+				"MLevel=" + level,
+				"AssemblyName=" +  currentProject + "_MLevel" + level,
+			};
+			var result = MSBuild.Execute();
+			if (!result)
+			{
+				throw new FailBuildingException(null);
+			}
+			ctx.BuildErrorLogger.LogDebug("At level " + MLevel + ", Inner Build Success: ");
+			foreach (var targetOutput in MSBuild.TargetOutputs)
+			{
+				ctx.BuildErrorLogger.LogDebug("Output: " + targetOutput.ItemSpec);
+			}
+
+			var resexe = MSBuild.TargetOutputs.FirstOrDefault(x => x.ItemSpec.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) && x.ItemSpec.Contains("@" + level + "_"));
+			var resdll = MSBuild.TargetOutputs.FirstOrDefault(x => x.ItemSpec.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && x.ItemSpec.Contains("@" + level + "_"));
+			string res = null;
+			if (resexe != null)
+			{
+				res = resexe.ItemSpec;
+			}
+			if (resdll != null)
+			{
+				res = resdll.ItemSpec;
+			}
+			_mResults[level] = res;
+			if (!_mLatestLevel.HasValue || _mLatestLevel.Value >= level)
+			{
+				_mLatestResult = res;
+				_mLatestLevel = level;
+			}
+			ctx.BuildErrorLogger.LogDebug("_mLatestLevel: " + level);
+			ctx.BuildErrorLogger.LogDebug("_mLatestResult: " + _mLatestResult);
+			ctx.BuildErrorLogger.LogDebug("return: " + res);
+			return res;
+		}
+
+		#endregion
 
 		#region INPUTS
 
@@ -43,6 +126,7 @@ namespace MetaCreator
 		public string TargetsVersion { get; set; }
 		public string TargetFrameworkVersion { get; set; }
 		public IBuildErrorLogger BuildErrorLogger { get; set; }
+		public byte MLevel { get; set; }
 
 		#endregion
 
@@ -63,6 +147,7 @@ namespace MetaCreator
 		}
 
 		public BuildErrorLoggerConfig BuildErrorLoggerConfig { get; set; }
+
 
 		#endregion
 
@@ -267,8 +352,15 @@ namespace MetaCreator
 
 		public bool Execute()
 		{
+			// MessageBox.Show(MLevel.ToString());
 			// Debugger.Launch();
 			Initialize();
+
+			if (MLevel == byte.MaxValue)
+			{
+				// ignore all metablocks
+				return true;
+			}
 
 			using (_appDomFactory)
 			{
@@ -301,10 +393,42 @@ namespace MetaCreator
 					{
 						processedCode = ProcessFile(code, ctx);
 					}
-					catch (FailBuildingException)
+					catch (FailBuildingException ex)
 					{
-						// Already logged to msbuild. Just fail the building.
+						if (ex.IgnoreThisFile)
+						{
+							continue;
+						}
 						return false;
+
+						// only one automatic level raise
+						/*
+						if (ex.Result.Errors.Any(x => x.ErrorNumber == "CS0103") && MLevel == 0)
+						{
+							var res = MBuild(ctx, checked((byte)(MLevel + 1)));
+							// add reference
+							if (res != null)
+							{
+								ctx.ReferencesMetaAdditional.Add(res);
+								try
+								{
+									processedCode = ProcessFile(code, ctx);
+								}
+								catch (FailBuildingException)
+								{
+									return false;
+								}
+							}
+							else
+							{
+								return false;
+							}
+						}
+						else
+						{
+							return false;
+						}
+						*/
 					}
 
 					if (ctx.NumberOfMetaBlocksProcessed > 0)
@@ -448,9 +572,9 @@ namespace MetaCreator
 					Path.GetFileNameWithoutExtension(_additionalFileNameBase) + "_add_" + (++_additionalFileNameIndex) + Path.GetExtension(_additionalFileNameBase));
 		}
 
-		static public ProcessFileCtx GetCtx(ExecuteMetaCreatorCore core, string fileName/*, string replacementFileRelativePath, string replacementFileAbsolutePath*/)
+		public ProcessFileCtx GetCtx(ExecuteMetaCreatorCore core, string fileName/*, string replacementFileRelativePath, string replacementFileAbsolutePath*/)
 		{
-			return new ProcessFileCtx
+			var ctx = new ProcessFileCtx
 			{
 				//AppDomFactory = appDomFactory,
 				BuildErrorLogger = core.BuildErrorLogger,
@@ -462,7 +586,10 @@ namespace MetaCreator
 				ProjDir = core.ProjDir,
 				TargetFrameworkVersion = core.TargetFrameworkVersion,
 				ReferencesOriginal = core.References.Select(x => x.ItemSpec).ToArray(),
+				MLevel = MLevel,
 			};
+			ctx.GetIntermMetaLevel = level => MBuild(ctx, level);
+			return ctx;
 		}
 	}
 }

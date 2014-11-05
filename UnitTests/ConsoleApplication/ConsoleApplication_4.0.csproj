@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="SameAssemblyGeneration1.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="SameAssemblyGeneration2.cs" />
     <Compile Include="SameAssemblyGenerationUtils.cs" />
   </ItemGroup>
   <ItemGroup>

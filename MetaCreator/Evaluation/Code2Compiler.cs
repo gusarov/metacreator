@@ -50,6 +50,7 @@ namespace MetaCreator.Evaluation
 					// IncludeDebugInformation = true,
 					CompilerOptions = "/debug:full /optimize-",
 					TempFiles = tempFiles,
+					OutputAssembly = "MetaCreatorDyn",
 					// MainClass = _generatorClassName,
 				};
 

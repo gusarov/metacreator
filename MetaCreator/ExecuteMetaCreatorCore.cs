@@ -185,9 +185,9 @@ namespace MetaCreator
 
 			var dllVersion = typeof(ExecuteMetaCreatorCore).Assembly.GetName().Version.ToString();
 
-			if (!dllVersion.StartsWith(TargetsVersion))
+			if (!dllVersion.StartsWith(TargetsVersion + "."))
 			{
-				throw new Exception("MetaCreator.targets version is {0}. But MetaCreator.dll version is {1}".Arg(TargetsVersion, dllVersion));
+				throw new Exception("MetaCreator.targets version is {0} But MetaCreator.dll version is {1}".Arg(TargetsVersion, dllVersion));
 			}
 
 			IntermediateOutputPathFull = Path.Combine(ProjDir, IntermediateOutputPathRelative);
@@ -399,13 +399,16 @@ namespace MetaCreator
 						{
 							continue;
 						}
-						return false;
+						// return false;
 
 						// only one automatic level raise
-						/*
-						if (ex.Result.Errors.Any(x => x.ErrorNumber == "CS0103") && MLevel == 0)
+						if ((ex.Result.Errors.Any(x => x.ErrorNumber == "CS0103")
+							|| ex.Result.Errors.Any(x => x.ErrorNumber == "CS0246")
+							) && MLevel == 0)
 						{
-							var res = MBuild(ctx, checked((byte)(MLevel + 1)));
+							ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise meta level", null, "MetaCreator.dll"));
+
+							var res = MBuild(ctx, byte.MaxValue);
 							// add reference
 							if (res != null)
 							{
@@ -413,9 +416,11 @@ namespace MetaCreator
 								try
 								{
 									processedCode = ProcessFile(code, ctx);
+									ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise succeed. Please, add /*@ requiresLevel max */ to speedup build", null, "MetaCreator.dll"));
 								}
 								catch (FailBuildingException)
 								{
+									ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise failed. Consider first error!", null, "MetaCreator.dll"));
 									return false;
 								}
 							}
@@ -428,7 +433,6 @@ namespace MetaCreator
 						{
 							return false;
 						}
-						*/
 					}
 
 					if (ctx.NumberOfMetaBlocksProcessed > 0)

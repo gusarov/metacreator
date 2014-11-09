@@ -12,6 +12,19 @@ using System.Diagnostics;
 
 namespace MetaCreator.Evaluation
 {
+	class ExtenderArguments
+	{
+		public string Word;
+		public bool Pre;
+		public bool NeedSecondPassForExtender;
+
+		public ExtenderArguments(string args, bool pre)
+		{
+			Word = args;
+			Pre = pre;
+		}
+	}
+
 	/// <summary>
 	/// Builder of metacode for execution
 	/// </summary>
@@ -21,7 +34,7 @@ namespace MetaCreator.Evaluation
 
 		public Code1Builder()
 		{
-			_mapExtenders = new Dictionary<string, Action<string>>(StringComparer.InvariantCultureIgnoreCase)
+			_mapExtenders = new Dictionary<string, Action<ExtenderArguments>>(StringComparer.InvariantCultureIgnoreCase)
 			{
 				{"StringInterpolation", StringInterpolation},
 				{"ErrorRemap", ErrorRemap},
@@ -40,32 +53,53 @@ namespace MetaCreator.Evaluation
 				{"metaLevel", SetMetaLevel},
 				{"requiresLevel", RequiresMetaLevel},
 				{"metaAssemblyName", MetaAssemblyName},
+				{"earlyPass", EarlyPass},
 			};
 		}
 
-		void MetaAssemblyName(string name)
+		private void EarlyPass(ExtenderArguments arg)
 		{
-			_ctx.MetaAssemblyName = name;
+			switch (arg.Word.ToLowerInvariant())
+			{
+				case "exclude":
+					_ctx.EarlyPassMode = EarlyPassMode.Exclude;
+					break;
+				case "nometa":
+					_ctx.EarlyPassMode = EarlyPassMode.NoMeta;
+					break;
+				default:
+					WriteError("EarlyPass allows this two types: Exclude and NoMeta");
+					break;
+			}
 		}
 
-		void SetMetaLevel(string level)
+		void MetaAssemblyName(ExtenderArguments arg)
 		{
-			var byteLevel = GetMetaLevel(level);
-			switch (byteLevel)
+			_ctx.MetaAssemblyName = arg.Word;
+		}
+
+		void SetMetaLevel(ExtenderArguments arg)
+		{
+			arg.NeedSecondPassForExtender = true;
+			if (!arg.Pre)
 			{
-				case 0:
-					WriteWarning("Consider to remove meta level 0 because this is default value.");
-					break;
-				case 255:
-					WriteError("You can not set meta level to max (255), because this is highest possible value. All metacode omited on this level.");
-					return;
-			}
-			if (_ctx.MLevel > byteLevel)
-			{
-				throw new FailBuildingException
+				var byteLevel = GetMetaLevel(arg.Word);
+				switch (byteLevel)
 				{
-					IgnoreThisFile = true,
-				};
+					case 0:
+						WriteWarning("Consider to remove meta level 0 because this is default value.");
+						break;
+					case 255:
+						WriteError("You can not set meta level to max (255), because this is highest possible value. All metacode omited on this level.");
+						return;
+				}
+				if (_ctx.MLevel > byteLevel)
+				{
+					throw new FailBuildingException
+					{
+						IgnoreThisFile = _ctx.EarlyPassMode ?? EarlyPassMode.NoMeta,
+					};
+				}
 			}
 		}
 
@@ -74,26 +108,30 @@ namespace MetaCreator.Evaluation
 			return byte.Parse(level.ToLowerInvariant().Replace("max", "255"));
 		}
 
-		void RequiresMetaLevel(string level)
+		void RequiresMetaLevel(ExtenderArguments arg)
 		{
-			var byteLevel = GetMetaLevel(level);
-			switch (byteLevel)
+			arg.NeedSecondPassForExtender = true;
+			if (!arg.Pre)
 			{
-				case 0:
-					WriteError("You cannot require meta level 0 because this is lowest possible value. At level 0 the resultant metacode is compiled.");
-					return;
-			}
-			if (_ctx.MLevel >= byteLevel)
-			{
-				throw new FailBuildingException
+				var byteLevel = GetMetaLevel(arg.Word);
+				switch (byteLevel)
 				{
-					IgnoreThisFile = true,
-				};
+					case 0:
+						WriteError("You cannot require meta level 0 because this is lowest possible value. At level 0 the resultant metacode is compiled.");
+						return;
+				}
+				if (_ctx.MLevel >= byteLevel)
+				{
+					throw new FailBuildingException
+					{
+						IgnoreThisFile = _ctx.EarlyPassMode ?? EarlyPassMode.NoMeta,
+					};
+				}
+				_ctx.ReferencesMetaAdditional.Add(_ctx.GetIntermMetaLevel(byteLevel));
 			}
-			_ctx.ReferencesMetaAdditional.Add(_ctx.GetIntermMetaLevel(byteLevel));
 		}
 
-		void Convert(string value)
+		void Convert(ExtenderArguments arg)
 		{
 			const string formatT4 = "<#";
 			const string formatMC = "/*";
@@ -145,51 +183,57 @@ namespace MetaCreator.Evaluation
 			}
 		}
 
-		void FileInProject(string name)
+		void FileInProject(ExtenderArguments arg)
 		{
 			_ctx.FileInProject = true;
-			if (!string.IsNullOrEmpty(name))
+			if (!string.IsNullOrEmpty(arg.Word))
 			{
-				_ctx.ReplacementFileName = name;
+				_ctx.ReplacementFileName = arg.Word;
 			}
 		}
 
-		void DebugLogging(string val)
+		void DebugLogging(ExtenderArguments arg)
 		{
-			_ctx.EnableDebugLogging = ToBool(val);
+			_ctx.EnableDebugLogging = ToBool(arg.Word);
 		}
 
-		void Comment(string value)
+		void Comment(ExtenderArguments arg)
 		{
 			
 		}
 
-		void FileExtension(string value)
+		void FileExtension(ExtenderArguments arg)
 		{
-			if (string.IsNullOrEmpty(value))
+			if (string.IsNullOrEmpty(arg.Word))
 			{
 				throw new ArgumentException("FileExtension not specified", "value");
 			}
-			if (string.IsNullOrEmpty(value.Trim()))
+			if (string.IsNullOrEmpty(arg.Word.Trim()))
 			{
 				throw new ArgumentException("FileExtension not specified", "value");
 			}
 			// ensure start with dot
-			if (value[0] != '.')
+			if (arg.Word[0] != '.')
 			{
-				value = '.' + value;
+				arg.Word = '.' + arg.Word;
 			}
-			_ctx.ReplacementExtension = value;
+			_ctx.ReplacementExtension = arg.Word;
 		}
 
-		void Timeout(string value)
+		void Timeout(ExtenderArguments arg)
 		{
-			_ctx.Timeout = TimeSpan.Parse(value);
+			_ctx.Timeout = TimeSpan.Parse(arg.Word);
 		}
 
-		void CSharpVersion(string version)
+		private static readonly Regex _rxCsVer = new Regex(@"v\d+\.\d+", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+		void CSharpVersion(ExtenderArguments arg)
 		{
-			_ctx.CSharpVersion = version;
+			if (!_rxCsVer.Match(arg.Word).Success)
+			{
+				WriteWarning("CSharpVersion '{0}' most probably have incorrect syntax. Consider 'v4.5'");
+			}
+			_ctx.CSharpVersion = arg.Word;
 		}
 
 		readonly static string _skeleton = Resources._GeneratorSkeleton;
@@ -409,6 +453,7 @@ namespace MetaCreator.Evaluation
 
 		string Preprocess(ProcessFileCtx ctx, string code)
 		{
+			var secondPass = new List<Action>();
 			foreach (var block in ctx.BlockParser.Parse(code))
 			{
 				SaveCaptureState(block);
@@ -416,9 +461,13 @@ namespace MetaCreator.Evaluation
 				switch (blockType)
 				{
 					case BlockParser.BlockType.Extensibility:
-						ExecuteExtender(block.Body);
+						ExecuteExtender(block.Body, secondPass);
 						break;
 				}
+			}
+			foreach (var action in secondPass)
+			{
+				action();
 			}
 			if(_enabledStringInterpolation)
 			{
@@ -635,7 +684,7 @@ namespace MetaCreator.Evaluation
 			return code;
 		}
 
-		readonly Dictionary<string, Action<string>> _mapExtenders;
+		readonly Dictionary<string, Action<ExtenderArguments>> _mapExtenders;
 
 		bool _enabledStringInterpolation;
 
@@ -674,17 +723,23 @@ namespace MetaCreator.Evaluation
 			return word;
 		}
 
-		public void ExecuteExtender(string extender)
+		public void ExecuteExtender(string extender, List<Action> secondPass)
 		{
 			extender = extender.Trim();
 
 			var name = CutFirstWord(ref extender);
 			var args = extender;
 
-			Action<string> value;
+			Action<ExtenderArguments> value;
 			if (_mapExtenders.TryGetValue(name.ToLowerInvariant(), out value))
 			{
-				value(args);
+				var ea = new ExtenderArguments(args, true);
+				value(ea);
+				if (ea.NeedSecondPassForExtender)
+				{
+					ea.Pre = false;
+					secondPass.Add(() => value(ea));
+				}
 			}
 			else
 			{
@@ -725,24 +780,24 @@ namespace MetaCreator.Evaluation
 			}
 		}
 
-		void StringInterpolation(string arg)
+		void StringInterpolation(ExtenderArguments arg)
 		{
-			_enabledStringInterpolation = ToBool(arg);
+			_enabledStringInterpolation = ToBool(arg.Word);
 		}
 
-		void ErrorRemap(string arg)
+		void ErrorRemap(ExtenderArguments arg)
 		{
-			_errorRemap = ToBool(arg);
+			_errorRemap = ToBool(arg.Word);
 		}
 
 		bool _errorRemap = true;
 
-		void ReferenceT4(string arg)
+		void ReferenceT4(ExtenderArguments arg)
 		{
-			var value = ParseT4Dog("name", arg);
+			var value = ParseT4Dog("name", arg.Word);
 			if (value != null)
 			{
-				Reference(value);
+				ReferenceCore(value);
 			}
 			else
 			{
@@ -750,12 +805,12 @@ namespace MetaCreator.Evaluation
 			}
 		}
 
-		void UsingT4(string arg)
+		void UsingT4(ExtenderArguments arg)
 		{
-			var value = ParseT4Dog("namespace", arg);
+			var value = ParseT4Dog("namespace", arg.Word);
 			if (value != null)
 			{
-				Using(value);
+				UsingCore(value);
 			}
 			else
 			{
@@ -778,16 +833,20 @@ namespace MetaCreator.Evaluation
 			return null;
 		}
 
-		void Reference(string arg)
+		void Reference(ExtenderArguments arg)
+		{
+			ReferenceCore(arg.Word);
+		}
+
+		void ReferenceCore(string arg)
 		{
 			_ctx.BuildErrorLogger.LogDebug("@Reference = " + arg);
 			_ctx.ReferencesMetaAdditional.Add(arg);
 		}
 
-		void GenerateBanner(string arg)
+		void GenerateBanner(ExtenderArguments arg)
 		{
 			WriteWarning("GenerateBanner is deprecated. Remove that.");
-			//ctx.GenerateBanner = ToBool(arg);
 		}
 
 		void WriteWarning(string message, params object[] args)
@@ -800,7 +859,12 @@ namespace MetaCreator.Evaluation
 			_ctx.BuildErrorLogger.LogErrorEvent(new BuildErrorEventArgs(null, null, _ctx.OriginalRelativeFileName, GetLineNumberByIndex(_code, _currentBlockIndex), 0, GetLineNumberByIndex(_code, _currentBlockFinishIndex), 0, message.Arg(args), null, "MetaCreator.dll"));
 		}
 
-		void Using(string arg)
+		void Using(ExtenderArguments arg)
+		{
+			UsingCore(arg.Word);
+		}
+
+		void UsingCore(string arg)
 		{
 			_namespaceImportsMetaAdditional.Add(arg);
 		}

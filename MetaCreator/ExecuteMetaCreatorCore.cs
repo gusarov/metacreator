@@ -36,14 +36,17 @@ namespace MetaCreator
 
 		#region Meta Levels
 
-		public MSBuild MSBuild { private get; set; }
+		public MSBuild MSBuild { get; set; }
 
 		private string _mLatestResult;
 		private byte? _mLatestLevel;
 		private readonly string[] _mResults = new string[256];
 
+		public string CurrentProject;
+
 		private string MBuild(ProcessFileCtx ctx, byte level)
 		{
+			//Debugger.Launch();
 			if (level == 0)
 			{
 				throw new Exception("Level 0 is not possible to request");
@@ -70,7 +73,6 @@ namespace MetaCreator
 			var intp = dir + "_obj" + Path.DirectorySeparatorChar;
 			Directory.CreateDirectory(outp);
 			Directory.CreateDirectory(intp);
-			var currentProject = Path.GetFileNameWithoutExtension(MSBuild.Projects.First().ItemSpec);
 			MSBuild.Properties = new[]
 			{
 				"OutputPath=" + outp,
@@ -78,7 +80,7 @@ namespace MetaCreator
 				"Configuration=Debug",
 				"Optimize=False",
 				"MLevel=" + level,
-				"AssemblyName=" +  currentProject + "_MLevel" + level,
+				"AssemblyName=" +  CurrentProject + "_MLevel" + level,
 			};
 			var result = MSBuild.Execute();
 			if (!result)
@@ -232,6 +234,14 @@ namespace MetaCreator
 				Timeout = ctx.Timeout,
 				MetaAssemblyName = ctx.MetaAssemblyName,
 			};
+/*
+			if (ctx.MLevel > 0 && string.IsNullOrEmpty(ctx.MetaAssemblyName))
+			{
+				var asmName = GetMLevelMetaAssemblyName(CurrentProject, ctx.ReplacementFileName, MLevel);
+				ctx.BuildErrorLogger.LogDebug("Generated MetaAssemblyName: " + asmName);
+				evaluationParameters.MetaAssemblyName = asmName;
+			}
+*/
 
 			ctx.BuildErrorLogger.LogDebug("OuterSpace: " + ctx.OuterNamespaceFromOriginalFile);
 			ctx.BuildErrorLogger.LogDebug("Imports: " + string.Join(", ", ctx.ImportsFromOriginalFile));
@@ -242,6 +252,13 @@ namespace MetaCreator
 			codeAnalyzer.Analyze(evaluationResult, ctx);
 			return (string)evaluationResult.ReturnedValue;
 		}
+
+/*
+		static string GetMLevelMetaAssemblyName(string assembly, string file, byte mLevel)
+		{
+			return "Meta." + assembly.Trim('.') + '.' + file.Trim('.') + '.' + mLevel;
+		}
+*/
 
 		string CsVersionFromFramework(string targetFrameworkVersion)
 		{
@@ -353,8 +370,7 @@ namespace MetaCreator
 
 		public bool Execute()
 		{
-			// MessageBox.Show(MLevel.ToString());
-			// Debugger.Launch();
+			//Debugger.Launch();
 			Initialize();
 
 			if (MLevel == byte.MaxValue)
@@ -396,14 +412,22 @@ namespace MetaCreator
 					}
 					catch (FailBuildingException ex)
 					{
-						if (ex.IgnoreThisFile)
+						switch (ex.IgnoreThisFile)
 						{
-							continue;
+							case EarlyPassMode.None:
+								break;
+							case EarlyPassMode.Exclude:
+								_removeFiles.Add(sourceFile);
+								continue;
+							case EarlyPassMode.NoMeta:
+								continue;
+							default:
+								throw new ArgumentOutOfRangeException();
 						}
 						// return false;
-
 						// only one automatic level raise
-						if ((ex.Result.Errors.Any(x => x.ErrorNumber == "CS0103")
+						if (ex.Result != null && ex.Result.Errors != null &&
+							(ex.Result.Errors.Any(x => x.ErrorNumber == "CS0103")
 							|| ex.Result.Errors.Any(x => x.ErrorNumber == "CS0246")
 							) && MLevel == 0)
 						{
@@ -589,6 +613,7 @@ namespace MetaCreator
 				IntermediateOutputPathRelative = core.IntermediateOutputPathRelative,
 				IntermediateOutputPathFull = core.IntermediateOutputPathFull,
 				ProjDir = core.ProjDir,
+				CurrentProject = core.CurrentProject,
 				TargetFrameworkVersion = core.TargetFrameworkVersion,
 				ReferencesOriginal = core.References.Select(x => x.ItemSpec).ToArray(),
 				MLevel = MLevel,

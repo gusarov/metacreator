@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using MetaCreator;
 using MetaCreator.Evaluation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -43,12 +44,12 @@ namespace MetaCreator_UnitTest
 				{
 					EvaluationException = new Exception("test_eval"),
 				},
-				IgnoreThisFile = true,
+				IgnoreThisFile = EarlyPassMode.NoMeta,
 			};
 
 			var des = DeSerialize(res);
 			Assert.AreEqual("test_build", des.Message);
-			Assert.IsTrue(des.IgnoreThisFile);
+			Assert.AreEqual(EarlyPassMode.NoMeta, des.IgnoreThisFile);
 			Assert.IsNotNull(des.Result);
 			Assert.IsNotNull(des.Result.EvaluationException);
 			Assert.AreEqual("test_eval", des.Result.EvaluationException.Message);

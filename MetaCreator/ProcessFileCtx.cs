@@ -102,6 +102,14 @@ namespace MetaCreator
 		public string OuterNamespaceFromOriginalFile;
 		public string MetaAssemblyName;
 		public Func<byte, string> GetIntermMetaLevel;
+		public EarlyPassMode? EarlyPassMode;
+		public string CurrentProject;
 	}
 
+	public enum EarlyPassMode
+	{
+		None,
+		Exclude,
+		NoMeta,
+	}
 }

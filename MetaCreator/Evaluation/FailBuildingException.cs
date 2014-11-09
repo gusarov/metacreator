@@ -7,7 +7,7 @@ namespace MetaCreator.Evaluation
 	public class FailBuildingException : Exception
 	{
 		public EvaluationResult Result { get; set; }
-		public bool IgnoreThisFile { get; set; }
+		public EarlyPassMode IgnoreThisFile { get; set; }
 
 		public FailBuildingException()
 		{
@@ -28,14 +28,14 @@ namespace MetaCreator.Evaluation
 			StreamingContext context) : base(info, context)
 		{
 			Result = (EvaluationResult)info.GetValue("Result", typeof(EvaluationResult));
-			IgnoreThisFile = (bool)info.GetValue("Ignore", typeof(bool));
+			IgnoreThisFile = (EarlyPassMode)info.GetValue("IgnoreThisFile", typeof(EarlyPassMode));
 		}
 
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
 			info.AddValue("Result", Result, typeof(EvaluationResult));
-			info.AddValue("Ignore", IgnoreThisFile);
+			info.AddValue("IgnoreThisFile", IgnoreThisFile);
 		}
 	}
 }

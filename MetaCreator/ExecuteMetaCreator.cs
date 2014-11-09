@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Xml;
 using Microsoft.Build.Evaluation;
@@ -92,8 +93,7 @@ namespace MetaCreator
 				Targets = new []{"Build"},
 				UseResultsCache = true,
 			};
-
-
+			_core.CurrentProject = Path.GetFileNameWithoutExtension(_core.MSBuild.Projects.First().ItemSpec);
 
 /*
 

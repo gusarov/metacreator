@@ -13,5 +13,6 @@ namespace MetaCreator.AppDomainIsolation
 		public bool DoNotRun;
 		public string[] ImportsFromOriginalFile;
 		public string OuterNamespaceFromOriginalFile;
+		public string MetaAssemblyName;
 	}
 }

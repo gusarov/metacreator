@@ -100,7 +100,7 @@ namespace MetaCreator
 		}
 
 		public string OuterNamespaceFromOriginalFile;
-
+		public string MetaAssemblyName;
 		public Func<byte, string> GetIntermMetaLevel;
 	}
 

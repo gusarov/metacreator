@@ -39,7 +39,13 @@ namespace MetaCreator.Evaluation
 				{"DebugLogging", DebugLogging},
 				{"metaLevel", SetMetaLevel},
 				{"requiresLevel", RequiresMetaLevel},
+				{"metaAssemblyName", MetaAssemblyName},
 			};
+		}
+
+		void MetaAssemblyName(string name)
+		{
+			_ctx.MetaAssemblyName = name;
 		}
 
 		void SetMetaLevel(string level)

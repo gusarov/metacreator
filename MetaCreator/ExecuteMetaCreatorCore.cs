@@ -230,6 +230,7 @@ namespace MetaCreator
 				ImportsFromOriginalFile = ctx.ImportsFromOriginalFile,
 				OuterNamespaceFromOriginalFile = ctx.OuterNamespaceFromOriginalFile,
 				Timeout = ctx.Timeout,
+				MetaAssemblyName = ctx.MetaAssemblyName,
 			};
 
 			ctx.BuildErrorLogger.LogDebug("OuterSpace: " + ctx.OuterNamespaceFromOriginalFile);

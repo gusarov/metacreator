@@ -47,12 +47,15 @@ namespace MetaCreator.Evaluation
 				var options = new CompilerParameters
 				{
 					// GenerateInMemory = true,
-					// IncludeDebugInformation = true,
+					IncludeDebugInformation = true,
 					CompilerOptions = "/debug:full /optimize-",
 					TempFiles = tempFiles,
-					// OutputAssembly = "MetaCreatorDyn",
 					// MainClass = _generatorClassName,
 				};
+				if (!string.IsNullOrWhiteSpace(input.MetaAssemblyName))
+				{
+					options.OutputAssembly = input.MetaAssemblyName;
+				}
 
 				foreach (var reference in references)
 				{

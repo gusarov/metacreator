@@ -67,7 +67,7 @@ namespace MetaCreator
 		{
 			if (string.IsNullOrWhiteSpace(MLevel))
 			{
-				MLevel = "0";
+				MLevel = "255";
 			}
 			var logConfig = new BuildErrorLoggerConfig();
 

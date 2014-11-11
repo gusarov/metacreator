@@ -1,5 +1,5 @@
 ﻿
-#line 1 "C:\Users\xkip\Dropbox\__Projects\Metacreator\UnitTests\ConsoleApplication\SameAssemblyGeneration1.cs"
+#line 1 "C:\Users\DGusarov\Dropbox\__Projects\Metacreator\UnitTests\ConsoleApplication\SameAssemblyGeneration1.cs"
 using System;
 using System.Collections.Generic;
 using System.Linq;

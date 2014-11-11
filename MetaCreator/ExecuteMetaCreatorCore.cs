@@ -47,9 +47,9 @@ namespace MetaCreator
 		private string MBuild(ProcessFileCtx ctx, byte level)
 		{
 			//Debugger.Launch();
-			if (level == 0)
+			if (level == 255)
 			{
-				throw new Exception("Level 0 is not possible to request");
+				throw new Exception("Level 255 is not possible to request");
 			}
 			if (level == MLevel)
 			{
@@ -235,7 +235,7 @@ namespace MetaCreator
 				MetaAssemblyName = ctx.MetaAssemblyName,
 			};
 /*
-			if (ctx.MLevel > 0 && string.IsNullOrEmpty(ctx.MetaAssemblyName))
+			if (ctx.MLevel < 255 && string.IsNullOrEmpty(ctx.MetaAssemblyName))
 			{
 				var asmName = GetMLevelMetaAssemblyName(CurrentProject, ctx.ReplacementFileName, MLevel);
 				ctx.BuildErrorLogger.LogDebug("Generated MetaAssemblyName: " + asmName);
@@ -373,7 +373,7 @@ namespace MetaCreator
 			//Debugger.Launch();
 			Initialize();
 
-			if (MLevel == byte.MaxValue)
+			if (MLevel == 0)
 			{
 				// ignore all metablocks
 				return true;
@@ -429,11 +429,11 @@ namespace MetaCreator
 						if (ex.Result != null && ex.Result.Errors != null &&
 							(ex.Result.Errors.Any(x => x.ErrorNumber == "CS0103")
 							|| ex.Result.Errors.Any(x => x.ErrorNumber == "CS0246")
-							) && MLevel == 0)
+							) && MLevel == 255)
 						{
 							ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise meta level", null, "MetaCreator.dll"));
 
-							var res = MBuild(ctx, byte.MaxValue);
+							var res = MBuild(ctx, 0);
 							// add reference
 							if (res != null)
 							{
@@ -441,7 +441,7 @@ namespace MetaCreator
 								try
 								{
 									processedCode = ProcessFile(code, ctx);
-									ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise succeed. Please, add /*@ requiresLevel max */ to speedup build", null, "MetaCreator.dll"));
+									ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise succeed. Please, add /*@ requiresLevel min */ to speedup build and get rid of warnings", null, "MetaCreator.dll"));
 								}
 								catch (FailBuildingException)
 								{

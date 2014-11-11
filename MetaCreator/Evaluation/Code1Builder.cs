@@ -86,14 +86,14 @@ namespace MetaCreator.Evaluation
 				var byteLevel = GetMetaLevel(arg.Word);
 				switch (byteLevel)
 				{
-					case 0:
-						WriteWarning("Consider to remove meta level 0 because this is default value.");
-						break;
 					case 255:
-						WriteError("You can not set meta level to max (255), because this is highest possible value. All metacode omited on this level.");
+						WriteWarning("Consider to remove meta level max (255) because this is default value.");
+						break;
+					case 0:
+						WriteError("You can not set meta level to min (0), because this is lowest possible value. All metacode omited on this level.");
 						return;
 				}
-				if (_ctx.MLevel > byteLevel)
+				if (_ctx.MLevel <= byteLevel)
 				{
 					throw new FailBuildingException
 					{
@@ -105,7 +105,7 @@ namespace MetaCreator.Evaluation
 
 		byte GetMetaLevel(string level)
 		{
-			return byte.Parse(level.ToLowerInvariant().Replace("max", "255"));
+			return byte.Parse(level.ToLowerInvariant().Replace("max", "255").Replace("min", "0"));
 		}
 
 		void RequiresMetaLevel(ExtenderArguments arg)
@@ -116,11 +116,11 @@ namespace MetaCreator.Evaluation
 				var byteLevel = GetMetaLevel(arg.Word);
 				switch (byteLevel)
 				{
-					case 0:
-						WriteError("You cannot require meta level 0 because this is lowest possible value. At level 0 the resultant metacode is compiled.");
+					case 255:
+						WriteError("You cannot require meta level max (255) because this is highest possible value (last pass). At this level the resultant metacode is compiled.");
 						return;
 				}
-				if (_ctx.MLevel >= byteLevel)
+				if (_ctx.MLevel < byteLevel)
 				{
 					throw new FailBuildingException
 					{

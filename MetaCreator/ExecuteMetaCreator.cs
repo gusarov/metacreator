@@ -119,7 +119,6 @@ namespace MetaCreator
 						}
 
 			*/
-
 			return _core.Execute();
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Microsoft.Build.Framework;
 
 namespace MetaCreator.Utils
 {
@@ -39,6 +40,11 @@ namespace MetaCreator.Utils
 		{
 			// return Guid.NewGuid().ToString("N");
 			return _rnd.Next().ToString("X");
+		}
+
+		public static BuildWarningEventArgs ConvertToWarning(this BuildErrorEventArgs e)
+		{
+			return new BuildWarningEventArgs(e.Subcategory, e.Code, e.File, e.LineNumber, e.ColumnNumber, e.EndLineNumber, e.EndColumnNumber, e.Message, e.HelpKeyword, e.SenderName, e.Timestamp);
 		}
 	}
 }

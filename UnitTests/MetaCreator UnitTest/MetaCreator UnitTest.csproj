@@ -76,6 +76,7 @@
     <Compile Include="Code4AnalyzeTests.cs" />
     <Compile Include="Code1BuilderTests.cs" />
     <Compile Include="EvaluationTests.cs" />
+    <Compile Include="ExamineUtils.cs" />
     <Compile Include="ExecuteMetaCreatorTest.cs" />
     <Compile Include="ExtendersTest.cs" />
     <Compile Include="FakeErrorLogger.cs" />

@@ -24,7 +24,8 @@ namespace MetaCreator
 		{
 		}
 
-		public ExecuteMetaCreatorCore(ITaskItem[] sources, ITaskItem[] references, string intermediateOutputPath, string projDir, IBuildErrorLogger buildErrorLogger)
+/*
+		public ExecuteMetaCreatorCore(ITaskItem[] sources, ITaskItem[] references, string intermediateOutputPath, string projDir, BuildErrorLoggerDelayedProxy buildErrorLogger)
 			:this()
 		{
 			Sources = sources;
@@ -33,6 +34,7 @@ namespace MetaCreator
 			ProjDir = projDir;
 			BuildErrorLogger = buildErrorLogger;
 		}
+*/
 
 		#region Meta Levels
 
@@ -127,7 +129,14 @@ namespace MetaCreator
 		public string ProjDir { get; set; }
 		public string TargetsVersion { get; set; }
 		public string TargetFrameworkVersion { get; set; }
-		public IBuildErrorLogger BuildErrorLogger { get; set; }
+
+		private BuildErrorLoggerDelayedProxy _buildErrorLogger;
+		public IBuildErrorLogger BuildErrorLogger
+		{
+			get { return _buildErrorLogger; }
+			set { _buildErrorLogger = new BuildErrorLoggerDelayedProxy(value); }
+		}
+
 		public byte MLevel { get; set; }
 
 		#endregion
@@ -408,6 +417,8 @@ namespace MetaCreator
 					string processedCode;
 					try
 					{
+						_buildErrorLogger.DelayedStart();
+						// ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "!!!!!", null, "MetaCreator.dll"));
 						processedCode = ProcessFile(code, ctx);
 					}
 					catch (FailBuildingException ex)
@@ -427,9 +438,9 @@ namespace MetaCreator
 						// return false;
 						// only one automatic level raise
 						if (ex.Result != null && ex.Result.Errors != null &&
-							(ex.Result.Errors.Any(x => x.ErrorNumber == "CS0103")
-							|| ex.Result.Errors.Any(x => x.ErrorNumber == "CS0246")
-							) && MLevel == 255)
+						    (ex.Result.Errors.Any(x => x.ErrorNumber == "CS0103")
+						     || ex.Result.Errors.Any(x => x.ErrorNumber == "CS0246")
+							    ) && MLevel == 255)
 						{
 							ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise meta level", null, "MetaCreator.dll"));
 
@@ -441,11 +452,13 @@ namespace MetaCreator
 								try
 								{
 									processedCode = ProcessFile(code, ctx);
-									ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise succeed. Please, add /*@ requiresLevel min */ to speedup build and get rid of warnings", null, "MetaCreator.dll"));
+									// Successed
+									_buildErrorLogger.DelayedCommitAsWarnings();
+									BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise succeed. Please, add /*@ requiresLevel min */ to speedup build and get rid of warnings", null, "MetaCreator.dll"));
 								}
 								catch (FailBuildingException)
 								{
-									ctx.BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise failed. Consider first error!", null, "MetaCreator.dll"));
+									BuildErrorLogger.LogWarningEvent(new BuildWarningEventArgs(null, null, ctx.OriginalRelativeFileName, 0, 0, 0, 0, "MetaCreator: Auto raise failed. Consider first error!", null, "MetaCreator.dll"));
 									return false;
 								}
 							}
@@ -458,6 +471,10 @@ namespace MetaCreator
 						{
 							return false;
 						}
+					}
+					finally
+					{
+						_buildErrorLogger.DelayedCommit();
 					}
 
 					if (ctx.NumberOfMetaBlocksProcessed > 0)
